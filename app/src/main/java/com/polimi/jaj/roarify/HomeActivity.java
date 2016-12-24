@@ -13,6 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
@@ -20,6 +22,8 @@ import com.facebook.login.LoginManager;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+
+import static android.R.layout.simple_list_item_1;
 
 public class HomeActivity extends AppCompatActivity
         implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
@@ -54,6 +58,10 @@ public class HomeActivity extends AppCompatActivity
                 .findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
+
+        String[] data = {"First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eighth", "Ninth"};
+        ListView comments = (ListView) findViewById(R.id.comments);
+        comments.setAdapter(new ArrayAdapter<String>(this, simple_list_item_1, data));
 
         if (AccessToken.getCurrentAccessToken() == null) {
             goLoginScreen();
