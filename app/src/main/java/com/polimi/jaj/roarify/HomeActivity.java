@@ -29,6 +29,7 @@ public class HomeActivity extends AppCompatActivity
         implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
 
     private GoogleMap mapa;
+    private View auxView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +122,8 @@ public class HomeActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_send) {
 
+        } else if (id == R.id.nav_logout) {
+            logout(auxView);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
