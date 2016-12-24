@@ -17,9 +17,14 @@ import android.view.MenuItem;
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
 
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
+
+    private GoogleMap mapa;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +49,11 @@ public class HomeActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
+        MapFragment mapFragment = (MapFragment) getFragmentManager()
+                .findFragmentById(R.id.map);
+
+        mapFragment.getMapAsync(this);
 
         if (AccessToken.getCurrentAccessToken() == null) {
             goLoginScreen();
@@ -119,5 +129,10 @@ public class HomeActivity extends AppCompatActivity
     public void logout(View view) {
         LoginManager.getInstance().logOut();
         goLoginScreen();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mapa = googleMap;
     }
 }
