@@ -5,7 +5,10 @@
     <string name="cancel_login">Se canceló la operación</string>
     <string name="error_login">Ocurrió un error al ingresar</string>
     <string name="logout">Log out</string>
-    <string name="title_activity_home">HomeActivity</string>
+    <string name="home">Home</string>
+    <string name="my_messages">My messages</string>
+    <string name="favorites">Favorites</string>
+    <string name="help_feedback">Help&#38;feedback</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
