@@ -15,10 +15,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
+import com.facebook.Profile;
 import com.facebook.login.LoginManager;
+import com.facebook.login.widget.ProfilePictureView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -28,7 +31,7 @@ import static android.R.layout.simple_list_item_1;
 public class HomeActivity extends AppCompatActivity
         implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
 
-    private GoogleMap mapa;
+    private GoogleMap map;
     private View auxView;
 
     @Override
@@ -70,6 +73,10 @@ public class HomeActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        if (Profile.getCurrentProfile() != null) {
+            setUserData(navigationView);
+        }
     }
 
     @Override
@@ -144,6 +151,22 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mapa = googleMap;
+        map = googleMap;
+    }
+
+    public void setUserData(NavigationView navigationView) {
+        Profile profile = Profile.getCurrentProfile();
+        String userId = profile.getId();
+        String firstName = profile.getFirstName();
+        String lastName = profile.getLastName();
+        String profileName = firstName + " " + lastName;
+
+        View headerLayout = navigationView.getHeaderView(0);
+        TextView username = (TextView) headerLayout.findViewById(R.id.username);
+        username.setText(profileName);
+
+        ProfilePictureView profilePictureView;
+        profilePictureView = (ProfilePictureView) headerLayout.findViewById(R.id.profilePicture);
+        profilePictureView.setProfileId(userId);
     }
 }
