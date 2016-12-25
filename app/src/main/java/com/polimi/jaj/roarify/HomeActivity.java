@@ -117,13 +117,13 @@ public class HomeActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_home) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_my_messages) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_favorites) {
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_help_feedback) {
 
         } else if (id == R.id.nav_share) {
 
@@ -157,6 +157,7 @@ public class HomeActivity extends AppCompatActivity
     public void setUserData(NavigationView navigationView) {
         Profile profile = Profile.getCurrentProfile();
         String userId = profile.getId();
+
         String firstName = profile.getFirstName();
         String lastName = profile.getLastName();
         String profileName = firstName + " " + lastName;
