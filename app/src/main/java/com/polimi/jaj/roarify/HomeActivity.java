@@ -1,6 +1,8 @@
 package com.polimi.jaj.roarify;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -22,9 +24,28 @@ import com.facebook.FacebookSdk;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.widget.ProfilePictureView;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.message.BasicNameValuePair;
+
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
 
 import static android.R.layout.simple_list_item_1;
 
@@ -33,6 +54,13 @@ public class HomeActivity extends AppCompatActivity
 
     private GoogleMap map;
     private View auxView;
+    private Double lat;
+    private Double lon;
+    private String user_ID;
+    private String profileName;
+    ProgressDialog progressBar;
+    HttpClient client;
+    ArrayList<String> dataMessages = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +90,8 @@ public class HomeActivity extends AppCompatActivity
                 .findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
+
+        //dataMessages.toArray();
 
         String[] data = {"First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eighth", "Ninth"};
         ListView comments = (ListView) findViewById(R.id.comments);
@@ -149,6 +179,7 @@ public class HomeActivity extends AppCompatActivity
         goLoginScreen();
     }
 
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
@@ -169,5 +200,93 @@ public class HomeActivity extends AppCompatActivity
         ProfilePictureView profilePictureView;
         profilePictureView = (ProfilePictureView) headerLayout.findViewById(R.id.profilePicture);
         profilePictureView.setProfileId(userId);
+
+        //new GetNearMessages().execute();//When map loading obtain messages
+
     }
+
+    private class GetNearMessages extends AsyncTask<Void, Message, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            while (!isCancelled()) {
+                List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+
+                //TESTING...........
+                lat = 13.5;
+                lon = 10.2;
+                user_ID = "12345";
+
+
+                //...........
+
+                pairs.add(new BasicNameValuePair("lat", "" + lat));
+                pairs.add(new BasicNameValuePair("long", "" + lon));
+                pairs.add(new BasicNameValuePair("userId", user_ID));
+
+
+                String paramsString = URLEncodedUtils.format(pairs, "UTF-8");
+                HttpGet get = new HttpGet("http://1-dot-roarify-152612.appspot.com/getNearMessages" + "?" + paramsString);
+
+                try {
+                    HttpResponse response = client.execute(get);
+                    HttpEntity entity = response.getEntity();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(entity.getContent(), "iso-8859-1"), 8);
+
+                    String jsonResponse = reader.readLine();
+                    Gson gson = new Gson();
+                    TypeToken<List<Message>> token = new TypeToken<List<Message>>() {
+                    };
+                    List<Message> messagesList = gson.fromJson(jsonResponse, token.getType());
+                    if (messagesList != null) {
+                        publishProgress(null);
+                        for (Message a : messagesList) {
+                            publishProgress(a);
+                        }
+
+                    }
+
+                } catch (ClientProtocolException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            }
+            return null;
+        }
+
+
+                @Override
+                protected void onPreExecute() {
+
+                }
+
+                @Override
+                protected void onPostExecute(Boolean result) {
+
+                }
+
+                @Override
+                protected void onProgressUpdate(Message... values) {
+                    // TODO Auto-generated method stub
+                    if (values == null) {
+
+                    } else {
+
+                        dataMessages.add(values[0].getTitle());
+
+                    }
+                }
+
+    }
+
+
+
+
 }
