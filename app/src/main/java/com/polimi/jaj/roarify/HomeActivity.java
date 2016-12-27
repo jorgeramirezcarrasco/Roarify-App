@@ -177,9 +177,9 @@ public class HomeActivity extends AppCompatActivity
         goLoginScreen();
     }
 
-    public void LoadMessages(){
-        dataMessages.toArray();
+    public void LoadMessages(ArrayList<String> dataMessages){
 
+        dataMessages.toArray();
         //String[] data = {"First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eighth", "Ninth"};
         ListView comments = (ListView) findViewById(R.id.comments);
         comments.setAdapter(new ArrayAdapter<String>(this, simple_list_item_1, dataMessages));
@@ -190,7 +190,7 @@ public class HomeActivity extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
         new GetNearMessages().execute();//When map loading obtain messages
         map = googleMap;
-        LoadMessages();
+
 
     }
 
@@ -263,6 +263,7 @@ public class HomeActivity extends AppCompatActivity
                 }
                 try {
                     Thread.sleep(5000);
+                    dataMessages.clear();//Every 5 seconds clear and refresh with new messages
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -289,6 +290,7 @@ public class HomeActivity extends AppCompatActivity
 
                     } else {
                         dataMessages.add(values[0].getTitle());
+                        LoadMessages(dataMessages);
 
                     }
                 }
