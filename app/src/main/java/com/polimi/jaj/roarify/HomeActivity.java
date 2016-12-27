@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -30,8 +31,11 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -59,7 +63,6 @@ public class HomeActivity extends AppCompatActivity
     private String user_ID;
     private String profileName;
     ProgressDialog progressBar;
-    HttpClient client;
     ArrayList<String> dataMessages = new ArrayList<String>();
 
     @Override
@@ -91,11 +94,6 @@ public class HomeActivity extends AppCompatActivity
 
         mapFragment.getMapAsync(this);
 
-        //dataMessages.toArray();
-
-        String[] data = {"First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eighth", "Ninth"};
-        ListView comments = (ListView) findViewById(R.id.comments);
-        comments.setAdapter(new ArrayAdapter<String>(this, simple_list_item_1, data));
 
         if (AccessToken.getCurrentAccessToken() == null) {
             goLoginScreen();
@@ -179,10 +177,21 @@ public class HomeActivity extends AppCompatActivity
         goLoginScreen();
     }
 
+    public void LoadMessages(){
+        dataMessages.toArray();
+
+        //String[] data = {"First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eighth", "Ninth"};
+        ListView comments = (ListView) findViewById(R.id.comments);
+        comments.setAdapter(new ArrayAdapter<String>(this, simple_list_item_1, dataMessages));
+    }
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        new GetNearMessages().execute();//When map loading obtain messages
         map = googleMap;
+        LoadMessages();
+
     }
 
     public void setUserData(NavigationView navigationView) {
@@ -201,7 +210,6 @@ public class HomeActivity extends AppCompatActivity
         profilePictureView = (ProfilePictureView) headerLayout.findViewById(R.id.profilePicture);
         profilePictureView.setProfileId(userId);
 
-        //new GetNearMessages().execute();//When map loading obtain messages
 
     }
 
@@ -229,11 +237,13 @@ public class HomeActivity extends AppCompatActivity
                 HttpGet get = new HttpGet("http://1-dot-roarify-152612.appspot.com/getNearMessages" + "?" + paramsString);
 
                 try {
+                    HttpClient client = new DefaultHttpClient();
                     HttpResponse response = client.execute(get);
                     HttpEntity entity = response.getEntity();
                     BufferedReader reader = new BufferedReader(new InputStreamReader(entity.getContent(), "iso-8859-1"), 8);
 
                     String jsonResponse = reader.readLine();
+
                     Gson gson = new Gson();
                     TypeToken<List<Message>> token = new TypeToken<List<Message>>() {
                     };
@@ -278,7 +288,6 @@ public class HomeActivity extends AppCompatActivity
                     if (values == null) {
 
                     } else {
-
                         dataMessages.add(values[0].getTitle());
 
                     }
