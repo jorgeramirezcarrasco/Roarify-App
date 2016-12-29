@@ -2,10 +2,15 @@ package com.polimi.jaj.roarify;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -19,6 +24,7 @@ import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
@@ -38,9 +44,17 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -54,7 +68,7 @@ import java.util.List;
 import static android.R.layout.simple_list_item_1;
 
 public class HomeActivity extends AppCompatActivity
-        implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
+        implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener,ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private GoogleMap map;
     private View auxView;
@@ -63,6 +77,10 @@ public class HomeActivity extends AppCompatActivity
     private String user_ID;
     private String profileName;
     ProgressDialog progressBar;
+    private GoogleApiClient mGoogleApiClient;
+    private Location mLastLocation;
+    private LatLng myLocation;
+    static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0 ;
     ArrayList<String> dataMessages = new ArrayList<String>();
 
     @Override
@@ -89,6 +107,15 @@ public class HomeActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        //Create GoogleAPIclient
+        buildGoogleApiClient();
+
+        // Create an instance of GoogleAPIClient.
+        if(mGoogleApiClient!= null){
+            mGoogleApiClient.connect();
+
+        }
+
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
 
@@ -104,6 +131,69 @@ public class HomeActivity extends AppCompatActivity
 
         if (Profile.getCurrentProfile() != null) {
             setUserData(navigationView);
+        }
+    }
+    //Create an instance of Google Api Client
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+    protected void onStart() {
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
+
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
+    }
+
+
+    //When is connected check permissions with the Package Manager
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
+        }
+        if (mLastLocation != null) {
+
+            myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            drawMarker(myLocation);
+
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Toast.makeText(this, "Connection suspended", Toast.LENGTH_SHORT).show();
+    }
+
+
+    /**
+     * Manipulates the request permission result
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        map.setMyLocationEnabled(true);
+                    }
+
+                } else {
+
+                }
+                return;
+            }
         }
     }
 
@@ -190,8 +280,27 @@ public class HomeActivity extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
         new GetNearMessages().execute();//When map loading obtain messages
         map = googleMap;
+        // Check permission about location before enable location button on map
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            map.setMyLocationEnabled(true);
+        } else {
+            ActivityCompat.requestPermissions(this,new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
 
 
+    }
+
+    public void drawMarker(LatLng myLocation){
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 10));
+        map.addMarker(new MarkerOptions().position(myLocation).title("My position"));
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Toast.makeText(this, "Failed to connect...", Toast.LENGTH_SHORT).show();
     }
 
     public void setUserData(NavigationView navigationView) {
