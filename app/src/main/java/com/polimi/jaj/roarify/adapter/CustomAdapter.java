@@ -1,58 +1,69 @@
 package com.polimi.jaj.roarify.adapter;
 
+import android.content.ClipData;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.polimi.jaj.roarify.R;
+import com.polimi.jaj.roarify.util.DisplayedMessage;
+
+import java.util.List;
 
 /**
  * Created by Alberto on 30/12/16.
  */
 
-public class CustomAdapter extends BaseAdapter {
+public class CustomAdapter extends ArrayAdapter<DisplayedMessage> {
 
-    Context context;
-    String[] data;
-    private static LayoutInflater inflater = null;
-
-    public CustomAdapter(Context context, String[] data) {
-        // TODO Auto-generated constructor stub
-        this.context = context;
-        this.data = data;
-        inflater = (LayoutInflater) context
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    public CustomAdapter(Context context, int textViewResourceId) {
+        super(context, textViewResourceId);
     }
 
-    @Override
-    public int getCount() {
-        // TODO Auto-generated method stub
-        return data.length;
-    }
-
-    @Override
-    public Object getItem(int position) {
-        // TODO Auto-generated method stub
-        return data[position];
-    }
-
-    @Override
-    public long getItemId(int position) {
-        // TODO Auto-generated method stub
-        return position;
+    public CustomAdapter(Context context, int resource, List<DisplayedMessage> items) {
+        super(context, resource, items);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        // TODO Auto-generated method stub
-        View vi = convertView;
-        if (vi == null)
-            vi = inflater.inflate(R.layout.row, null);
-        TextView text = (TextView) vi.findViewById(R.id.text);
-        text.setText(data[position]);
-        return vi;
+
+        View v = convertView;
+
+        if (v == null) {
+            LayoutInflater vi;
+            vi = LayoutInflater.from(getContext());
+            v = vi.inflate(R.layout.row, null);
+        }
+
+        DisplayedMessage p = getItem(position);
+
+        if (p != null) {
+            TextView tt1 = (TextView) v.findViewById(R.id.author);
+            TextView tt2 = (TextView) v.findViewById(R.id.message);
+            TextView tt3 = (TextView) v.findViewById(R.id.time_sent);
+            TextView tt4 = (TextView) v.findViewById(R.id.distance);
+
+            if (tt1 != null) {
+                tt1.setText(p.getAuthor());
+            }
+
+            if (tt2 != null) {
+                tt2.setText(p.getMessage());
+            }
+
+            if (tt3 != null) {
+                tt3.setText(p.getTimeSent());
+            }
+
+            if (tt4 != null) {
+                tt4.setText(p.getDistance());
+            }
+        }
+
+        return v;
     }
+
 }
