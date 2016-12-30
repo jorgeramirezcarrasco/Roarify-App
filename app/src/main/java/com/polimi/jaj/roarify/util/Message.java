@@ -1,4 +1,4 @@
-package com.polimi.jaj.roarify;
+package com.polimi.jaj.roarify.util;
 
 
 import java.io.Serializable;
