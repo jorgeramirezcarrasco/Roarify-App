@@ -44,6 +44,8 @@ import org.apache.http.message.BasicNameValuePair;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.location.LocationServices;
@@ -54,6 +56,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
 import com.polimi.jaj.roarify.adapter.CustomAdapter;
 import com.polimi.jaj.roarify.util.DisplayedMessage;
 import com.polimi.jaj.roarify.util.Message;
@@ -62,34 +65,50 @@ import com.polimi.jaj.roarify.R;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
 import static android.R.layout.simple_list_item_1;
 
 public class HomeActivity extends AppCompatActivity
-        implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener,ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+        implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener,ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
-    private GoogleMap map;
+
     private View auxView;
+
+    /* Server Connection parameters */
+
     private Double lat;
     private Double lon;
     private String user_ID;
+    ArrayList<String> dataMessages = new ArrayList<String>();
     private String profileName;
-    ProgressDialog progressBar;
+
+    /* Google Maps parameters */
+
+    private GoogleMap map;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
+    private String mLastUpdateTime;
     private LatLng myLocation;
     static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0 ;
-    ArrayList<String> dataMessages = new ArrayList<String>();
+    private boolean mRequestingLocationUpdates;
+    private LocationRequest mLocationRequest;
 
+    /**
+     * OnCreate method
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        setContentView(R.layout.activity_home);
 
+        FacebookSdk.sdkInitialize(getApplicationContext());
+
+        /* Layout setup */
+        setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -108,95 +127,37 @@ public class HomeActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        //Create GoogleAPIclient
-        buildGoogleApiClient();
-
-        // Create an instance of GoogleAPIClient.
-        if(mGoogleApiClient!= null){
-            mGoogleApiClient.connect();
-
-        }
-
-        MapFragment mapFragment = (MapFragment) getFragmentManager()
-                .findFragmentById(R.id.map);
-
-        mapFragment.getMapAsync(this);
-
-
-        if (AccessToken.getCurrentAccessToken() == null) {
-            goLoginScreen();
-        }
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         if (Profile.getCurrentProfile() != null) {
             setUserData(navigationView);
         }
-    }
-    //Create an instance of Google Api Client
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-    }
-    protected void onStart() {
-        mGoogleApiClient.connect();
-        super.onStart();
-    }
 
-    protected void onStop() {
-        mGoogleApiClient.disconnect();
-        super.onStop();
-    }
+        /* Google Api Client Connection */
+        buildGoogleApiClient();
 
-
-    //When is connected check permissions with the Package Manager
-    @Override
-    public void onConnected(Bundle connectionHint) {
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-
+        if(mGoogleApiClient!= null){
+            mGoogleApiClient.connect();
         }
-        if (mLastLocation != null) {
+        /* GMap Setup */
+        MapFragment mapFragment = (MapFragment) getFragmentManager()
+                .findFragmentById(R.id.map);
 
-            myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-            drawMarker(myLocation);
+        mapFragment.getMapAsync(this);
 
+        /* Check Facebook token */
+        if (AccessToken.getCurrentAccessToken() == null) {
+            goLoginScreen();
         }
-    }
 
-    @Override
-    public void onConnectionSuspended(int i) {
-        Toast.makeText(this, "Connection suspended", Toast.LENGTH_SHORT).show();
-    }
 
+    }
 
     /**
-     * Manipulates the request permission result
+     * Layout setup methods
      */
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED) {
-                        map.setMyLocationEnabled(true);
-                    }
 
-                } else {
-
-                }
-                return;
-            }
-        }
-    }
 
     @Override
     public void onBackPressed() {
@@ -256,18 +217,6 @@ public class HomeActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
-    private void goLoginScreen() {
-        Intent intent = new Intent(this, LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-    }
-
-    public void logout(View view) {
-        LoginManager.getInstance().logOut();
-        goLoginScreen();
-    }
-
     public void LoadMessages(ArrayList<String> dataMessages){
         /*
         dataMessages.toArray();
@@ -293,33 +242,20 @@ public class HomeActivity extends AppCompatActivity
     }
 
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        new GetNearMessages().execute();//When map loading obtain messages
-        map = googleMap;
-        // Check permission about location before enable location button on map
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            map.setMyLocationEnabled(true);
-        } else {
-            ActivityCompat.requestPermissions(this,new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-        }
+    /**
+     * Login Management methods
+     */
 
-
+    private void goLoginScreen() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
-    public void drawMarker(LatLng myLocation){
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 10));
-        map.addMarker(new MarkerOptions().position(myLocation).title("My position"));
-
+    public void logout(View view) {
+        LoginManager.getInstance().logOut();
+        goLoginScreen();
     }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Toast.makeText(this, "Failed to connect...", Toast.LENGTH_SHORT).show();
-    }
-
     public void setUserData(NavigationView navigationView) {
         Profile profile = Profile.getCurrentProfile();
         String userId = profile.getId();
@@ -338,6 +274,34 @@ public class HomeActivity extends AppCompatActivity
 
 
     }
+
+    /**
+     * Google Maps methods
+     */
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        new GetNearMessages().execute();//When map loading obtain messages
+        map = googleMap;
+        // Check permission about location before enable location button on map
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            map.setMyLocationEnabled(true);
+        } else {
+            ActivityCompat.requestPermissions(this,new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+    }
+
+    public void drawMarker(LatLng myLocation){
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 10));
+        map.addMarker(new MarkerOptions().position(myLocation).title("My position"));
+    }
+
+
+    /**
+     * Server Connection methods
+     */
 
     private class GetNearMessages extends AsyncTask<Void, Message, Boolean> {
 
@@ -425,5 +389,117 @@ public class HomeActivity extends AppCompatActivity
 
 
 
+    /**
+     * Pack Manager Method that manipulates the request permission result
+     */
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        map.setMyLocationEnabled(true);
+                    }
+
+                } else {
+
+                }
+                return;
+            }
+        }
+    }
+
+
+    /**
+     * Google Play Services Methods
+     */
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+    protected void onStart() {
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
+
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
+    }
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        /* When is connected check permissions with the Package Manager */
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            /* Obtain the last Location */
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            /* Obtain the last date */
+            mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+             /* Allows Location Updates */
+            mRequestingLocationUpdates=true;
+            mLocationRequest = new LocationRequest();
+            if (mRequestingLocationUpdates) {
+                startLocationUpdates();
+            }
+        }
+         /* If all the process was right draw the marker */
+        if (mLastLocation != null) {
+            /* Convert Location and call drawMarker method */
+            myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            drawMarker(myLocation);
+        }
+    }
+    @Override
+    public void onConnectionSuspended(int i) {
+        Toast.makeText(this, "Connection suspended", Toast.LENGTH_SHORT).show();
+    }
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Toast.makeText(this, "Failed to connect...", Toast.LENGTH_SHORT).show();
+    }
+    /* Method that start the location updates */
+    protected void startLocationUpdates() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(
+                    mGoogleApiClient, mLocationRequest, this);}
+    }
+    /* Method that is called when Location is changed */
+    @Override
+    public void onLocationChanged(Location location) {
+        mLastLocation = location;
+        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+        Toast.makeText(HomeActivity.this, "Location:"+mLastLocation.toString(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(HomeActivity.this, "Date:"+mLastUpdateTime.toString(), Toast.LENGTH_SHORT).show();
+        myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+        drawMarker(myLocation);
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
+    }
+
+    protected void stopLocationUpdates() {
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                mGoogleApiClient, this);
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
+            startLocationUpdates();
+        }
+    }
 
 }
