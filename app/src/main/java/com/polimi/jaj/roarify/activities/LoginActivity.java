@@ -1,9 +1,8 @@
-package com.polimi.jaj.roarify;
+package com.polimi.jaj.roarify.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
@@ -12,6 +11,8 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.polimi.jaj.roarify.R;
+import com.polimi.jaj.roarify.activities.HomeActivity;
 
 import java.util.Arrays;
 

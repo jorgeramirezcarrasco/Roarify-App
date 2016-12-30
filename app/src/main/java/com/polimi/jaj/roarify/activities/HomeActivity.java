@@ -1,4 +1,4 @@
-package com.polimi.jaj.roarify;
+package com.polimi.jaj.roarify.activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -11,7 +11,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -37,10 +36,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -57,6 +54,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.polimi.jaj.roarify.util.Message;
+import com.polimi.jaj.roarify.R;
 
 import java.io.BufferedReader;
 import java.io.IOException;
