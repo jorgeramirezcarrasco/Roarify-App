@@ -1,6 +1,5 @@
 package com.polimi.jaj.roarify.adapter;
 
-import android.content.ClipData;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.polimi.jaj.roarify.R;
-import com.polimi.jaj.roarify.util.DisplayedMessage;
+import com.polimi.jaj.roarify.model.DisplayedMessage;
 
 import java.util.List;
 

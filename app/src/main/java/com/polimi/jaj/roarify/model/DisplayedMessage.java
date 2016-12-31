@@ -1,4 +1,4 @@
-package com.polimi.jaj.roarify.util;
+package com.polimi.jaj.roarify.model;
 
 /**
  * Created by Alberto on 30/12/16.

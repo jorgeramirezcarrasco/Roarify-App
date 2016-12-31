@@ -1,14 +1,17 @@
 <resources>
     <string name="app_name">Roarify</string>
     <string name="facebook_app_id">239845343113407</string>
-    <string name="welcome">Bienvenido</string>
-    <string name="cancel_login">Se canceló la operación</string>
-    <string name="error_login">Ocurrió un error al ingresar</string>
+    <string name="welcome">Welcome</string>
+    <string name="cancel_login">Operation cancelled</string>
+    <string name="error_login">Something went wrong</string>
     <string name="logout">Log out</string>
     <string name="home">Home</string>
     <string name="my_messages">My messages</string>
     <string name="favorites">Favorites</string>
     <string name="help_feedback">Help&#38;feedback</string>
+
+    <string name="favorite_button">Favorite button</string>
+    <string name="message_edit_text">Message</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
