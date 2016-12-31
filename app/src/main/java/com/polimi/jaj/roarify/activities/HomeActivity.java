@@ -1,6 +1,6 @@
 package com.polimi.jaj.roarify.activities;
 
-import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -11,6 +11,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,7 +22,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,8 +60,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import com.polimi.jaj.roarify.adapter.CustomAdapter;
-import com.polimi.jaj.roarify.util.DisplayedMessage;
-import com.polimi.jaj.roarify.util.Message;
+import com.polimi.jaj.roarify.model.DisplayedMessage;
+import com.polimi.jaj.roarify.model.Message;
 import com.polimi.jaj.roarify.R;
 
 import java.io.BufferedReader;
@@ -71,24 +73,29 @@ import java.util.Date;
 import java.util.List;
 
 
-import static android.R.layout.simple_list_item_1;
-
 public class HomeActivity extends AppCompatActivity
-        implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener,ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+        implements OnMapReadyCallback,
+                   NavigationView.OnNavigationItemSelectedListener,
+                   ConnectionCallbacks,
+                   GoogleApiClient.OnConnectionFailedListener,
+                   LocationListener {
 
 
     private View auxView;
 
-    /* Server Connection parameters */
+    /* Parameters needed for the dialog fragment */
+    private AlertDialog.Builder builder;
+    private AlertDialog alert;
+    private View dialogView;
+    private LayoutInflater inflater;
 
+    /* Server Connection parameters */
     private Double lat;
     private Double lon;
     private String user_ID;
     ArrayList<String> dataMessages = new ArrayList<String>();
-    private String profileName;
 
     /* Google Maps parameters */
-
     private GoogleMap map;
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
@@ -130,6 +137,21 @@ public class HomeActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        /* Initial setup of the dialog fragment when clicking on a message */
+        builder = new AlertDialog.Builder(this);
+        builder.setPositiveButton("Send", new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int id) {
+            /* Method that sends the response to the server or the user that wrote this message (not clear yet).
+             * In case of sending the message to the server, it would also be a multicast message. In case of
+             * sending the message only to the user, the setup of this button should be done in the LoadMessages
+             * method, as we need to know the user who sent the first message; moreover, we need to differentiate
+             * between a normal user and an anonymous user. If the user is anonymous, this button shouldn't be
+             * shown, or shouldn't be clickable (color it grey). */ }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int id) {
+            dialog.cancel(); }
+        });
+
+        /* User data setup */
         if (Profile.getCurrentProfile() != null) {
             setUserData(navigationView);
         }
@@ -217,6 +239,8 @@ public class HomeActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
     public void LoadMessages(ArrayList<String> dataMessages){
         /*
         dataMessages.toArray();
@@ -230,7 +254,7 @@ public class HomeActivity extends AppCompatActivity
         DisplayedMessage message3 = new DisplayedMessage("Third","This is a common message. Let's try to make it long. In this case, we are making it so long that ellipsis (puntos suspensivos) will appear. This part of the message is likely to disappear","1:10","25m");
         DisplayedMessage message4 = new DisplayedMessage("Fourth","This is message 4","12:01","29m");
         DisplayedMessage message5 = new DisplayedMessage("Fifth","This is message 5. Yet another example","23:23","851m");
-        List<DisplayedMessage> elements = new ArrayList<>();
+        final List<DisplayedMessage> elements = new ArrayList<>();
         elements.add(message1);
         elements.add(message2);
         elements.add(message3);
@@ -239,6 +263,22 @@ public class HomeActivity extends AppCompatActivity
         ListView comments = (ListView) findViewById(R.id.comments);
         CustomAdapter customAdapter = new CustomAdapter(this, R.layout.row, elements);
         comments.setAdapter(customAdapter);
+
+        comments.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                // TODO Auto-generated method stub
+                inflater = getLayoutInflater();
+                dialogView = inflater.inflate(R.layout.message_dialog, null);
+                builder.setView(dialogView);
+                builder.setTitle(elements.get(position).getAuthor());
+                builder.setMessage(elements.get(position).getMessage()).setCancelable(false);
+                alert = builder.create();
+                alert.show();
+            }
+        });
     }
 
 
