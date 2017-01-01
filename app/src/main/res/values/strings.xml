@@ -4,6 +4,7 @@
     <string name="welcome">Welcome</string>
     <string name="cancel_login">Operation cancelled</string>
     <string name="error_login">Something went wrong</string>
+    <string name="load_messages_fail">Loading messages failed</string>
     <string name="logout">Log out</string>
     <string name="home">Home</string>
     <string name="my_messages">My messages</string>
