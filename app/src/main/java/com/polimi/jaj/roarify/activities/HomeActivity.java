@@ -11,6 +11,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -82,12 +83,17 @@ public class HomeActivity extends AppCompatActivity
 
 
     private View auxView;
+    private SwipeRefreshLayout swipeContainer;
 
-    /* Parameters needed for the dialog fragment */
-    private AlertDialog.Builder builder;
-    private AlertDialog alert;
-    private View dialogView;
-    private LayoutInflater inflater;
+    /* Parameters needed for the dialog fragments */
+    private View dialogViewReply;
+    private LayoutInflater inflaterReply;
+    private AlertDialog.Builder builderReply;
+    private AlertDialog alertReply;
+    private View dialogViewMessage;
+    private LayoutInflater inflaterMessage;
+    private AlertDialog.Builder builderMessage;
+    private AlertDialog alertMessage;
 
     /* Server Connection parameters */
     private Double lat;
@@ -123,8 +129,7 @@ public class HomeActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                alertMessage.show();
             }
         });
 
@@ -137,9 +142,23 @@ public class HomeActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        // Setup refresh listener which triggers new data loading
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Your code to refresh the list here.
+                // Make sure you call swipeContainer.setRefreshing(false)
+                // once the network request has completed successfully.
+                new GetNearMessages().execute();
+            }
+        });
+
+        swipeContainer.setColorSchemeResources(R.color.colorPrimary);
+
         /* Initial setup of the dialog fragment when clicking on a message */
-        builder = new AlertDialog.Builder(this);
-        builder.setPositiveButton("Send", new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int id) {
+        builderReply = new AlertDialog.Builder(this);
+        builderReply.setPositiveButton("Reply", new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int id) {
             /* Method that sends the response to the server or the user that wrote this message (not clear yet).
              * In case of sending the message to the server, it would also be a multicast message. In case of
              * sending the message only to the user, the setup of this button should be done in the LoadMessages
@@ -147,9 +166,23 @@ public class HomeActivity extends AppCompatActivity
              * between a normal user and an anonymous user. If the user is anonymous, this button shouldn't be
              * shown, or shouldn't be clickable (color it grey). */ }
         });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int id) {
+        builderReply.setNegativeButton("Cancel", new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int id) {
             dialog.cancel(); }
         });
+
+        /* Setup of the dialog fragment when clicking on the '+' button */
+        builderMessage = new AlertDialog.Builder(this);
+        builderMessage.setPositiveButton("Roar!", new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int id) {
+            }
+        });
+        builderMessage.setNegativeButton("Cancel", new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int id) {
+            dialog.cancel(); }
+        });
+        inflaterMessage = this.getLayoutInflater();
+        dialogViewMessage = inflaterMessage.inflate(R.layout.message_dialog, null);
+        builderMessage.setView(dialogViewMessage);
+        builderMessage.setTitle("New message");
+        alertMessage = builderMessage.create();
 
         /* User data setup */
         if (Profile.getCurrentProfile() != null) {
@@ -270,13 +303,13 @@ public class HomeActivity extends AppCompatActivity
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 // TODO Auto-generated method stub
-                inflater = getLayoutInflater();
-                dialogView = inflater.inflate(R.layout.message_dialog, null);
-                builder.setView(dialogView);
-                builder.setTitle(elements.get(position).getAuthor());
-                builder.setMessage(elements.get(position).getMessage()).setCancelable(false);
-                alert = builder.create();
-                alert.show();
+                inflaterReply = getLayoutInflater();
+                dialogViewReply = inflaterReply.inflate(R.layout.reply_dialog, null);
+                builderReply.setView(dialogViewReply);
+                builderReply.setTitle(elements.get(position).getAuthor());
+                builderReply.setMessage(elements.get(position).getMessage()).setCancelable(false);
+                alertReply = builderReply.create();
+                alertReply.show();
             }
         });
     }
@@ -347,7 +380,7 @@ public class HomeActivity extends AppCompatActivity
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            while (!isCancelled()) {
+            /*while (!isCancelled()) {*/
                 List<NameValuePair> pairs = new ArrayList<NameValuePair>();
 
                 //TESTING...........
@@ -391,39 +424,39 @@ public class HomeActivity extends AppCompatActivity
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                try {
-                    Thread.sleep(5000);
+                /*try {
+                    Thread.sleep(5000);*/
                     dataMessages.clear();//Every 5 seconds clear and refresh with new messages
-                } catch (InterruptedException e) {
+                /*} catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
 
-            }
+            /*}*/
             return null;
         }
 
 
-                @Override
-                protected void onPreExecute() {
+        @Override
+        protected void onPreExecute() {
 
-                }
+        }
 
-                @Override
-                protected void onPostExecute(Boolean result) {
+        @Override
+        protected void onPostExecute(Boolean result) {
+            swipeContainer.setRefreshing(false);
+        }
 
-                }
+        @Override
+        protected void onProgressUpdate(Message... values) {
+            // TODO Auto-generated method stub
+            if (values == null) {
 
-                @Override
-                protected void onProgressUpdate(Message... values) {
-                    // TODO Auto-generated method stub
-                    if (values == null) {
+            } else {
+                dataMessages.add(values[0].getTitle());
+                LoadMessages(dataMessages);
 
-                    } else {
-                        dataMessages.add(values[0].getTitle());
-                        LoadMessages(dataMessages);
-
-                    }
-                }
+            }
+        }
 
     }
 

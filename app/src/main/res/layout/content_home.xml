@@ -15,12 +15,24 @@
         android:layout_width="match_parent"
         android:layout_height="200dp" />
 
-    <ListView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/comments"
+    <View
+        android:id="@+id/separator"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_below="@id/map"
+        android:background="#B0BEC5"/>
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swipeContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="10dp"
-        android:layout_below="@id/map"
-        android:orientation="vertical" />
+        android:layout_below="@id/separator"
+        android:orientation="vertical" >
 
+        <ListView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/comments"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+    </android.support.v4.widget.SwipeRefreshLayout>
 </RelativeLayout>
