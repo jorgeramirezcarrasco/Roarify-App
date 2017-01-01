@@ -1,5 +1,6 @@
 package com.polimi.jaj.roarify.activities;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -421,8 +422,10 @@ public class HomeActivity extends AppCompatActivity
 
                 } catch (ClientProtocolException e) {
                     e.printStackTrace();
+                    showToastedWarning();
                 } catch (IOException e) {
                     e.printStackTrace();
+                    showToastedWarning();
                 }
                 /*try {
                     Thread.sleep(5000);*/
@@ -430,9 +433,23 @@ public class HomeActivity extends AppCompatActivity
                 /*} catch (InterruptedException e) {
                     e.printStackTrace();
                 }*/
-
             /*}*/
             return null;
+        }
+
+        private void showToastedWarning() {
+            try {
+                runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        Toast.makeText(HomeActivity.this, R.string.load_messages_fail, Toast.LENGTH_SHORT).show();
+                    }
+                });
+                Thread.sleep(300);
+            } catch (InterruptedException e2) {
+                e2.printStackTrace();
+            }
         }
 
 
