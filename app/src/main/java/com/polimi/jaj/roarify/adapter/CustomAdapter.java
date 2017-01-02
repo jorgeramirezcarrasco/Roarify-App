@@ -8,7 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.polimi.jaj.roarify.R;
-import com.polimi.jaj.roarify.model.DisplayedMessage;
+import com.polimi.jaj.roarify.model.Message;
 
 import java.util.List;
 
@@ -16,13 +16,13 @@ import java.util.List;
  * Created by Alberto on 30/12/16.
  */
 
-public class CustomAdapter extends ArrayAdapter<DisplayedMessage> {
+public class CustomAdapter extends ArrayAdapter<Message> {
 
     public CustomAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
     }
 
-    public CustomAdapter(Context context, int resource, List<DisplayedMessage> items) {
+    public CustomAdapter(Context context, int resource, List<Message> items) {
         super(context, resource, items);
     }
 
@@ -37,7 +37,7 @@ public class CustomAdapter extends ArrayAdapter<DisplayedMessage> {
             v = vi.inflate(R.layout.row, null);
         }
 
-        DisplayedMessage p = getItem(position);
+        Message p = getItem(position);
 
         if (p != null) {
             TextView tt1 = (TextView) v.findViewById(R.id.author);
@@ -46,7 +46,7 @@ public class CustomAdapter extends ArrayAdapter<DisplayedMessage> {
             TextView tt4 = (TextView) v.findViewById(R.id.distance);
 
             if (tt1 != null) {
-                tt1.setText(p.getAuthor());
+                tt1.setText(p.getUserName());
             }
 
             if (tt2 != null) {

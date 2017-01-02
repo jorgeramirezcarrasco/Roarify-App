@@ -1,6 +1,5 @@
 package com.polimi.jaj.roarify.activities;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,7 +8,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -25,6 +23,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,7 +61,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import com.polimi.jaj.roarify.adapter.CustomAdapter;
-import com.polimi.jaj.roarify.model.DisplayedMessage;
+import com.polimi.jaj.roarify.data.RoarifySQLiteRepository;
 import com.polimi.jaj.roarify.model.Message;
 import com.polimi.jaj.roarify.R;
 
@@ -73,6 +72,8 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static android.R.layout.simple_list_item_1;
 
 
 public class HomeActivity extends AppCompatActivity
@@ -276,19 +277,19 @@ public class HomeActivity extends AppCompatActivity
 
 
     public void LoadMessages(ArrayList<String> dataMessages){
-        /*
-        dataMessages.toArray();
+
+        /*dataMessages.toArray();
         //String[] data = {"First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eighth", "Ninth"};
         ListView comments = (ListView) findViewById(R.id.comments);
-        comments.setAdapter(new ArrayAdapter<String>(this, simple_list_item_1, dataMessages));
-        */
+        comments.setAdapter(new ArrayAdapter<String>(this, simple_list_item_1, dataMessages));*/
 
-        DisplayedMessage message1 = new DisplayedMessage("First","This is message 1","17:46","239m");
-        DisplayedMessage message2 = new DisplayedMessage("Second","This is a common message. Let's try to make it long, so we can check that it fits in any possible situation (different screens, orientation, etc.). ","13:22","590m");
-        DisplayedMessage message3 = new DisplayedMessage("Third","This is a common message. Let's try to make it long. In this case, we are making it so long that ellipsis (puntos suspensivos) will appear. This part of the message is likely to disappear","1:10","25m");
-        DisplayedMessage message4 = new DisplayedMessage("Fourth","This is message 4","12:01","29m");
-        DisplayedMessage message5 = new DisplayedMessage("Fifth","This is message 5. Yet another example","23:23","851m");
-        final List<DisplayedMessage> elements = new ArrayList<>();
+
+        Message message1 = new Message("First","This is message 1","Jan 1, 2017\n17:46","239m");
+        Message message2 = new Message("Second","This is a common message. Let's try to make it long, so we can check that it fits in any possible situation (different screens, orientation, etc.). ","May 5, 2017\n13:22","590m");
+        Message message3 = new Message("Third","This is a common message. Let's try to make it long. In this case, we are making it so long that ellipsis (puntos suspensivos) will appear. This part of the message is likely to disappear","Aug 17, 2015\n1:10","25m");
+        Message message4 = new Message("Fourth","This is message 4","Feb 12, 2016\n12:01","29m");
+        Message message5 = new Message("Fifth","This is message 5. Yet another example","Dec 26, 2015\n23:23","851m");
+        final List<Message> elements = new ArrayList<>();
         elements.add(message1);
         elements.add(message2);
         elements.add(message3);
@@ -307,7 +308,7 @@ public class HomeActivity extends AppCompatActivity
                 inflaterReply = getLayoutInflater();
                 dialogViewReply = inflaterReply.inflate(R.layout.reply_dialog, null);
                 builderReply.setView(dialogViewReply);
-                builderReply.setTitle(elements.get(position).getAuthor());
+                builderReply.setTitle(elements.get(position).getUserName());
                 builderReply.setMessage(elements.get(position).getMessage()).setCancelable(false);
                 alertReply = builderReply.create();
                 alertReply.show();
