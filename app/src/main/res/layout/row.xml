@@ -10,7 +10,7 @@
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="#000000"
-        android:text="Author" />
+        android:text="" />
 
     <TextView
         android:id="@+id/time_sent"
@@ -21,7 +21,8 @@
         android:layout_margin="5dp"
         android:textStyle="italic"
         android:textSize="12sp"
-        android:text="20:13" />
+        android:textAlignment="textEnd"
+        android:text="" />
 
     <TextView
         android:id="@+id/message"
@@ -36,7 +37,7 @@
         android:layout_marginRight="5dp"
         android:layout_marginLeft="5dp"
         android:textColor="#000000"
-        android:text="This is a common message. Let's try to make it long, so we can check that it fits in any possible situation (different screens, orientation, etc.). "/>
+        android:text=""/>
 
     <TextView
         android:id="@+id/distance"
@@ -46,6 +47,6 @@
         android:layout_margin="5dp"
         android:textStyle="italic"
         android:textSize="12sp"
-        android:text="587m" />
+        android:text="" />
 
 </RelativeLayout>
