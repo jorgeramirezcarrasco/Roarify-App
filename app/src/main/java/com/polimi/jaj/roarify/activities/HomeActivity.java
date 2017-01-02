@@ -12,6 +12,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -101,7 +102,7 @@ public class HomeActivity extends AppCompatActivity
     private Double lat;
     private Double lon;
     private String user_ID;
-    ArrayList<String> dataMessages = new ArrayList<String>();
+    List<Message> dataMessages = new ArrayList<Message>();
 
     /* Google Maps parameters */
     private GoogleMap map;
@@ -276,27 +277,10 @@ public class HomeActivity extends AppCompatActivity
     }
 
 
-    public void LoadMessages(ArrayList<String> dataMessages){
+    public void LoadMessages(final List<Message> dataMessages){
 
-        /*dataMessages.toArray();
-        //String[] data = {"First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eighth", "Ninth"};
         ListView comments = (ListView) findViewById(R.id.comments);
-        comments.setAdapter(new ArrayAdapter<String>(this, simple_list_item_1, dataMessages));*/
-
-
-        Message message1 = new Message("First","This is message 1","Jan 1, 2017\n17:46","239m");
-        Message message2 = new Message("Second","This is a common message. Let's try to make it long, so we can check that it fits in any possible situation (different screens, orientation, etc.). ","May 5, 2017\n13:22","590m");
-        Message message3 = new Message("Third","This is a common message. Let's try to make it long. In this case, we are making it so long that ellipsis (puntos suspensivos) will appear. This part of the message is likely to disappear","Aug 17, 2015\n1:10","25m");
-        Message message4 = new Message("Fourth","This is message 4","Feb 12, 2016\n12:01","29m");
-        Message message5 = new Message("Fifth","This is message 5. Yet another example","Dec 26, 2015\n23:23","851m");
-        final List<Message> elements = new ArrayList<>();
-        elements.add(message1);
-        elements.add(message2);
-        elements.add(message3);
-        elements.add(message4);
-        elements.add(message5);
-        ListView comments = (ListView) findViewById(R.id.comments);
-        CustomAdapter customAdapter = new CustomAdapter(this, R.layout.row, elements);
+        CustomAdapter customAdapter = new CustomAdapter(this, R.layout.row, dataMessages);
         comments.setAdapter(customAdapter);
 
         comments.setOnItemClickListener(new AdapterView.OnItemClickListener()
@@ -308,8 +292,8 @@ public class HomeActivity extends AppCompatActivity
                 inflaterReply = getLayoutInflater();
                 dialogViewReply = inflaterReply.inflate(R.layout.reply_dialog, null);
                 builderReply.setView(dialogViewReply);
-                builderReply.setTitle(elements.get(position).getUserName());
-                builderReply.setMessage(elements.get(position).getMessage()).setCancelable(false);
+                builderReply.setTitle(dataMessages.get(position).getUserName());
+                builderReply.setMessage(dataMessages.get(position).getText()).setCancelable(false);
                 alertReply = builderReply.create();
                 alertReply.show();
             }
@@ -386,20 +370,17 @@ public class HomeActivity extends AppCompatActivity
                 List<NameValuePair> pairs = new ArrayList<NameValuePair>();
 
                 //TESTING...........
-                lat = 13.5;
+                lat = 10.7;
                 lon = 10.2;
-                user_ID = "12345";
-
-
+            
                 //...........
 
                 pairs.add(new BasicNameValuePair("lat", "" + lat));
                 pairs.add(new BasicNameValuePair("long", "" + lon));
-                pairs.add(new BasicNameValuePair("userId", user_ID));
 
 
                 String paramsString = URLEncodedUtils.format(pairs, "UTF-8");
-                HttpGet get = new HttpGet("http://1-dot-roarify-152612.appspot.com/getNearMessages" + "?" + paramsString);
+                HttpGet get = new HttpGet("http://1-dot-roarify-server.appspot.com/getNearMessages" + "?" + paramsString);
 
                 try {
                     HttpClient client = new DefaultHttpClient();
@@ -430,7 +411,7 @@ public class HomeActivity extends AppCompatActivity
                 }
                 /*try {
                     Thread.sleep(5000);*/
-                    dataMessages.clear();//Every 5 seconds clear and refresh with new messages
+                    dataMessages.clear();
                 /*} catch (InterruptedException e) {
                     e.printStackTrace();
                 }*/
@@ -470,7 +451,8 @@ public class HomeActivity extends AppCompatActivity
             if (values == null) {
 
             } else {
-                dataMessages.add(values[0].getTitle());
+                Message message = new Message(values[0].getMessageId(),values[0].getUserId(),values[0].getUserName(),values[0].getText(),values[0].getTime(),values[0].getLatitude(),values[0].getLongitude());
+                dataMessages.add(message);
                 LoadMessages(dataMessages);
 
             }

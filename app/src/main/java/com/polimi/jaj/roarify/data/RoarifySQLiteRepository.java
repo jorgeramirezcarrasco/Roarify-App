@@ -30,7 +30,7 @@ public class RoarifySQLiteRepository {
                         FavoriteEntry.COLUMN_NAME_LONGITUDE+COMMA_SEP+ ")"+
                         "VALUES(?"+COMMA_SEP+"?"+COMMA_SEP+"?)"+COMMA_SEP+"?)"+COMMA_SEP+"?)"+COMMA_SEP+"?)",
                 new Object[]{favorite.getMessageId(),favorite.getUserId(), favorite.getUserName(),
-                        favorite.getMessage(), favorite.getTime(), favorite.getLatitude(),
+                        favorite.getText(), favorite.getTime(), favorite.getLatitude(),
                         favorite.getLongitude(),});
     }
 
