@@ -2,10 +2,6 @@ package com.polimi.jaj.roarify.model;
 
 import java.io.Serializable;
 
-/**
- * Created by Alberto on 30/12/16.
- */
-
 public class Message implements Serializable{
 
     private static final long serialVersionUID = 1L;
@@ -13,42 +9,24 @@ public class Message implements Serializable{
     private String messageId;
     private Integer userId;
     private String userName;
-    private String message;
-    private Integer time; // Timestamp to be formatted as desired
+    private String text;
+    private String time; // Timestamp to be formatted as desired
     private Double latitude;
     private Double longitude;
-    private String timeSent; // To be removed in the future
-    private String distance; // To be removed in the future
-    private String title; // To be removed in the future
 
-    /* PROVISIONAL CONSTRUCTOR, SO THAT THE APP STILL WORKS
-     * To be removed in the future */
-    public Message(String userName, String message, String timeSent, String distance) {
-        this.userName = userName;
-        this.message = message;
-        this.timeSent = timeSent;
-        this.distance = distance;
-    }
 
-    /* CONSTRUCTOR TO BE USED */
-    public Message(String messageId, Integer userId, String userName, String message, Integer time, Double latitude, Double longitude) {
+    /* CONSTRUCTOR */
+    public Message(String messageId, Integer userId, String userName, String text, String time, Double latitude, Double longitude) {
         this.messageId = messageId;
         this.userId = userId;
         this.userName = userName;
-        this.message = message;
+        this.text = text;
         this.time = time;
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
 
     public String getMessageId() {
         return messageId;
@@ -74,35 +52,19 @@ public class Message implements Serializable{
         this.userName = userName;
     }
 
-    public String getMessage() {
-        return message;
+    public String getText() {
+        return text;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setText(String text) {
+        this.text = text;
     }
 
-    public String getTimeSent() {
-        return timeSent;
-    }
-
-    public void setTimeSent(String timeSent) {
-        this.timeSent = timeSent;
-    }
-
-    public String getDistance() {
-        return distance;
-    }
-
-    public void setDistance(String distance) {
-        this.distance = distance;
-    }
-
-    public Integer getTime() {
+    public String getTime() {
         return time;
     }
 
-    public void setTime(Integer time) {
+    public void setTime(String time) {
         this.time = time;
     }
 

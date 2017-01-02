@@ -50,15 +50,15 @@ public class CustomAdapter extends ArrayAdapter<Message> {
             }
 
             if (tt2 != null) {
-                tt2.setText(p.getMessage());
+                tt2.setText(p.getText());
             }
 
             if (tt3 != null) {
-                tt3.setText(p.getTimeSent());
+                tt3.setText(p.getTime());
             }
 
             if (tt4 != null) {
-                tt4.setText(p.getDistance());
+                tt4.setText("200metros");//TESTING
             }
         }
 
