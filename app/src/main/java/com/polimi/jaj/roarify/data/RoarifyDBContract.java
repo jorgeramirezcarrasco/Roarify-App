@@ -31,11 +31,11 @@ public class RoarifyDBContract {
 
 
     public static SQLiteDatabase getWritableDatabase(Context context){
-        return new MovieDBHelper(context).getWritableDatabase();
+        return new RoarifyDBHelper(context).getWritableDatabase();
     }
 
     public static SQLiteDatabase getReadableDatabase(Context context){
-        return new MovieDBHelper(context).getReadableDatabase();
+        return new RoarifyDBHelper(context).getReadableDatabase();
     }
 
     public static class FavoriteEntry implements BaseColumns {
@@ -50,9 +50,9 @@ public class RoarifyDBContract {
         public static final String COLUMN_NAME_LONGITUDE = "loc_lon";
     }
 
-    public static class MovieDBHelper extends SQLiteOpenHelper {
+    public static class RoarifyDBHelper extends SQLiteOpenHelper {
 
-        public MovieDBHelper(Context context){
+        public RoarifyDBHelper(Context context){
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
         }
 

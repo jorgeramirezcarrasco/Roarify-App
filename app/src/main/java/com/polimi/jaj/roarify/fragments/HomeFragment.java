@@ -12,7 +12,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +34,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.polimi.jaj.roarify.R;
-import com.polimi.jaj.roarify.activities.HomeActivity;
 import com.polimi.jaj.roarify.adapter.CustomAdapter;
 import com.polimi.jaj.roarify.model.Message;
 
@@ -101,7 +99,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-        final View view = inflater.inflate(R.layout.content_home, container, false);
+        final View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         return view;
     }

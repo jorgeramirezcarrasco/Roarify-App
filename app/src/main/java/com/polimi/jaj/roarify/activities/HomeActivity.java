@@ -199,22 +199,19 @@ public class HomeActivity extends AppCompatActivity {
     public void setFragment(int position) {
         FragmentManager fragmentManager;
         FragmentTransaction fragmentTransaction;
+        fragmentManager = getSupportFragmentManager();
+        fragmentTransaction = fragmentManager.beginTransaction();
         switch (position) {
             case 0:
-                fragmentManager = getSupportFragmentManager();
-                fragmentTransaction = fragmentManager.beginTransaction();
                 HomeFragment homeFragment = new HomeFragment();
-                fragmentTransaction.replace(R.id.fragment, homeFragment);
-                fragmentTransaction.commit();
+                fragmentTransaction.replace(R.id.fragment_container, homeFragment);
                 break;
             case 1:
-                fragmentManager = getSupportFragmentManager();
-                fragmentTransaction = fragmentManager.beginTransaction();
                 MyMessagesFragment myMessagesFragment = new MyMessagesFragment();
-                fragmentTransaction.replace(R.id.fragment, myMessagesFragment);
-                fragmentTransaction.commit();
+                fragmentTransaction.replace(R.id.fragment_container, myMessagesFragment);
                 break;
         }
+        fragmentTransaction.commit();
     }
 
 
