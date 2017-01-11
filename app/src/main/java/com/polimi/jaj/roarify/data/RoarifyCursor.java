@@ -19,14 +19,14 @@ public class RoarifyCursor extends CursorWrapper{
                         COLUMN_NAME_MESSAGE_ID));
     }
 
-    public String getUserId(){
-        return getString(
+    public Integer getUserId(){
+        return getInt(
                 getColumnIndex(RoarifyDBContract.FavoriteEntry.
                         COLUMN_NAME_USER_ID));
     }
 
-    public float getUserName(){
-        return getFloat(
+    public String getUserName(){
+        return getString(
                 getColumnIndex(RoarifyDBContract.FavoriteEntry.
                         COLUMN_NAME_USER_NAME));
     }
