@@ -7,16 +7,16 @@ public class Message implements Serializable{
     private static final long serialVersionUID = 1L;
 
     private String messageId;
-    private Integer userId;
+    private String userId;
     private String userName;
     private String text;
-    private String time; // Timestamp to be formatted as desired
+    private String time;
     private Double latitude;
     private Double longitude;
 
 
     /* CONSTRUCTOR */
-    public Message(String messageId, Integer userId, String userName, String text, String time, Double latitude, Double longitude) {
+    public Message(String messageId, String userId, String userName, String text, String time, Double latitude, Double longitude) {
         this.messageId = messageId;
         this.userId = userId;
         this.userName = userName;
@@ -36,11 +36,11 @@ public class Message implements Serializable{
         this.messageId = messageId;
     }
 
-    public Integer getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 

@@ -1,5 +1,6 @@
 package com.polimi.jaj.roarify.fragments;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -12,14 +13,17 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
 
+import com.facebook.Profile;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -42,14 +46,18 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -65,7 +73,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
         GoogleApiClient.OnConnectionFailedListener, LocationListener{
 
 
-    /* Google Maps parameters */
 
     /* Google Maps parameters */
     private GoogleApiClient mGoogleApiClient;
@@ -88,7 +95,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
     private AlertDialog.Builder builderMessage;
     private AlertDialog alertMessage;
     private SwipeRefreshLayout swipeContainer;
-
+    String textPost;
     /* Server Connection parameters */
     private Double lat;
     private Double lon;
@@ -161,6 +168,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
         /* Setup of the dialog fragment when clicking on the '+' button */
         builderMessage = new AlertDialog.Builder(getActivity());
         builderMessage.setPositiveButton("Roar!", new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int id) {
+
+            EditText editText = (EditText) dialogViewMessage.findViewById(R.id.new_message);
+            textPost=editText.getText().toString();
+            new PostMessage().execute();
+            ((EditText) dialogViewMessage.findViewById(R.id.new_message)).setText("");
         }
         });
         builderMessage.setNegativeButton("Cancel", new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int id) {
@@ -180,7 +192,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        new GetNearMessages().execute();//When map loading obtain messages
         map = googleMap;
         // Check permission about location before enable location button on map
         if (ContextCompat.checkSelfPermission((getActivity()), android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -194,6 +205,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
     }
 
     public void drawMarker(LatLng myLocation){
+        new GetNearMessages().execute();//When location is ready obtain messages
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 10));
         map.addMarker(new MarkerOptions().position(myLocation).title("My position"));
     }
@@ -228,18 +240,69 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
      * Server Connection methods
      */
 
+    private class PostMessage extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+
+            HttpPost post = new HttpPost("https://1-dot-roarify-server.appspot.com/postMessage");
+            List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+
+            pairs.add(new BasicNameValuePair("userId", Profile.getCurrentProfile().getId()));
+            pairs.add(new BasicNameValuePair("userName", Profile.getCurrentProfile().getName()));
+            pairs.add(new BasicNameValuePair("time", mLastUpdateTime.toString()));
+            pairs.add(new BasicNameValuePair("text",textPost ));
+            pairs.add(new BasicNameValuePair("lat", String.valueOf(mLastLocation.getLatitude())));
+            pairs.add(new BasicNameValuePair("long", String.valueOf(mLastLocation.getLongitude())));
+            pairs.add(new BasicNameValuePair("isParent", "true"));
+            pairs.add(new BasicNameValuePair("parentId", ""));
+
+            try {
+                post.setEntity(new UrlEncodedFormEntity(pairs));
+            } catch (UnsupportedEncodingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            try {
+                HttpClient client = new DefaultHttpClient();
+                HttpResponse response = client.execute(post);
+                if(response.getStatusLine().getStatusCode() == 200){
+                    return true;
+                }else{
+                    return false;
+                }
+            } catch (ClientProtocolException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                return false;
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                return false;
+            }
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+
+        }
+
+    }
     private class GetNearMessages extends AsyncTask<Void, Message, Boolean> {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            /*while (!isCancelled()) {*/
             List<NameValuePair> pairs = new ArrayList<NameValuePair>();
 
-            //TESTING...........
-            lat = 10.7;
-            lon = 10.2;
+                lat = mLastLocation.getLatitude();
+                lon = mLastLocation.getLongitude();
 
-            //...........
+
 
             pairs.add(new BasicNameValuePair("lat", "" + lat));
             pairs.add(new BasicNameValuePair("long", "" + lon));
@@ -275,13 +338,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
                 e.printStackTrace();
                 showToastedWarning();
             }
-                /*try {
-                    Thread.sleep(5000);*/
+
             dataMessages.clear();
-                /*} catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
-            /*}*/
             return null;
         }
 

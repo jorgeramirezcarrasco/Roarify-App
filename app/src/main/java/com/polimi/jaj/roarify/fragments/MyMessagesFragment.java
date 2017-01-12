@@ -15,7 +15,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 
-
+import com.facebook.Profile;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.polimi.jaj.roarify.R;
@@ -98,7 +98,7 @@ public class MyMessagesFragment extends Fragment {
                 // Your code to refresh the list here.
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
-                new GetNearMessages().execute();
+                new GetUserMessages().execute();
             }
         });
 
@@ -133,6 +133,8 @@ public class MyMessagesFragment extends Fragment {
         builderMessage.setTitle("New message");
         alertMessage = builderMessage.create();
 
+        new GetUserMessages().execute();
+
 
     }
 
@@ -140,25 +142,18 @@ public class MyMessagesFragment extends Fragment {
      * Server Connection methods
      */
 
-    private class GetNearMessages extends AsyncTask<Void, Message, Boolean> {
+    private class GetUserMessages extends AsyncTask<Void, Message, Boolean> {
 
         @Override
         protected Boolean doInBackground(Void... params) {
             /*while (!isCancelled()) {*/
             List<NameValuePair> pairs = new ArrayList<NameValuePair>();
 
-            //TESTING...........
-            lat = 10.7;
-            lon = 10.2;
 
-            //...........
-
-            pairs.add(new BasicNameValuePair("lat", "" + lat));
-            pairs.add(new BasicNameValuePair("long", "" + lon));
-
+            pairs.add(new BasicNameValuePair("userId", "" + Profile.getCurrentProfile().getId().toString()));
 
             String paramsString = URLEncodedUtils.format(pairs, "UTF-8");
-            HttpGet get = new HttpGet("http://1-dot-roarify-server.appspot.com/getNearMessages" + "?" + paramsString);
+            HttpGet get = new HttpGet("http://1-dot-roarify-server.appspot.com/getUserMessages" + "?" + paramsString);
 
             try {
                 HttpClient client = new DefaultHttpClient();
