@@ -1,0 +1,8 @@
+BIBLIOGRAFÍA
+http://stackoverflow.com/questions/33194594/navigationview-get-find-header-layout
+http://alvarez.tech/login-facebook-en-android/
+http://stackoverflow.com/questions/19855072/android-get-facebook-profile-picture
+https://developer.android.com/training/location/receive-location-updates.html
+
+PÁGINAS DE INTERÉS:
+https://materialdesignicons.com/
