@@ -485,6 +485,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
             LocationServices.FusedLocationApi.requestLocationUpdates(
                     mGoogleApiClient, mLocationRequest, this);
         }
+        //This is for the list of messages to appear in the he first place without refreshing.
+        new GetNearMessages().execute();
+
     }
 
     /* Method that is called when Location is changed */
