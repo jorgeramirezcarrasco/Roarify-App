@@ -70,9 +70,7 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
     private Location mLastLocation;
 
     /* Server Connection parameters */
-    private Double lat;
-    private Double lon;
-    private String user_ID;
+    private String idMessage;
     List<Message> dataMessages = new ArrayList<Message>();
 
     private SwipeRefreshLayout swipeContainer;
@@ -105,7 +103,7 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
         
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
 
-        new MessageActivity.GetNearMessages().execute();
+        new MessageActivity.GetMyMessage().execute();
 
         // Setup refresh listener which triggers new data loading
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -114,7 +112,7 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
                 // Your code to refresh the list here.
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
-                new MessageActivity.GetNearMessages().execute();
+                new MessageActivity.GetMyMessage().execute();
             }
         });
 
@@ -164,22 +162,20 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
     }
 
 
-    private class GetNearMessages extends AsyncTask<Void, Message, Boolean> {
+    private class GetMyMessage extends AsyncTask<Void, Message, Boolean> {
 
         @Override
         protected Boolean doInBackground(Void... params) {
             List<NameValuePair> pairs = new ArrayList<NameValuePair>();
 
-            lat = 45.48;
-            lon = 9.21;
+            idMessage="5732568548769792"; //Este valor debe enviarse en el intent del message que se haya tocado
 
 
-            pairs.add(new BasicNameValuePair("lat", "" + lat));
-            pairs.add(new BasicNameValuePair("long", "" + lon));
+            pairs.add(new BasicNameValuePair("id", "" + idMessage));
 
 
             String paramsString = URLEncodedUtils.format(pairs, "UTF-8");
-            HttpGet get = new HttpGet("http://1-dot-roarify-server.appspot.com/getNearMessages" + "?" + paramsString);
+            HttpGet get = new HttpGet("http://1-dot-roarify-server.appspot.com/getMessage" + "?" + paramsString);
 
             try {
                 HttpClient client = new DefaultHttpClient();
@@ -245,7 +241,95 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
             if (values == null) {
 
             } else {
-                Message message = new Message(values[0].getMessageId(), values[0].getUserId(), values[0].getUserName(), values[0].getText(), values[0].getTime(), values[0].getLatitude(), values[0].getLongitude());
+                Message message = new Message(values[0].getMessageId(), values[0].getUserId(), values[0].getUserName(), values[0].getText(), values[0].getTime(), values[0].getLatitude(), values[0].getLongitude(),values[0].getIsParent(),values[0].getParentId());
+                dataMessages.add(message);
+                LoadMessages(dataMessages);
+
+            }
+        }
+
+    }
+
+    private class GetChildrenMessages extends AsyncTask<Void, Message, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+
+            idMessage="5634472569470976"; //Este valor debe enviarse en el intent del message que se haya tocado
+
+
+            pairs.add(new BasicNameValuePair("id", "" + idMessage));
+
+
+            String paramsString = URLEncodedUtils.format(pairs, "UTF-8");
+            HttpGet get = new HttpGet("http://1-dot-roarify-server.appspot.com/getChildrenMessages" + "?" + paramsString);
+
+            try {
+                HttpClient client = new DefaultHttpClient();
+                HttpResponse response = client.execute(get);
+                HttpEntity entity = response.getEntity();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(entity.getContent(), "iso-8859-1"), 8);
+
+                String jsonResponse = reader.readLine();
+
+                Gson gson = new Gson();
+                TypeToken<List<Message>> token = new TypeToken<List<Message>>() {
+                };
+                List<Message> messagesList = gson.fromJson(jsonResponse, token.getType());
+                if (messagesList != null) {
+                    publishProgress(null);
+                    for (Message a : messagesList) {
+                        publishProgress(a);
+                    }
+
+                }
+
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+                showToastedWarning();
+            } catch (IOException e) {
+                e.printStackTrace();
+                showToastedWarning();
+            }
+
+            dataMessages.clear();
+            return null;
+        }
+
+        private void showToastedWarning() {
+            try {
+                runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        Toast.makeText(MessageActivity.this, R.string.load_messages_fail, Toast.LENGTH_SHORT).show();
+                    }
+                });
+                Thread.sleep(300);
+            } catch (InterruptedException e2) {
+                e2.printStackTrace();
+            }
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            swipeContainer.setRefreshing(false);
+        }
+
+        @Override
+        protected void onProgressUpdate(Message... values) {
+            // TODO Auto-generated method stub
+            if (values == null) {
+
+            } else {
+                Message message = new Message(values[0].getMessageId(), values[0].getUserId(), values[0].getUserName(), values[0].getText(), values[0].getTime(), values[0].getLatitude(), values[0].getLongitude(),values[0].getIsParent(),values[0].getParentId());
                 dataMessages.add(message);
                 LoadMessages(dataMessages);
 

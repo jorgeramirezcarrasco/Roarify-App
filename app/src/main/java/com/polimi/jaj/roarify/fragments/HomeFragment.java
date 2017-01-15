@@ -316,8 +316,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
         protected Boolean doInBackground(Void... params) {
             List<NameValuePair> pairs = new ArrayList<NameValuePair>();
 
-            lat = mLastLocation.getLatitude();
-            lon = mLastLocation.getLongitude();
+            if(mLastLocation != null) {
+
+                lat = mLastLocation.getLatitude();
+                lon = mLastLocation.getLongitude();
+            }
 
 
             pairs.add(new BasicNameValuePair("lat", "" + lat));
@@ -391,7 +394,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
             if (values == null) {
 
             } else {
-                Message message = new Message(values[0].getMessageId(), values[0].getUserId(), values[0].getUserName(), values[0].getText(), values[0].getTime(), values[0].getLatitude(), values[0].getLongitude());
+                Message message = new Message(values[0].getMessageId(), values[0].getUserId(), values[0].getUserName(), values[0].getText(), values[0].getTime(), values[0].getLatitude(), values[0].getLongitude(),values[0].getIsParent(),values[0].getParentId());
                 dataMessages.add(message);
                 LoadMessages(dataMessages);
 
@@ -495,8 +498,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
     public void onLocationChanged(Location location) {
         mLastLocation = location;
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
-        Toast.makeText(getActivity(), "Location:" + mLastLocation.toString(), Toast.LENGTH_SHORT).show();
-        Toast.makeText(getActivity(), "Date:" + mLastUpdateTime.toString(), Toast.LENGTH_SHORT).show();
         myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
         drawMarker(myLocation);
     }
