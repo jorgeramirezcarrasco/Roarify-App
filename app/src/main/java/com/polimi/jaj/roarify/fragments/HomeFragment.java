@@ -394,6 +394,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
             if (values == null) {
 
             } else {
+
                 Message message = new Message(values[0].getMessageId(), values[0].getUserId(), values[0].getUserName(), values[0].getText(), values[0].getTime(), values[0].getLatitude(), values[0].getLongitude(),values[0].getIsParent(),values[0].getParentId());
                 dataMessages.add(message);
                 LoadMessages(dataMessages);
@@ -416,9 +417,12 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
                                     int position, long id) {
 
                 Message message = (Message) parent.getItemAtPosition(position);
+                Log.i("idMessage",message.getMessageId());
+                Log.i("idMessage",String.valueOf(message.getLongitude()));
+
 
                 Intent mIntent = new Intent(getActivity() ,MessageActivity.class);
-                mIntent.putExtra("message", message);
+                mIntent.putExtra("idMessage", message.getMessageId());
                 startActivity(mIntent);
 
             }

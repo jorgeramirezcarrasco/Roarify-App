@@ -13,6 +13,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -98,9 +99,9 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
 
 
         Intent mIntent = getIntent();
-        Message message = (Message) mIntent.getExtras().getSerializable("message");
+        idMessage = (String) mIntent.getExtras().getSerializable("idMessage");
+        Log.i("idMessage",idMessage);
 
-        
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
 
         new MessageActivity.GetMyMessage().execute();
@@ -121,17 +122,7 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
         CustomAdapter customAdapter = new CustomAdapter(this, R.layout.row, dataMessages);
         comments.setAdapter(customAdapter);
 
-
     }
-
-    /*
-    public void LoadMessages(final List<Message> dataMessages) {
-
-        ListView comments = (ListView) this.findViewById(R.id.comments);
-        CustomAdapter customAdapter = new CustomAdapter(this, R.layout.row, dataMessages);
-        comments.setAdapter(customAdapter);
-
-    }*/
 
 
     /**
@@ -168,7 +159,7 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
         protected Boolean doInBackground(Void... params) {
             List<NameValuePair> pairs = new ArrayList<NameValuePair>();
 
-            idMessage="5732568548769792"; //Este valor debe enviarse en el intent del message que se haya tocado
+            //idMessage="5732568548769792"; //Este valor debe enviarse en el intent del message que se haya tocado
 
 
             pairs.add(new BasicNameValuePair("id", "" + idMessage));
@@ -186,14 +177,11 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
                 String jsonResponse = reader.readLine();
 
                 Gson gson = new Gson();
-                TypeToken<List<Message>> token = new TypeToken<List<Message>>() {
+                TypeToken<Message> token = new TypeToken<Message>() {
                 };
-                List<Message> messagesList = gson.fromJson(jsonResponse, token.getType());
-                if (messagesList != null) {
-                    publishProgress(null);
-                    for (Message a : messagesList) {
-                        publishProgress(a);
-                    }
+                Message messageReceived = gson.fromJson(jsonResponse, token.getType());
+                if (messageReceived != null) {
+                    publishProgress(messageReceived);
 
                 }
 
@@ -256,7 +244,7 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
         protected Boolean doInBackground(Void... params) {
             List<NameValuePair> pairs = new ArrayList<NameValuePair>();
 
-            idMessage="5634472569470976"; //Este valor debe enviarse en el intent del message que se haya tocado
+            //idMessage="5634472569470976"; //Este valor debe enviarse en el intent del message que se haya tocado
 
 
             pairs.add(new BasicNameValuePair("id", "" + idMessage));
