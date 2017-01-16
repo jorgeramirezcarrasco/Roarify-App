@@ -418,7 +418,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
 
                 Message message = (Message) parent.getItemAtPosition(position);
                 Log.i("idMessage",message.getMessageId());
-                Log.i("idMessage",String.valueOf(message.getLongitude()));
+                Log.i("idMessage",message.getIsParent());
 
 
                 Intent mIntent = new Intent(getActivity() ,MessageActivity.class);

@@ -1,5 +1,6 @@
 package com.polimi.jaj.roarify.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -11,9 +12,11 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -21,6 +24,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.Profile;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -43,7 +47,9 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
@@ -51,12 +57,14 @@ import org.apache.http.message.BasicNameValuePair;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class MessageActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MessageActivity extends AppCompatActivity implements OnMapReadyCallback,GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, LocationListener{
 
 
 
@@ -69,6 +77,19 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
     static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
     private LatLng messageLocation;
     private Location mLastLocation;
+    private LatLng myLocation;
+
+
+    /* Parameters needed for the dialog fragments */
+    private View dialogViewReply;
+    private LayoutInflater inflaterReply;
+    private AlertDialog.Builder builderReply;
+    private AlertDialog alertReply;
+    private View dialogViewMessage;
+    private LayoutInflater inflaterMessage;
+    private AlertDialog.Builder builderMessage;
+    private AlertDialog alertMessage;
+    String textPost;
 
     /* Server Connection parameters */
     private String idMessage;
@@ -87,14 +108,20 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
         setSupportActionBar(toolbar);
 
 
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+         /* Google Api Client Connection */
+        buildGoogleApiClient();
+
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.connect();
+        }
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                alertMessage.show();
             }
-        });*/
+        });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
@@ -105,6 +132,7 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
 
         new MessageActivity.GetMyMessage().execute();
+        new MessageActivity.GetChildrenMessages().execute();
 
         // Setup refresh listener which triggers new data loading
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -114,6 +142,8 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
                 new MessageActivity.GetMyMessage().execute();
+                new MessageActivity.GetChildrenMessages().execute();
+
             }
         });
 
@@ -121,6 +151,28 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
         ListView comments = (ListView) findViewById(R.id.comments);
         CustomAdapter customAdapter = new CustomAdapter(this, R.layout.row, dataMessages);
         comments.setAdapter(customAdapter);
+
+                /* Setup of the dialog fragment when clicking on the '+' button */
+        builderMessage = new AlertDialog.Builder(this);
+        builderMessage.setPositiveButton("Roar!", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+
+                EditText editText = (EditText) dialogViewMessage.findViewById(R.id.new_message);
+                textPost = editText.getText().toString();
+                new MessageActivity.PostMessage().execute();
+                ((EditText) dialogViewMessage.findViewById(R.id.new_message)).setText("");
+            }
+        });
+        builderMessage.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+        inflaterMessage = this.getLayoutInflater();
+        dialogViewMessage = inflaterMessage.inflate(R.layout.message_dialog, null);
+        builderMessage.setView(dialogViewMessage);
+        builderMessage.setTitle("Reply");
+        alertMessage = builderMessage.create();
 
     }
 
@@ -141,6 +193,12 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
+    }
+
+    public void drawMarker(LatLng myLocation) {
+        new GetMyMessage().execute();//When location is ready obtain messages
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 10));
+        map.addMarker(new MarkerOptions().position(myLocation).title("My position"));
     }
 
 
@@ -324,6 +382,160 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
             }
         }
 
+    }
+
+    /**
+     * Server Connection methods
+     */
+
+    private class PostMessage extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+
+            HttpPost post = new HttpPost("https://1-dot-roarify-server.appspot.com/postMessage");
+            List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+
+            pairs.add(new BasicNameValuePair("userId", Profile.getCurrentProfile().getId()));
+            pairs.add(new BasicNameValuePair("userName", Profile.getCurrentProfile().getName()));
+            pairs.add(new BasicNameValuePair("time", mLastUpdateTime.toString()));
+            pairs.add(new BasicNameValuePair("text", textPost));
+            pairs.add(new BasicNameValuePair("lat", String.valueOf(mLastLocation.getLatitude())));
+            pairs.add(new BasicNameValuePair("long", String.valueOf(mLastLocation.getLongitude())));
+            pairs.add(new BasicNameValuePair("isParent", "false"));
+            pairs.add(new BasicNameValuePair("parentId", idMessage));
+
+            try {
+                post.setEntity(new UrlEncodedFormEntity(pairs));
+            } catch (UnsupportedEncodingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            try {
+                HttpClient client = new DefaultHttpClient();
+                HttpResponse response = client.execute(post);
+                if (response.getStatusLine().getStatusCode() == 200) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (ClientProtocolException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                return false;
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                return false;
+            }
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+
+        }
+
+    }
+
+
+
+    /**
+     * Google Play Services Methods
+     */
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+
+    public void onStart() {
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
+
+    public void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
+    }
+
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        /* When is connected check permissions with the Package Manager */
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            /* Obtain the last Location */
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            /* Obtain the last date */
+            mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+             /* Allows Location Updates */
+            mRequestingLocationUpdates = true;
+            mLocationRequest = new LocationRequest();
+            if (mRequestingLocationUpdates) {
+                startLocationUpdates();
+            }
+        }
+         /* If all the process was right draw the marker */
+        if (mLastLocation != null) {
+            /* Convert Location and call drawMarker method */
+            myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Toast.makeText(this, "Connection suspended", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Toast.makeText(this, "Failed to connect...", Toast.LENGTH_SHORT).show();
+    }
+
+
+    protected void startLocationUpdates() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        }
+
+
+    }
+
+
+    /* Method that is called when Location is changed */
+    @Override
+    public void onLocationChanged(Location location) {
+        mLastLocation = location;
+        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+        myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+        drawMarker(myLocation);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        stopLocationUpdates();
+    }
+
+    protected void stopLocationUpdates() {
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
+            startLocationUpdates();
+        }
     }
 
 

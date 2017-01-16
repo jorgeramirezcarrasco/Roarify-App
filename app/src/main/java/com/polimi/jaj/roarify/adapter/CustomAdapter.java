@@ -31,34 +31,71 @@ public class CustomAdapter extends ArrayAdapter<Message> {
 
         View v = convertView;
 
-        if (v == null) {
-            LayoutInflater vi;
-            vi = LayoutInflater.from(getContext());
-            v = vi.inflate(R.layout.row, null);
-        }
+
 
         Message p = getItem(position);
 
         if (p != null) {
-            TextView tt1 = (TextView) v.findViewById(R.id.author);
-            TextView tt2 = (TextView) v.findViewById(R.id.message);
-            TextView tt3 = (TextView) v.findViewById(R.id.time_sent);
-            TextView tt4 = (TextView) v.findViewById(R.id.distance);
 
-            if (tt1 != null) {
-                tt1.setText(p.getUserName());
+            if (p.getIsParent().equals("true")) {
+
+                if (v == null) {
+                    LayoutInflater vi;
+                    vi = LayoutInflater.from(getContext());
+                    v = vi.inflate(R.layout.row, null);
+                }
+
+                TextView tt1 = (TextView) v.findViewById(R.id.author);
+                TextView tt2 = (TextView) v.findViewById(R.id.message);
+                TextView tt3 = (TextView) v.findViewById(R.id.time_sent);
+                TextView tt4 = (TextView) v.findViewById(R.id.distance);
+
+                if (tt1 != null) {
+                    tt1.setText(p.getUserName());
+                }
+
+                if (tt2 != null) {
+                    tt2.setText(p.getText());
+                }
+
+                if (tt3 != null) {
+                    tt3.setText(p.getTime());
+                }
+
+                if (tt4 != null) {
+                    tt4.setText("200metros");//TESTING
+                }
             }
+            else{
 
-            if (tt2 != null) {
-                tt2.setText(p.getText());
-            }
+                if (v == null) {
+                    LayoutInflater vi;
+                    vi = LayoutInflater.from(getContext());
+                    v = vi.inflate(R.layout.rownotparent, null);
+                }
 
-            if (tt3 != null) {
-                tt3.setText(p.getTime());
-            }
+                TextView tt1 = (TextView) v.findViewById(R.id.author);
+                TextView tt2 = (TextView) v.findViewById(R.id.message);
+                TextView tt3 = (TextView) v.findViewById(R.id.time_sent);
+                TextView tt4 = (TextView) v.findViewById(R.id.distance);
 
-            if (tt4 != null) {
-                tt4.setText("200metros");//TESTING
+                if (tt1 != null) {
+                    tt1.setText(p.getUserName());
+                }
+
+                if (tt2 != null) {
+                    tt2.setText(p.getText());
+                }
+
+                if (tt3 != null) {
+                    tt3.setText(p.getTime());
+                }
+
+                if (tt4 != null) {
+                    tt4.setText("200metros");//TESTING
+                }
+
+
             }
         }
 
