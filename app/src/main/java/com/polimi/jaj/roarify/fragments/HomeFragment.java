@@ -509,7 +509,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
     @Override
     public void onPause() {
         super.onPause();
-        stopLocationUpdates();
+        if (mGoogleApiClient.isConnected()) {
+            stopLocationUpdates();
+        }
     }
 
     protected void stopLocationUpdates() {
