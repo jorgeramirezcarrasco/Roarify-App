@@ -19,6 +19,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -39,7 +41,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.polimi.jaj.roarify.R;
-import com.polimi.jaj.roarify.adapter.CustomAdapter;
+import com.polimi.jaj.roarify.adapter.MessageAdapter;
 import com.polimi.jaj.roarify.fragments.HomeFragment;
 import com.polimi.jaj.roarify.model.Message;
 
@@ -81,6 +83,9 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
     private LatLng messageLocation;
     private Location mLastLocation;
     private LatLng myLocation;
+    private Float distance; //Cambiar a Integer cuando queramos redondear.
+    private Location locationMessage;//to calculate de distance between out position and the message.
+
 
 
     /* Parameters needed for the dialog fragments */
@@ -118,17 +123,12 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
             mGoogleApiClient.connect();
         }
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                alertMessage.show();
-            }
-        });
 
         /* GMap Setup */
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+
 
 
         Intent mIntent = getIntent();
@@ -137,8 +137,9 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
 
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
 
+        dataMessages.clear();
         new MessageActivity.GetMyMessage().execute();
-        new MessageActivity.GetChildrenMessages().execute();
+
 
         // Setup refresh listener which triggers new data loading
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -147,16 +148,34 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
                 // Your code to refresh the list here.
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
+                dataMessages.clear();
                 new MessageActivity.GetMyMessage().execute();
-                new MessageActivity.GetChildrenMessages().execute();
 
             }
         });
 
 
+
         ListView comments = (ListView) findViewById(R.id.comments);
-        CustomAdapter customAdapter = new CustomAdapter(this, R.layout.row, dataMessages);
-        comments.setAdapter(customAdapter);
+        MessageAdapter messageAdapter = new MessageAdapter(this, R.layout.rowparent, dataMessages);
+        comments.setAdapter(messageAdapter);
+
+
+        //Button replyButton = (Button) findViewById(R.id.replyButton);
+        comments.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                                            @Override
+                                            public void onItemClick(AdapterView<?> parent, View view,
+                                                                    int position, long id) {
+
+                                                switch (view.getId()) {
+                                                    case R.id.replyButton:
+                                                        alertMessage.show();
+                                                        Log.i("HOLA2", "hola2");
+                                                        break;
+                                                }
+                                            }
+                                        });
 
                 /* Setup of the dialog fragment when clicking on the '+' button */
         builderMessage = new AlertDialog.Builder(this);
@@ -211,8 +230,8 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
     public void LoadMessages(final List<Message> dataMessages) {
 
         ListView comments = (ListView) this.findViewById(R.id.comments);
-        CustomAdapter customAdapter = new CustomAdapter(this, R.layout.row, dataMessages);
-        comments.setAdapter(customAdapter);
+        MessageAdapter messageAdapter = new MessageAdapter(this, R.layout.row, dataMessages);
+        comments.setAdapter(messageAdapter);
 
     }
 
@@ -284,7 +303,11 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
 
         @Override
         protected void onPostExecute(Boolean result) {
+
             swipeContainer.setRefreshing(false);
+            new MessageActivity.GetChildrenMessages().execute();
+
+
         }
 
         @Override
@@ -293,9 +316,12 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
             if (values == null) {
 
             } else {
-                Message message = new Message(values[0].getMessageId(), values[0].getUserId(), values[0].getUserName(), values[0].getText(), values[0].getTime(), values[0].getLatitude(), values[0].getLongitude(),values[0].getIsParent(),values[0].getParentId());
+                Message message = new Message(values[0].getMessageId(), values[0].getUserId(), values[0].getUserName(), values[0].getText(), values[0].getTime(), values[0].getLatitude(), values[0].getLongitude(),values[0].getIsParent(),values[0].getParentId(), null);
+                locationMessage = new Location("Roarify");
+                //message.setDistance(getDistanceToMessage(locationMessage, message).toString());
                 dataMessages.add(message);
                 LoadMessages(dataMessages);
+
 
             }
         }
@@ -345,7 +371,7 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
                 showToastedWarning();
             }
 
-            dataMessages.clear();
+            //dataMessages.clear();
             return null;
         }
 
@@ -371,9 +397,7 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
         }
 
         @Override
-        protected void onPostExecute(Boolean result) {
-            swipeContainer.setRefreshing(false);
-        }
+        protected void onPostExecute(Boolean result) {swipeContainer.setRefreshing(false);}
 
         @Override
         protected void onProgressUpdate(Message... values) {
@@ -381,10 +405,9 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
             if (values == null) {
 
             } else {
-                Message message = new Message(values[0].getMessageId(), values[0].getUserId(), values[0].getUserName(), values[0].getText(), values[0].getTime(), values[0].getLatitude(), values[0].getLongitude(),values[0].getIsParent(),values[0].getParentId());
+                Message message = new Message(values[0].getMessageId(), values[0].getUserId(), values[0].getUserName(), values[0].getText(), values[0].getTime(), values[0].getLatitude(), values[0].getLongitude(),values[0].getIsParent(),values[0].getParentId(), null);
                 dataMessages.add(message);
                 LoadMessages(dataMessages);
-
             }
         }
 
@@ -544,5 +567,19 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
         }
     }
 
+    public Float getDistanceToMessage(Location locationMessage, Message message){
+        locationMessage.setLatitude(message.getLatitude());
+        locationMessage.setLongitude(message.getLongitude());
+        //distance=Math.round(mLastLocation.distanceTo(locationMessage));
+        /*Ahora mismo distance es un Float y sale con demasiadas cifras decimales,
+        * para que no salgan tantas la sentencia de arriba redondea pero hay que cambiar el tipo
+        * de distance de Float a Integer. Ahora mismo lo dejamos con los decimales para
+         * ver que funciona.*/
+        distance = new Float(0);
+
+        distance = mLastLocation.distanceTo(locationMessage);
+
+        return distance;
+    }
 
 }

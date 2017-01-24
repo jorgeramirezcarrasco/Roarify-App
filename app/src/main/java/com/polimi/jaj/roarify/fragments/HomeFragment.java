@@ -86,6 +86,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
     private GoogleMap map;
     static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
     private LatLng myLocation;
+    private Float distance;//Cambiar a integer cuando queramos redondear
+    private Location locationMessage;//to calculate de distance between out position and the message.
 
 
     /* Parameters needed for the dialog fragments */
@@ -198,6 +200,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
         builderMessage.setView(dialogViewMessage);
         builderMessage.setTitle("New message");
         alertMessage = builderMessage.create();
+
+
 
 
     }
@@ -395,7 +399,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
 
             } else {
 
-                Message message = new Message(values[0].getMessageId(), values[0].getUserId(), values[0].getUserName(), values[0].getText(), values[0].getTime(), values[0].getLatitude(), values[0].getLongitude(),values[0].getIsParent(),values[0].getParentId());
+                Message message = new Message(values[0].getMessageId(), values[0].getUserId(), values[0].getUserName(), values[0].getText(), values[0].getTime(), values[0].getLatitude(), values[0].getLongitude(),values[0].getIsParent(),values[0].getParentId(), null);
+                locationMessage = new Location("Roarify");
+                message.setDistance(getDistanceToMessage(locationMessage, message).toString());
+                Log.i("distancia", distance.toString());
                 dataMessages.add(message);
                 LoadMessages(dataMessages);
 
@@ -527,6 +534,19 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
         }
     }
 
+    public Float getDistanceToMessage(Location locationMessage, Message message){
+        locationMessage.setLatitude(message.getLatitude());
+        locationMessage.setLongitude(message.getLongitude());
+        //distance=Math.round(mLastLocation.distanceTo(locationMessage));
+        /*Ahora mismo distance es un Float y sale con demasiadas cifras decimales,
+        * para que no salgan tantas la sentencia de arriba redondea pero hay que cambiar el tipo
+        * de distance de Float a Integer. Ahora mismo lo dejamos con los decimales para
+         * ver que funciona.*/
+
+        distance=mLastLocation.distanceTo(locationMessage);
+
+        return distance;
+    }
 
 
 }

@@ -225,7 +225,7 @@ public class MyMessagesFragment extends Fragment {
             if (values == null) {
 
             } else {
-                Message message = new Message(values[0].getMessageId(),values[0].getUserId(),values[0].getUserName(),values[0].getText(),values[0].getTime(),values[0].getLatitude(),values[0].getLongitude(),values[0].getIsParent(),values[0].getParentId());
+                Message message = new Message(values[0].getMessageId(),values[0].getUserId(),values[0].getUserName(),values[0].getText(),values[0].getTime(),values[0].getLatitude(),values[0].getLongitude(),values[0].getIsParent(),values[0].getParentId(), null);
                 dataMessages.add(message);
                 LoadMessages(dataMessages);
 

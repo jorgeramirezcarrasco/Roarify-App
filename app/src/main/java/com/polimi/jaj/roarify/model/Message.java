@@ -18,10 +18,11 @@ public class Message implements Serializable{
     private Double lon;
     private String isParent;
     private String parentId;
+    private String distance;//Este valor se actualiza desde el usuario, el servidor no lo toca.
 
 
     /* CONSTRUCTOR */
-    public Message(String messageId, String userId, String userName, String text, String time, Double lat, Double lon, String isParent, String parentId) {
+    public Message(String messageId, String userId, String userName, String text, String time, Double lat, Double lon, String isParent, String parentId, String distance) {
         this.messageId = messageId;
         this.userId = userId;
         this.userName = userName;
@@ -31,6 +32,7 @@ public class Message implements Serializable{
         this.lon = lon;
         this.isParent = isParent;
         this.parentId = parentId;
+        this.distance = distance;
     }
 
 
@@ -98,6 +100,10 @@ public class Message implements Serializable{
     public  String getIsParent (){return isParent;}
 
     public String getParentId(){return parentId;}
+
+    public void setDistance (String distance){this.distance = distance;}
+
+    public String getDistance(){return distance;}
 
 
 }

@@ -1,6 +1,7 @@
 package com.polimi.jaj.roarify.adapter;
 
 import android.content.Context;
+import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.polimi.jaj.roarify.R;
+import com.polimi.jaj.roarify.fragments.HomeFragment;
 import com.polimi.jaj.roarify.model.Message;
 
 import java.util.List;
@@ -31,73 +33,44 @@ public class CustomAdapter extends ArrayAdapter<Message> {
 
         View v = convertView;
 
+        final Float distance;
+        final Location locationMessage;//to calculate de distance between out position and the message.
+
 
 
         Message p = getItem(position);
 
         if (p != null) {
 
-            if (p.getIsParent().equals("true")) {
-
-                if (v == null) {
-                    LayoutInflater vi;
-                    vi = LayoutInflater.from(getContext());
-                    v = vi.inflate(R.layout.row, null);
-                }
-
-                TextView tt1 = (TextView) v.findViewById(R.id.author);
-                TextView tt2 = (TextView) v.findViewById(R.id.message);
-                TextView tt3 = (TextView) v.findViewById(R.id.time_sent);
-                TextView tt4 = (TextView) v.findViewById(R.id.distance);
-
-                if (tt1 != null) {
-                    tt1.setText(p.getUserName());
-                }
-
-                if (tt2 != null) {
-                    tt2.setText(p.getText());
-                }
-
-                if (tt3 != null) {
-                    tt3.setText(p.getTime());
-                }
-
-                if (tt4 != null) {
-                    tt4.setText("200metros");//TESTING
-                }
+            if (v == null) {
+                LayoutInflater vi;
+                vi = LayoutInflater.from(getContext());
+                v = vi.inflate(R.layout.row, null);
             }
-            else{
 
-                if (v == null) {
-                    LayoutInflater vi;
-                    vi = LayoutInflater.from(getContext());
-                    v = vi.inflate(R.layout.rownotparent, null);
-                }
+            TextView tt1 = (TextView) v.findViewById(R.id.author);
+            TextView tt2 = (TextView) v.findViewById(R.id.message);
+            TextView tt3 = (TextView) v.findViewById(R.id.time_sent);
+            TextView tt4 = (TextView) v.findViewById(R.id.distance);
 
-                TextView tt1 = (TextView) v.findViewById(R.id.author);
-                TextView tt2 = (TextView) v.findViewById(R.id.message);
-                TextView tt3 = (TextView) v.findViewById(R.id.time_sent);
-                TextView tt4 = (TextView) v.findViewById(R.id.distance);
+            if (tt1 != null) {
+                tt1.setText(p.getUserName());
+            }
 
-                if (tt1 != null) {
-                    tt1.setText(p.getUserName());
-                }
+            if (tt2 != null) {
+                tt2.setText(p.getText());
+            }
 
-                if (tt2 != null) {
-                    tt2.setText(p.getText());
-                }
+            if (tt3 != null) {
+                tt3.setText(p.getTime());
+            }
 
-                if (tt3 != null) {
-                    tt3.setText(p.getTime());
-                }
+            if (tt4 != null) {
 
-                if (tt4 != null) {
-                    tt4.setText("200metros");//TESTING
-                }
-
-
+                tt4.setText(p.getDistance() + "m");//TESTING
             }
         }
+
 
         return v;
     }
