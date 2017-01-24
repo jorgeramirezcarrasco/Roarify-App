@@ -34,7 +34,7 @@ public class CustomAdapter extends ArrayAdapter<Message> {
         View v = convertView;
 
         final Float distance;
-        final Location locationMessage;//to calculate de distance between out position and the message.
+        final Location locationMessage;//to calculate the distance between our position and the message.
 
 
 

@@ -24,6 +24,7 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.widget.ProfilePictureView;
 
 
+import com.polimi.jaj.roarify.fragments.FavoritesFragment;
 import com.polimi.jaj.roarify.fragments.HomeFragment;
 import com.polimi.jaj.roarify.R;
 import com.polimi.jaj.roarify.fragments.MyMessagesFragment;
@@ -209,6 +210,10 @@ public class HomeActivity extends AppCompatActivity {
             case 1:
                 MyMessagesFragment myMessagesFragment = new MyMessagesFragment();
                 fragmentTransaction.replace(R.id.fragment_container, myMessagesFragment);
+                break;
+            case 2:
+                FavoritesFragment myFavoritesFragment = new FavoritesFragment();
+                fragmentTransaction.replace(R.id.fragment_container, myFavoritesFragment);
                 break;
         }
         fragmentTransaction.commit();

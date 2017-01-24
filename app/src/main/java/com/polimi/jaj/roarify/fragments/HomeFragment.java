@@ -86,7 +86,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
     private GoogleMap map;
     static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
     private LatLng myLocation;
-    private Float distance;//Cambiar a integer cuando queramos redondear
+    private Integer distance;//Cambiar a integer cuando queramos redondear
     private Location locationMessage;//to calculate de distance between out position and the message.
 
 
@@ -534,16 +534,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
         }
     }
 
-    public Float getDistanceToMessage(Location locationMessage, Message message){
+    public Integer getDistanceToMessage(Location locationMessage, Message message){
         locationMessage.setLatitude(message.getLatitude());
         locationMessage.setLongitude(message.getLongitude());
-        //distance=Math.round(mLastLocation.distanceTo(locationMessage));
-        /*Ahora mismo distance es un Float y sale con demasiadas cifras decimales,
-        * para que no salgan tantas la sentencia de arriba redondea pero hay que cambiar el tipo
-        * de distance de Float a Integer. Ahora mismo lo dejamos con los decimales para
-         * ver que funciona.*/
-
-        distance=mLastLocation.distanceTo(locationMessage);
+        distance = Math.round(mLastLocation.distanceTo(locationMessage));
 
         return distance;
     }
