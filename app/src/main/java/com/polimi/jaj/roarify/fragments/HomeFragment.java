@@ -34,6 +34,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
@@ -225,9 +226,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
     }
 
     public void drawMarker(LatLng myLocation) {
-        new GetNearMessages().execute();//When location is ready obtain messages
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 10));
-        map.addMarker(new MarkerOptions().position(myLocation).title("My position"));
+        map.clear();
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 20));
+        for (Message m : dataMessages) {
+                map.addMarker(new MarkerOptions().position(new LatLng(m.getLatitude(), m.getLongitude())).title(m.getText()).snippet(m.getUserName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker)));
+            }
     }
 
     /**
@@ -402,9 +405,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
                 Message message = new Message(values[0].getMessageId(), values[0].getUserId(), values[0].getUserName(), values[0].getText(), values[0].getTime(), values[0].getLatitude(), values[0].getLongitude(),values[0].getIsParent(),values[0].getParentId(), null);
                 locationMessage = new Location("Roarify");
                 message.setDistance(getDistanceToMessage(locationMessage, message).toString());
-                Log.i("distancia", distance.toString());
                 dataMessages.add(message);
                 LoadMessages(dataMessages);
+                drawMarker(myLocation);
 
             }
         }
@@ -475,10 +478,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
                 startLocationUpdates();
             }
         }
-         /* If all the process was right draw the marker */
         if (mLastLocation != null) {
-            /* Convert Location and call drawMarker method */
+            /* Convert Location */
             myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            /* Obtain Messages */
+            new GetNearMessages().execute();
         }
     }
 
@@ -499,8 +503,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
             LocationServices.FusedLocationApi.requestLocationUpdates(
                     mGoogleApiClient, mLocationRequest, this);
         }
-        //This is for the list of messages to appear in the he first place without refreshing.
-        new GetNearMessages().execute();
 
     }
 
@@ -510,7 +512,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
         mLastLocation = location;
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
         myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-        drawMarker(myLocation);
     }
 
     @Override
