@@ -1,6 +1,7 @@
 package com.polimi.jaj.roarify.fragments;
 
 import android.content.DialogInterface;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -14,6 +15,9 @@ import android.widget.ListView;
 
 import com.polimi.jaj.roarify.R;
 import com.polimi.jaj.roarify.adapter.CustomAdapter;
+import com.polimi.jaj.roarify.data.RoarifyCursor;
+import com.polimi.jaj.roarify.data.RoarifyDBContract.*;
+import com.polimi.jaj.roarify.data.RoarifySQLiteRepository;
 import com.polimi.jaj.roarify.model.Message;
 
 
@@ -94,15 +98,38 @@ public class FavoritesFragment extends Fragment {
         builderMessage.setTitle("New message");
         alertMessage = builderMessage.create();
 
+        // DATABASE OPERATIONS
+        /*
+        RoarifySQLiteRepository db = new RoarifySQLiteRepository(getContext());
+        //SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        Message messageExample = new Message("12345","54321","Albert","Hola que tal, probando","11:47 PM",17.8,9.98,null,null,null);
+        Message messageExample2 = new Message("12346","54321","Albert","Esta es la segunda prueba","1:21 AM",17.8,9.98,null,null,null);
+        Message messageExample3 = new Message("12347","54322","Miguel","Esta es la prueba numero 3","8:24 AM",18.0,9.8,null,null,null);
+        db.add(messageExample);
+        db.add(messageExample2);
+        db.add(messageExample3);
+        RoarifyCursor cursorExample = db.findAll();
+        System.out.println("HOLA  "+cursorExample.getPosition());
+        System.out.println("HOLA  "+cursorExample.getCount());
+        cursorExample = db.findById("12346");
+        cursorExample.moveToFirst();
+        System.out.println("HOLA  "+cursorExample.getPosition());
+        System.out.println("HOLA  "+cursorExample.getMessage());
+        //cursorExample.moveToNext();
+        cursorExample.moveToFirst();
+        System.out.println("HOLA  "+cursorExample.getPosition());
+        System.out.println("HOLA  "+cursorExample.getMessage());
+        */
+
     }
 
     public void LoadMessages(final List<Message> dataMessages){
 
-        ListView comments = (ListView) getActivity().findViewById(R.id.comments);
+        ListView favorites = (ListView) getActivity().findViewById(R.id.favorites);
         CustomAdapter customAdapter = new CustomAdapter(getActivity(), R.layout.row, dataMessages);
-        comments.setAdapter(customAdapter);
+        favorites.setAdapter(customAdapter);
 
-        comments.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        favorites.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,

@@ -13,7 +13,6 @@ public class RoarifyDBContract {
     public static final String DATABASE_NAME = "Roarify.db";
     public static final int DATABASE_VERSION = 1;
 
-    public static final String INTEGER_TYPE = " int";
     public static final String FLOAT_TYPE = " float";
     public static final String TEXT_TYPE = " text";
 
@@ -21,11 +20,11 @@ public class RoarifyDBContract {
 
     private static final String SQL_CREATE_FAVORITES_TABLE =
             "CREATE TABLE IF NOT EXISTS "+FavoriteEntry.TABLE_NAME+" ("+
-                    FavoriteEntry.COLUMN_NAME_MESSAGE_ID+INTEGER_TYPE+" PRIMARY KEY"+COMMA_SEP+
-                    FavoriteEntry.COLUMN_NAME_USER_ID+INTEGER_TYPE+COMMA_SEP+
+                    FavoriteEntry.COLUMN_NAME_MESSAGE_ID+TEXT_TYPE+" PRIMARY KEY"+COMMA_SEP+
+                    FavoriteEntry.COLUMN_NAME_USER_ID+TEXT_TYPE+COMMA_SEP+
                     FavoriteEntry.COLUMN_NAME_USER_NAME+TEXT_TYPE+COMMA_SEP+
                     FavoriteEntry.COLUMN_NAME_MESSAGE+TEXT_TYPE+COMMA_SEP+
-                    FavoriteEntry.COLUMN_NAME_TIME+INTEGER_TYPE+COMMA_SEP+
+                    FavoriteEntry.COLUMN_NAME_TIME+TEXT_TYPE+COMMA_SEP+
                     FavoriteEntry.COLUMN_NAME_LATITUDE+FLOAT_TYPE+COMMA_SEP+
                     FavoriteEntry.COLUMN_NAME_LONGITUDE+FLOAT_TYPE+" )";
 
@@ -59,6 +58,7 @@ public class RoarifyDBContract {
         @Override
         public void onCreate(SQLiteDatabase db) {
             db.execSQL(SQL_CREATE_FAVORITES_TABLE);
+            System.out.println("SE HA CREADO LA BD");
         }
 
         @Override
