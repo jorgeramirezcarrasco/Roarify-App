@@ -137,7 +137,6 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
 
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
 
-        dataMessages.clear();
         new MessageActivity.GetMyMessage().execute();
 
 
@@ -148,7 +147,6 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
                 // Your code to refresh the list here.
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
-                dataMessages.clear();
                 new MessageActivity.GetMyMessage().execute();
 
             }
@@ -276,7 +274,6 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
                 showToastedWarning();
             }
 
-            dataMessages.clear();
             return null;
         }
 
@@ -298,7 +295,7 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
 
         @Override
         protected void onPreExecute() {
-
+            dataMessages.clear();
         }
 
         @Override
@@ -371,7 +368,6 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
                 showToastedWarning();
             }
 
-            //dataMessages.clear();
             return null;
         }
 
@@ -397,7 +393,8 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
         }
 
         @Override
-        protected void onPostExecute(Boolean result) {swipeContainer.setRefreshing(false);}
+        protected void onPostExecute(Boolean result) {swipeContainer.setRefreshing(false);
+        }
 
         @Override
         protected void onProgressUpdate(Message... values) {
