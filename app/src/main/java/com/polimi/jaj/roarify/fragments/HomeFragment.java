@@ -227,7 +227,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
 
     public void drawMarker(LatLng myLocation) {
         map.clear();
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 20));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 10));
         for (Message m : dataMessages) {
                 map.addMarker(new MarkerOptions().position(new LatLng(m.getLatitude(), m.getLongitude())).title(m.getText()).snippet(m.getUserName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker)));
             }

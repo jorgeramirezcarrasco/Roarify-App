@@ -24,14 +24,15 @@ public class RoarifySQLiteRepository {
                         FavoriteEntry.COLUMN_NAME_MESSAGE_ID+COMMA_SEP+
                         FavoriteEntry.COLUMN_NAME_USER_ID+COMMA_SEP+
                         FavoriteEntry.COLUMN_NAME_USER_NAME+COMMA_SEP+
-                        FavoriteEntry.COLUMN_NAME_MESSAGE+
+                        FavoriteEntry.COLUMN_NAME_MESSAGE+COMMA_SEP+
                         FavoriteEntry.COLUMN_NAME_TIME+COMMA_SEP+
                         FavoriteEntry.COLUMN_NAME_LATITUDE+COMMA_SEP+
-                        FavoriteEntry.COLUMN_NAME_LONGITUDE+COMMA_SEP+ ")"+
-                        "VALUES(?"+COMMA_SEP+"?"+COMMA_SEP+"?)"+COMMA_SEP+"?)"+COMMA_SEP+"?)"+COMMA_SEP+"?)",
+                        FavoriteEntry.COLUMN_NAME_LONGITUDE+ ") "+
+                        "VALUES(?"+COMMA_SEP+"?"+COMMA_SEP+"?"+COMMA_SEP+"?"+COMMA_SEP+"?"+COMMA_SEP+"?"+COMMA_SEP+"?)",
                 new Object[]{favorite.getMessageId(),favorite.getUserId(), favorite.getUserName(),
                         favorite.getText(), favorite.getTime(), favorite.getLatitude(),
                         favorite.getLongitude(),});
+        System.out.println("SE HA ANADIDO UN MENSAJE");
     }
 
     public void delete(Message favorite){
