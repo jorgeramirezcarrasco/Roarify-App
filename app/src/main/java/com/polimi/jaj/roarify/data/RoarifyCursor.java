@@ -37,5 +37,11 @@ public class RoarifyCursor extends CursorWrapper{
                         COLUMN_NAME_MESSAGE));
     }
 
+    public String getTime(){
+        return getString(
+                getColumnIndex(RoarifyDBContract.FavoriteEntry.
+                        COLUMN_NAME_TIME));
+    }
+
 
 }

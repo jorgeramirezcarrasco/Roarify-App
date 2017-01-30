@@ -18,7 +18,7 @@
         android:orientation="vertical" >
 
         <ListView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/comments"
+            android:id="@+id/mymessages"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </android.support.v4.widget.SwipeRefreshLayout>

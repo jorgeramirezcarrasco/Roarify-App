@@ -24,6 +24,7 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.widget.ProfilePictureView;
 
 
+import com.polimi.jaj.roarify.data.RoarifySQLiteRepository;
 import com.polimi.jaj.roarify.fragments.FavoritesFragment;
 import com.polimi.jaj.roarify.fragments.HomeFragment;
 import com.polimi.jaj.roarify.R;
@@ -37,6 +38,7 @@ public class HomeActivity extends AppCompatActivity {
     private View auxView;
     DrawerLayout drawer;
     private AlertDialog alertMessage;
+    public static RoarifySQLiteRepository db;
 
 
 
@@ -49,6 +51,8 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         FacebookSdk.sdkInitialize(getApplicationContext());
+
+        db = new RoarifySQLiteRepository(this);
 
         /* Layout setup */
         setContentView(R.layout.activity_home);

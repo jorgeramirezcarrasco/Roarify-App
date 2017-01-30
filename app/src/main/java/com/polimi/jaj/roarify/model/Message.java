@@ -21,6 +21,8 @@ public class Message implements Serializable{
     private String distance;//Este valor se actualiza desde el usuario, el servidor no lo toca.
 
 
+    public Message(){}
+
     /* CONSTRUCTOR */
     public Message(String messageId, String userId, String userName, String text, String time, Double lat, Double lon, String isParent, String parentId, String distance) {
         this.messageId = messageId;

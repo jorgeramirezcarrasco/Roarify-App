@@ -67,6 +67,7 @@ import java.util.Date;
 import java.util.List;
 
 import static android.os.SystemClock.sleep;
+import static com.polimi.jaj.roarify.activities.HomeActivity.db;
 
 public class MessageActivity extends AppCompatActivity implements OnMapReadyCallback,GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener{
@@ -230,6 +231,21 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
         ListView comments = (ListView) this.findViewById(R.id.comments);
         MessageAdapter messageAdapter = new MessageAdapter(this, R.layout.row, dataMessages);
         comments.setAdapter(messageAdapter);
+        comments.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+
+                Message message = (Message) parent.getItemAtPosition(position);
+                Log.i("idMessage", message.getMessageId());
+                Log.i("idMessage", message.getIsParent());
+                Toast.makeText(MessageActivity.this, message.getMessageId()+" -> "+message.getIsParent(), Toast.LENGTH_SHORT).show();
+
+                db.add(message);
+
+            }
+        });
 
     }
 

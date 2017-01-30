@@ -2,6 +2,7 @@ package com.polimi.jaj.roarify.fragments;
 
 import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -20,8 +21,10 @@ import com.polimi.jaj.roarify.data.RoarifyDBContract.*;
 import com.polimi.jaj.roarify.data.RoarifySQLiteRepository;
 import com.polimi.jaj.roarify.model.Message;
 
-
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.polimi.jaj.roarify.activities.HomeActivity.db;
 
 
 public class FavoritesFragment extends Fragment {
@@ -35,6 +38,7 @@ public class FavoritesFragment extends Fragment {
     private AlertDialog.Builder builderMessage;
     private AlertDialog alertMessage;
     private SwipeRefreshLayout swipeContainer;
+    private List<Message> favoriteMessages = new ArrayList<Message>();;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -121,6 +125,20 @@ public class FavoritesFragment extends Fragment {
         System.out.println("HOLA  "+cursorExample.getMessage());
         */
 
+        RoarifyCursor cursorExample = db.findAll();
+
+
+        while(cursorExample.moveToNext()){
+            Message iMessage = new Message();
+            iMessage.setUserName(cursorExample.getUserName());
+            iMessage.setText(cursorExample.getMessage());
+            iMessage.setTime(cursorExample.getTime());
+            iMessage.setDistance("200"); //TESTING
+
+            favoriteMessages.add(iMessage);
+        }
+        LoadMessages(favoriteMessages);
+
     }
 
     public void LoadMessages(final List<Message> dataMessages){
@@ -145,4 +163,5 @@ public class FavoritesFragment extends Fragment {
             }
         });
     }
+
 }

@@ -66,7 +66,6 @@ public class CustomAdapter extends ArrayAdapter<Message> {
             }
 
             if (tt4 != null) {
-
                 tt4.setText(p.getDistance() + "m");//TESTING
             }
         }

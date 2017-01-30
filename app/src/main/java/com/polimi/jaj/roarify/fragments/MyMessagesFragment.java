@@ -236,7 +236,7 @@ public class MyMessagesFragment extends Fragment {
 
     public void LoadMessages(final List<Message> dataMessages){
 
-        ListView comments = (ListView) getActivity().findViewById(R.id.comments);
+        ListView comments = (ListView) getActivity().findViewById(R.id.mymessages);
         CustomAdapter customAdapter = new CustomAdapter(getActivity(), R.layout.row, dataMessages);
         comments.setAdapter(customAdapter);
 
