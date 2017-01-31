@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -20,6 +21,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.polimi.jaj.roarify.R;
 import com.polimi.jaj.roarify.adapter.CustomAdapter;
+import com.polimi.jaj.roarify.data.RoarifyCursor;
 import com.polimi.jaj.roarify.model.Message;
 
 import org.apache.http.HttpEntity;
@@ -38,6 +40,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.polimi.jaj.roarify.activities.HomeActivity.db;
 
 
 /**
@@ -47,18 +50,11 @@ import java.util.List;
 public class MyMessagesFragment extends Fragment {
 
 
-
-
     /* Parameters needed for the dialog fragments */
     private View dialogViewReply;
     private LayoutInflater inflaterReply;
     private AlertDialog.Builder builderReply;
     private AlertDialog alertReply;
-    private View dialogViewMessage;
-    private LayoutInflater inflaterMessage;
-    private AlertDialog.Builder builderMessage;
-    private AlertDialog alertMessage;
-    private SwipeRefreshLayout swipeContainer;
 
     /* Server Connection parameters */
     private Double lat;
@@ -77,33 +73,8 @@ public class MyMessagesFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
 
-        FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                alertMessage.show();
-            }
-        });
-
-
         /*Layout Setup*/
         inflaterReply = getLayoutInflater(savedInstanceState);
-
-
-        swipeContainer = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipeContainer);
-        // Setup refresh listener which triggers new data loading
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                // Your code to refresh the list here.
-                // Make sure you call swipeContainer.setRefreshing(false)
-                // once the network request has completed successfully.
-                new GetUserMessages().execute();
-            }
-        });
-
-        swipeContainer.setColorSchemeResources(R.color.colorPrimary);
-
 
         /* Initial setup of the dialog fragment when clicking on a message */
         builderReply = new AlertDialog.Builder((getActivity()));
@@ -115,23 +86,9 @@ public class MyMessagesFragment extends Fragment {
              * between a normal user and an anonymous user. If the user is anonymous, this button shouldn't be
              * shown, or shouldn't be clickable (color it grey). */ }
         });
-        builderReply.setNegativeButton("Cancel", new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int id) {
+        builderReply.setNegativeButton("Back", new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int id) {
             dialog.cancel(); }
         });
-
-        /* Setup of the dialog fragment when clicking on the '+' button */
-        builderMessage = new AlertDialog.Builder(getActivity());
-        builderMessage.setPositiveButton("Roar!", new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int id) {
-        }
-        });
-        builderMessage.setNegativeButton("Cancel", new DialogInterface.OnClickListener() { public void onClick(DialogInterface dialog, int id) {
-            dialog.cancel(); }
-        });
-        inflaterMessage = getActivity().getLayoutInflater();
-        dialogViewMessage = inflaterMessage.inflate(R.layout.message_dialog, null);
-        builderMessage.setView(dialogViewMessage);
-        builderMessage.setTitle("New message");
-        alertMessage = builderMessage.create();
 
         new GetUserMessages().execute();
 
@@ -216,7 +173,7 @@ public class MyMessagesFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Boolean result) {
-            swipeContainer.setRefreshing(false);
+
         }
 
         @Override
@@ -236,11 +193,11 @@ public class MyMessagesFragment extends Fragment {
 
     public void LoadMessages(final List<Message> dataMessages){
 
-        ListView comments = (ListView) getActivity().findViewById(R.id.mymessages);
+        ListView myMessages = (ListView) getActivity().findViewById(R.id.mymessages);
         CustomAdapter customAdapter = new CustomAdapter(getActivity(), R.layout.row, dataMessages);
-        comments.setAdapter(customAdapter);
+        myMessages.setAdapter(customAdapter);
 
-        comments.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        myMessages.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
@@ -251,13 +208,35 @@ public class MyMessagesFragment extends Fragment {
                 builderReply.setView(dialogViewReply);
                 builderReply.setTitle(dataMessages.get(position).getUserName());
                 builderReply.setMessage(dataMessages.get(position).getText()).setCancelable(false);
+
+                final Message message = (Message) parent.getItemAtPosition(position);
+                CheckBox favCheckBox = (CheckBox) dialogViewReply.findViewById(R.id.checkbox_favorite);
+                if (db.findById(message.getMessageId()).moveToNext()){
+                    favCheckBox.setChecked(true);
+                }
+                favCheckBox.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        System.out.println("DENTRO DE PINCHAR EL CHECKBOX");
+                        boolean checked = ((CheckBox) view).isChecked();
+                        if (checked){
+                            db.add(message);
+                            System.out.println("SI esta checkada");
+                        }
+                        else {
+                            db.delete(message);
+                            System.out.println("NO esta checkada");
+                        }
+                    }
+                });
+
                 alertReply = builderReply.create();
                 alertReply.show();
             }
         });
     }
-
-
 
 
 }

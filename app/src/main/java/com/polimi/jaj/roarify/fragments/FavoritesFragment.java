@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.ListView;
 
 import com.polimi.jaj.roarify.R;
@@ -51,15 +52,6 @@ public class FavoritesFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-
-        FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                alertMessage.show();
-            }
-        });
-
 
         /*Layout Setup*/
         inflaterReply = getLayoutInflater(savedInstanceState);
@@ -125,14 +117,14 @@ public class FavoritesFragment extends Fragment {
         System.out.println("HOLA  "+cursorExample.getMessage());
         */
 
-        RoarifyCursor cursorExample = db.findAll();
+        RoarifyCursor cursorAllMessages = db.findAll();
 
-
-        while(cursorExample.moveToNext()){
+        while(cursorAllMessages.moveToNext()){
             Message iMessage = new Message();
-            iMessage.setUserName(cursorExample.getUserName());
-            iMessage.setText(cursorExample.getMessage());
-            iMessage.setTime(cursorExample.getTime());
+            iMessage.setUserName(cursorAllMessages.getUserName());
+            iMessage.setText(cursorAllMessages.getMessage());
+            iMessage.setTime(cursorAllMessages.getTime());
+            iMessage.setMessageId(cursorAllMessages.getMessageId());
             iMessage.setDistance("200"); //TESTING
 
             favoriteMessages.add(iMessage);
@@ -158,6 +150,43 @@ public class FavoritesFragment extends Fragment {
                 builderReply.setView(dialogViewReply);
                 builderReply.setTitle(dataMessages.get(position).getUserName());
                 builderReply.setMessage(dataMessages.get(position).getText()).setCancelable(false);
+
+                final Message message = (Message) parent.getItemAtPosition(position);
+                CheckBox favCheckBox = (CheckBox) dialogViewReply.findViewById(R.id.checkbox_favorite);
+                if (db.findById(message.getMessageId()).moveToNext()){
+                    favCheckBox.setChecked(true);
+                }
+                favCheckBox.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        System.out.println("DENTRO DE PINCHAR EL CHECKBOX");
+                        boolean checked = ((CheckBox) view).isChecked();
+                        if (checked){
+                            db.add(message);
+                            System.out.println("SI esta checkada");
+                        }
+                        else {
+                            db.delete(message);
+                            System.out.println("NO esta checkada");
+                        }
+                        RoarifyCursor cursorAux = db.findAll();
+                        List<Message> auxMessages = new ArrayList<Message>();;
+                        while(cursorAux.moveToNext()){
+                            Message iMessage = new Message();
+                            iMessage.setUserName(cursorAux.getUserName());
+                            iMessage.setText(cursorAux.getMessage());
+                            iMessage.setTime(cursorAux.getTime());
+                            iMessage.setMessageId(cursorAux.getMessageId());
+                            iMessage.setDistance("200"); //TESTING
+
+                            auxMessages.add(iMessage);
+                        }
+                        LoadMessages(auxMessages);
+                    }
+                });
+
                 alertReply = builderReply.create();
                 alertReply.show();
             }

@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -94,10 +95,6 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
     private LayoutInflater inflaterReply;
     private AlertDialog.Builder builderReply;
     private AlertDialog alertReply;
-    private View dialogViewMessage;
-    private LayoutInflater inflaterMessage;
-    private AlertDialog.Builder builderMessage;
-    private AlertDialog alertMessage;
     String textPost;
 
     /* Server Connection parameters */
@@ -161,7 +158,7 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
 
 
         //Button replyButton = (Button) findViewById(R.id.replyButton);
-        comments.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        /*comments.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
                                             @Override
                                             public void onItemClick(AdapterView<?> parent, View view,
@@ -174,29 +171,21 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
                                                         break;
                                                 }
                                             }
-                                        });
+                                        });*/
 
-                /* Setup of the dialog fragment when clicking on the '+' button */
-        builderMessage = new AlertDialog.Builder(this);
-        builderMessage.setPositiveButton("Roar!", new DialogInterface.OnClickListener() {
+        inflaterReply = getLayoutInflater();
+
+        builderReply = new AlertDialog.Builder(this);
+        builderReply.setPositiveButton("Reply", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
 
-                EditText editText = (EditText) dialogViewMessage.findViewById(R.id.new_message);
-                textPost = editText.getText().toString();
-                new MessageActivity.PostMessage().execute();
-                ((EditText) dialogViewMessage.findViewById(R.id.new_message)).setText("");
             }
         });
-        builderMessage.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        builderReply.setNegativeButton("Back", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 dialog.cancel();
             }
         });
-        inflaterMessage = this.getLayoutInflater();
-        dialogViewMessage = inflaterMessage.inflate(R.layout.message_dialog, null);
-        builderMessage.setView(dialogViewMessage);
-        builderMessage.setTitle("Reply");
-        alertMessage = builderMessage.create();
 
     }
 
@@ -237,12 +226,36 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
 
-                Message message = (Message) parent.getItemAtPosition(position);
-                Log.i("idMessage", message.getMessageId());
-                Log.i("idMessage", message.getIsParent());
-                Toast.makeText(MessageActivity.this, message.getMessageId()+" -> "+message.getIsParent(), Toast.LENGTH_SHORT).show();
+                dialogViewReply = inflaterReply.inflate(R.layout.reply_dialog, null);
+                builderReply.setView(dialogViewReply);
+                builderReply.setTitle(dataMessages.get(position).getUserName());
+                builderReply.setMessage(dataMessages.get(position).getText()).setCancelable(false);
 
-                db.add(message);
+                final Message message = (Message) parent.getItemAtPosition(position);
+                CheckBox favCheckBox = (CheckBox) dialogViewReply.findViewById(R.id.checkbox_favorite);
+                if (db.findById(message.getMessageId()).moveToNext()){
+                    favCheckBox.setChecked(true);
+                }
+                favCheckBox.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        System.out.println("DENTRO DE PINCHAR EL CHECKBOX");
+                        boolean checked = ((CheckBox) view).isChecked();
+                        if (checked){
+                            db.add(message);
+                            System.out.println("SI esta checkada");
+                        }
+                        else {
+                            db.delete(message);
+                            System.out.println("NO esta checkada");
+                        }
+                    }
+                });
+
+                alertReply = builderReply.create();
+                alertReply.show();
 
             }
         });

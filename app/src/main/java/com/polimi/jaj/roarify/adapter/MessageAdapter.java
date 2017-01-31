@@ -52,13 +52,6 @@ public class MessageAdapter extends ArrayAdapter<Message> {
                 TextView tt2 = (TextView) v.findViewById(R.id.message);
                 TextView tt3 = (TextView) v.findViewById(R.id.time_sent);
                 TextView tt4 = (TextView) v.findViewById(R.id.distance);
-                Button replyButton= (Button) v.findViewById(R.id.replyButton);
-                replyButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ((ListView) parent).performItemClick(v, position, 0);//Let the event be handled in onItemClick()
-                    }
-                });
 
                 if (tt1 != null) {
                     tt1.setText(p.getUserName());

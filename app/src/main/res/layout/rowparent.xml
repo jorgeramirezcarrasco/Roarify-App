@@ -1,16 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="70dp">
+    android:layout_width="match_parent" android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/author"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:textSize="15sp"
-        android:textColor="@color/cast_intro_overlay_background_color"
-        android:text="author" />
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        android:text="" />
+
+    <TextView
+        android:id="@+id/time_sent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerInParent="true"
+        android:layout_margin="5dp"
+        android:textStyle="italic"
+        android:textSize="12sp"
+        android:textAlignment="textEnd"
+        android:text="" />
 
     <TextView
         android:id="@+id/message"
@@ -18,15 +30,12 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/author"
         android:scrollHorizontally="true"
-        android:ellipsize="end"
-        android:maxLines="3"
         android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@id/time_sent"
         android:layout_marginRight="5dp"
         android:layout_marginLeft="5dp"
         android:textColor="#000000"
-        android:text="message"
-        android:layout_alignEnd="@+id/time_sent"
-        android:textSize="18dp" />
+        android:text=""/>
 
     <TextView
         android:id="@+id/distance"
@@ -36,32 +45,6 @@
         android:layout_margin="5dp"
         android:textStyle="italic"
         android:textSize="12sp"
-        android:text="distance" />
-
-    <TextView
-        android:id="@+id/time_sent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textStyle="italic"
-        android:textSize="12sp"
-        android:textAlignment="textEnd"
-        android:text="time_sent"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_alignBaseline="@+id/author"
-        android:layout_alignBottom="@+id/author"
-        android:layout_toEndOf="@+id/author" />
-
-    <Button
-        android:text="Reply"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:id="@+id/replyButton"
-        android:textColor="@color/cardview_light_background"
-        android:textSize="28dp"
-        android:textStyle="bold"
-        android:shadowColor="@color/cast_expanded_controller_background_color"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true" />
+        android:text="" />
 
 </RelativeLayout>

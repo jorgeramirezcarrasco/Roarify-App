@@ -3,15 +3,14 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/favorite_button"
+    <CheckBox android:id="@+id/checkbox_favorite"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/favorite"
         android:layout_marginTop="4dp"
-        android:contentDescription="@string/favorite_button"
-        android:src="@drawable/star_circle"
-        android:layout_gravity="center_horizontal" />
-        <!--android:onClick=""--> <!-- Add this tag when the function is ready to use -->
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="4dp"/>
 
     <EditText
         android:id="@+id/response"

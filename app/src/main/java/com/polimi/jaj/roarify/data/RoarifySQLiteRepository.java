@@ -39,6 +39,7 @@ public class RoarifySQLiteRepository {
         db.execSQL("DELETE FROM "+FavoriteEntry.TABLE_NAME+ " WHERE " +
                         FavoriteEntry.COLUMN_NAME_MESSAGE_ID + " = ?",
                 new Object[]{favorite.getMessageId()});
+        System.out.println("SE HA ELIMINADO UN MENSAJE");
     }
 
     public RoarifyCursor findById(String id){
