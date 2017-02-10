@@ -65,6 +65,8 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -88,7 +90,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
     static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
     private LatLng myLocation;
     private Integer distance;//Cambiar a integer cuando queramos redondear
-    private Location locationMessage;//to calculate de distance between out position and the message.
+    private Location locationMessage;//to calculate the distance between our position and the message.
 
 
     /* Parameters needed for the dialog fragments */
@@ -107,6 +109,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
     private Double lon;
     private String user_ID;
     List<Message> dataMessages = new ArrayList<Message>();
+    List<Message> dataMessagesDraw = new ArrayList<Message>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -125,6 +128,21 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
 
         if (mGoogleApiClient != null) {
             mGoogleApiClient.connect();
+        }else{
+            //If we came back and the GoogleApiClient is already created
+            if (ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+            /* Obtain the last Location */
+                mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            /* Obtain the last date */
+                mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+             /* Allows Location Updates */
+                mRequestingLocationUpdates = true;
+                mLocationRequest = new LocationRequest();
+                if (mRequestingLocationUpdates) {
+                    startLocationUpdates();
+                }
+            }
         }
 
         FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
@@ -228,7 +246,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
     public void drawMarker(LatLng myLocation) {
         map.clear();
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 10));
-        for (Message m : dataMessages) {
+        for (Message m : dataMessagesDraw) {
                 map.addMarker(new MarkerOptions().position(new LatLng(m.getLatitude(), m.getLongitude())).title(m.getText()).snippet(m.getUserName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker)));
             }
     }
@@ -393,6 +411,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
         @Override
         protected void onPostExecute(Boolean result) {
             swipeContainer.setRefreshing(false);
+            dataMessagesDraw=dataMessages;
+            LoadMessages(dataMessagesDraw);
+            drawMarker(myLocation);
         }
 
         @Override
@@ -406,18 +427,23 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
                 locationMessage = new Location("Roarify");
                 message.setDistance(getDistanceToMessage(locationMessage, message).toString());
                 dataMessages.add(message);
-                LoadMessages(dataMessages);
-                drawMarker(myLocation);
 
             }
         }
 
     }
 
-    public void LoadMessages(final List<Message> dataMessages) {
+    public void LoadMessages(final List<Message> dataMessagesDraw) {
+
+        Collections.sort(dataMessagesDraw, new Comparator<Message>() {
+            @Override
+            public int compare(Message o1, Message o2) {
+                return Integer.valueOf(o1.getDistance()).compareTo(Integer.valueOf(o2.getDistance()));
+            }
+        });
 
         ListView comments = (ListView) getActivity().findViewById(R.id.comments);
-        CustomAdapter customAdapter = new CustomAdapter(getActivity(), R.layout.row, dataMessages);
+        CustomAdapter customAdapter = new CustomAdapter(getActivity(), R.layout.row, dataMessagesDraw);
         comments.setAdapter(customAdapter);
 
         comments.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -427,9 +453,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
                                     int position, long id) {
 
                 Message message = (Message) parent.getItemAtPosition(position);
-                Log.i("idMessage",message.getMessageId());
-                Log.i("idMessage",message.getIsParent());
-
 
                 Intent mIntent = new Intent(getActivity() ,MessageActivity.class);
                 mIntent.putExtra("idMessage", message.getMessageId());
@@ -483,6 +506,18 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
             myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
             /* Obtain Messages */
             new GetNearMessages().execute();
+        }else{
+            /* Try again to obtain the last Location */
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            /* Obtain the last date */
+            mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+             /* Allows Location Updates */
+            mRequestingLocationUpdates = true;
+            mLocationRequest = new LocationRequest();
+            if (mRequestingLocationUpdates) {
+                startLocationUpdates();
+            }
+
         }
     }
 
@@ -533,6 +568,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
         if (mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
             startLocationUpdates();
         }
+
+
     }
 
     public Integer getDistanceToMessage(Location locationMessage, Message message){

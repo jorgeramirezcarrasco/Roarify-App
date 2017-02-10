@@ -8,6 +8,7 @@
     tools:context="com.polimi.jaj.roarify.activities.MessageActivity">
 
     <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbarlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
@@ -21,28 +22,40 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <fragment
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_marginTop="58dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
-
     <View
         android:id="@+id/separator"
         android:layout_width="match_parent"
         android:layout_height="3dp"
-        android:layout_below="@id/map"
         android:background="#B0BEC5"/>
+
+    <FrameLayout
+        android:background="#FF8C00"
+        android:id="@+id/container"
+        android:layout_height="300dp"
+        android:layout_width="match_parent"
+        android:layout_below="@id/appbarlayout"
+        tools:context="com.polimi.jaj.roarify.activities.MessageActivity"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools" />
+
+    <TextView
+        android:id="@+id/textReplies"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#000"
+        android:text="Replies"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_below="@id/container"
+        android:layout_margin="5dp"
+        />
 
     <android.support.v4.widget.SwipeRefreshLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/swipeContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/map"
+        android:layout_below="@id/textReplies"
         android:orientation="vertical" >
 
         <ListView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -57,7 +70,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-        tools:context="com.polimi.jaj.roarify.activities.HomeActivity">
+        tools:context="com.polimi.jaj.roarify.activities.MessageActivity">
 
 
     </android.support.design.widget.CoordinatorLayout>

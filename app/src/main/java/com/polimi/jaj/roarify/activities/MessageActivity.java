@@ -14,7 +14,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +25,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,6 +46,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.polimi.jaj.roarify.R;
 import com.polimi.jaj.roarify.adapter.MessageAdapter;
+import com.polimi.jaj.roarify.fragments.CardViewFragment;
 import com.polimi.jaj.roarify.fragments.HomeFragment;
 import com.polimi.jaj.roarify.model.Message;
 
@@ -64,13 +68,15 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
 import static android.os.SystemClock.sleep;
 import static com.polimi.jaj.roarify.activities.HomeActivity.db;
 
-public class MessageActivity extends AppCompatActivity implements OnMapReadyCallback,GoogleApiClient.ConnectionCallbacks,
+public class MessageActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener{
 
 
@@ -85,7 +91,7 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
     private LatLng messageLocation;
     private Location mLastLocation;
     private LatLng myLocation;
-    private Float distance; //Cambiar a Integer cuando queramos redondear.
+    private Integer distance; //Cambiar a Integer cuando queramos redondear.
     private Location locationMessage;//to calculate de distance between out position and the message.
 
 
@@ -95,10 +101,15 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
     private LayoutInflater inflaterReply;
     private AlertDialog.Builder builderReply;
     private AlertDialog alertReply;
+    private View dialogViewDelete;
+    private LayoutInflater inflaterDelete;
+    private AlertDialog.Builder builderDelete;
+    private AlertDialog alertDelete;
     String textPost;
 
     /* Server Connection parameters */
     private String idMessage;
+    Message dataMessage = new Message();
     List<Message> dataMessages = new ArrayList<Message>();
 
     private SwipeRefreshLayout swipeContainer;
@@ -110,8 +121,17 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
+        if (savedInstanceState == null) {
+            getFragmentManager().beginTransaction()
+                    .add(R.id.container, CardViewFragment.newInstance())
+                    .commit();
+        }
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
 
 
          /* Google Api Client Connection */
@@ -121,18 +141,9 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
             mGoogleApiClient.connect();
         }
 
-
-        /* GMap Setup */
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-
-
-
-
+        /* Intent Receiver */
         Intent mIntent = getIntent();
         idMessage = (String) mIntent.getExtras().getSerializable("idMessage");
-        Log.i("idMessage",idMessage);
-
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
 
         new MessageActivity.GetMyMessage().execute();
@@ -145,40 +156,21 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
                 // Your code to refresh the list here.
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
-                new MessageActivity.GetMyMessage().execute();
+                new MessageActivity.GetChildrenMessages().execute();
 
             }
         });
 
-
-
-        ListView comments = (ListView) findViewById(R.id.comments);
-        MessageAdapter messageAdapter = new MessageAdapter(this, R.layout.rowparent, dataMessages);
-        comments.setAdapter(messageAdapter);
-
-
-        //Button replyButton = (Button) findViewById(R.id.replyButton);
-        /*comments.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-                                            @Override
-                                            public void onItemClick(AdapterView<?> parent, View view,
-                                                                    int position, long id) {
-
-                                                switch (view.getId()) {
-                                                    case R.id.replyButton:
-                                                        alertMessage.show();
-                                                        Log.i("HOLA2", "hola2");
-                                                        break;
-                                                }
-                                            }
-                                        });*/
 
         inflaterReply = getLayoutInflater();
 
         builderReply = new AlertDialog.Builder(this);
         builderReply.setPositiveButton("Reply", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-
+                EditText editText = (EditText) dialogViewReply.findViewById(R.id.response);
+                textPost = editText.getText().toString();
+                new PostMessage().execute();
+                ((EditText) dialogViewReply.findViewById(R.id.response)).setText("");
             }
         });
         builderReply.setNegativeButton("Back", new DialogInterface.OnClickListener() {
@@ -187,37 +179,109 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
             }
         });
 
+        inflaterDelete = getLayoutInflater();
+
+        builderDelete = new AlertDialog.Builder(this);
+        builderDelete.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                new DeleteMessage().execute();
+            }
+        });
+        builderDelete.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+
     }
 
+    public void LoadCardItems(final Message dataMessage) {
 
-    /**
-     * Google Maps methods
-     */
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("Message from "+dataMessage.getUserName().split("\\s+")[0]);
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        map = googleMap;
-        // Check permission about location before enable location button on map
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            map.setMyLocationEnabled(true);
+        TextView text = (TextView) this.findViewById(R.id.textMessage);
+        text.setText(dataMessage.getText());
+        text.setMovementMethod(new ScrollingMovementMethod());
 
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        TextView user = (TextView) this.findViewById(R.id.authorMessage);
+        user.setText("From: "+dataMessage.getUserName());
+
+        TextView distance = (TextView) this.findViewById(R.id.distanceMessage);
+        distance.setText(dataMessage.getDistance()+"m from you");
+
+        TextView time = (TextView) this.findViewById(R.id.timeMessage);
+        time.setText("At "+dataMessage.getTime());
+
+        ImageButton reply = (ImageButton) this.findViewById(R.id.replyButton);
+        reply.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+                dialogViewReply = inflaterReply.inflate(R.layout.reply_dialog, null);
+                builderReply.setView(dialogViewReply);
+                builderReply.setTitle(dataMessage.getUserName());
+                builderReply.setMessage(dataMessage.getText()).setCancelable(false);
+
+                final Message message = dataMessage;
+                CheckBox favCheckBox = (CheckBox) dialogViewReply.findViewById(R.id.checkbox_favorite);
+                if (db.findById(message.getMessageId()).moveToNext()){
+                    favCheckBox.setChecked(true);
+                }
+                favCheckBox.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        System.out.println("DENTRO DE PINCHAR EL CHECKBOX");
+                        boolean checked = ((CheckBox) view).isChecked();
+                        if (checked){
+                            db.add(message);
+                            System.out.println("SI esta checkada");
+                        }
+                        else {
+                            db.delete(message);
+                            System.out.println("NO esta checkada");
+                        }
+                    }
+                });
+
+                alertReply = builderReply.create();
+                alertReply.show();
+
+            }
+        });
+        //Check if the user logged is the author
+        if(Double.valueOf(dataMessage.getUserId().toString()).equals(Double.valueOf(Profile.getCurrentProfile().getId().toString()))){
+        ImageButton delete = (ImageButton) this.findViewById(R.id.deleteButton);
+            delete.setVisibility(View.VISIBLE);
+        delete.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+                dialogViewDelete = inflaterDelete.inflate(R.layout.delete_dialog, null);
+                builderDelete.setView(dialogViewDelete);
+                builderDelete.setTitle("Delete Message");
+                builderDelete.setMessage("Are you sure that you want to delete the message?").setCancelable(false);
+
+                alertDelete= builderDelete.create();
+                alertDelete.show();
+
+            }
+        });
         }
-    }
 
-    public void drawMarker(LatLng myLocation) {
-        new GetMyMessage().execute();//When location is ready obtain messages
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 10));
-        map.addMarker(new MarkerOptions().position(myLocation).title("My position"));
     }
-
 
     public void LoadMessages(final List<Message> dataMessages) {
 
+        Collections.sort(dataMessages, new Comparator<Message>() {
+            @Override
+            public int compare(Message o1, Message o2) {
+                return Integer.valueOf(o1.getDistance()).compareTo(Integer.valueOf(o2.getDistance()));
+            }
+        });
+
         ListView comments = (ListView) this.findViewById(R.id.comments);
+        comments.setAdapter(null);
         MessageAdapter messageAdapter = new MessageAdapter(this, R.layout.row, dataMessages);
         comments.setAdapter(messageAdapter);
         comments.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -261,16 +325,15 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
         });
 
     }
-
+    /**
+     * Server Connection methods
+     */
 
     private class GetMyMessage extends AsyncTask<Void, Message, Boolean> {
 
         @Override
         protected Boolean doInBackground(Void... params) {
             List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-
-            //idMessage="5732568548769792"; //Este valor debe enviarse en el intent del message que se haya tocado
-
 
             pairs.add(new BasicNameValuePair("id", "" + idMessage));
 
@@ -302,7 +365,6 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
                 e.printStackTrace();
                 showToastedWarning();
             }
-
             return null;
         }
 
@@ -324,7 +386,7 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
 
         @Override
         protected void onPreExecute() {
-            dataMessages.clear();
+
         }
 
         @Override
@@ -332,8 +394,7 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
 
             swipeContainer.setRefreshing(false);
             new MessageActivity.GetChildrenMessages().execute();
-
-
+            LoadCardItems(dataMessage);
         }
 
         @Override
@@ -344,9 +405,8 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
             } else {
                 Message message = new Message(values[0].getMessageId(), values[0].getUserId(), values[0].getUserName(), values[0].getText(), values[0].getTime(), values[0].getLatitude(), values[0].getLongitude(),values[0].getIsParent(),values[0].getParentId(), null);
                 locationMessage = new Location("Roarify");
-                //message.setDistance(getDistanceToMessage(locationMessage, message).toString());
-                dataMessages.add(message);
-                LoadMessages(dataMessages);
+                message.setDistance(getDistanceToMessage(locationMessage, message).toString());
+                dataMessage=message;
 
 
             }
@@ -359,8 +419,6 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
         @Override
         protected Boolean doInBackground(Void... params) {
             List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-
-            //idMessage="5634472569470976"; //Este valor debe enviarse en el intent del message que se haya tocado
 
 
             pairs.add(new BasicNameValuePair("id", "" + idMessage));
@@ -418,11 +476,14 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
 
         @Override
         protected void onPreExecute() {
-
+            dataMessages.clear();
         }
 
         @Override
-        protected void onPostExecute(Boolean result) {swipeContainer.setRefreshing(false);
+        protected void onPostExecute(Boolean result) {
+            swipeContainer.setRefreshing(false);
+            LoadMessages(dataMessages);
+
         }
 
         @Override
@@ -433,15 +494,15 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
             } else {
                 Message message = new Message(values[0].getMessageId(), values[0].getUserId(), values[0].getUserName(), values[0].getText(), values[0].getTime(), values[0].getLatitude(), values[0].getLongitude(),values[0].getIsParent(),values[0].getParentId(), null);
                 dataMessages.add(message);
+                locationMessage = new Location("Roarify");
+                message.setDistance(getDistanceToMessage(locationMessage, message).toString());
                 LoadMessages(dataMessages);
             }
         }
 
     }
 
-    /**
-     * Server Connection methods
-     */
+
 
     private class PostMessage extends AsyncTask<Void, Void, Boolean> {
 
@@ -450,6 +511,7 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
 
             HttpPost post = new HttpPost("https://1-dot-roarify-server.appspot.com/postMessage");
             List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+
 
             pairs.add(new BasicNameValuePair("userId", Profile.getCurrentProfile().getId()));
             pairs.add(new BasicNameValuePair("userName", Profile.getCurrentProfile().getName()));
@@ -492,11 +554,60 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
 
         @Override
         protected void onPostExecute(Boolean result) {
-
+            new GetChildrenMessages().execute();
         }
 
     }
 
+
+
+    private class DeleteMessage extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+
+            HttpPost post = new HttpPost("https://1-dot-roarify-server.appspot.com/deleteMessage");
+            List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+
+            pairs.add(new BasicNameValuePair("id", "" + idMessage));
+
+
+            try {
+                post.setEntity(new UrlEncodedFormEntity(pairs));
+            } catch (UnsupportedEncodingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            try {
+                HttpClient client = new DefaultHttpClient();
+                HttpResponse response = client.execute(post);
+                if (response.getStatusLine().getStatusCode() == 200) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (ClientProtocolException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                return false;
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                return false;
+            }
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            finish();
+        }
+
+    }
 
 
     /**
@@ -572,7 +683,6 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
         mLastLocation = location;
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
         myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-        drawMarker(myLocation);
     }
 
     @Override
@@ -593,18 +703,11 @@ public class MessageActivity extends AppCompatActivity implements OnMapReadyCall
         }
     }
 
-    public Float getDistanceToMessage(Location locationMessage, Message message){
+    public Integer getDistanceToMessage(Location locationMessage, Message message){
         locationMessage.setLatitude(message.getLatitude());
         locationMessage.setLongitude(message.getLongitude());
-        //distance=Math.round(mLastLocation.distanceTo(locationMessage));
-        /*Ahora mismo distance es un Float y sale con demasiadas cifras decimales,
-        * para que no salgan tantas la sentencia de arriba redondea pero hay que cambiar el tipo
-        * de distance de Float a Integer. Ahora mismo lo dejamos con los decimales para
-         * ver que funciona.*/
-        distance = new Float(0);
-
-        distance = mLastLocation.distanceTo(locationMessage);
-
+        distance = new Integer(0);
+        distance = Math.round(mLastLocation.distanceTo(locationMessage));
         return distance;
     }
 
