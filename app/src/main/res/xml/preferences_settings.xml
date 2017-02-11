@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/title_first_section">
+
+        <Preference
+            android:selectable="true"
+            android:enabled="true"
+            android:title="@string/title_delete_favorites"
+            android:summary="@string/summary_delete_favorites" />
+
+        <CheckBoxPreference
+            android:key="anonymous_preference"
+            android:title="@string/title_anonymous_preference"
+            android:defaultValue="false"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/title_second_section">
+
+        <ListPreference
+            android:key="time_preference"
+            android:title="@string/title_time_preference"
+            android:dialogTitle="@string/dialog_title_time_preference"
+            android:entries="@array/entries_time_preference"
+            android:entryValues="@array/entryvalues_time_preference" />
+
+        <ListPreference
+            android:key="distance_preference"
+            android:title="@string/title_distance_preference"
+            android:dialogTitle="@string/dialog_title_distance_preference"
+            android:entries="@array/entries_distance_preference"
+            android:entryValues="@array/entryvalues_distance_preference" />
+
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

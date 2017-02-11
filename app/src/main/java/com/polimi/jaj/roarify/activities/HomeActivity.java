@@ -2,7 +2,6 @@ package com.polimi.jaj.roarify.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
@@ -29,6 +28,7 @@ import com.polimi.jaj.roarify.fragments.FavoritesFragment;
 import com.polimi.jaj.roarify.fragments.HomeFragment;
 import com.polimi.jaj.roarify.R;
 import com.polimi.jaj.roarify.fragments.MyMessagesFragment;
+import com.polimi.jaj.roarify.fragments.SettingsFragment;
 
 
 public class HomeActivity extends AppCompatActivity {
@@ -155,7 +155,8 @@ public class HomeActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            Intent mIntent = new Intent(this, SettingsActivity.class);
+            startActivity(mIntent);
         }
 
         return super.onOptionsItemSelected(item);

@@ -22,14 +22,8 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <View
-        android:id="@+id/separator"
-        android:layout_width="match_parent"
-        android:layout_height="3dp"
-        android:background="#B0BEC5"/>
-
     <FrameLayout
-        android:background="#FF8C00"
+        android:background="#FFB74D"
         android:id="@+id/container"
         android:layout_height="300dp"
         android:layout_width="match_parent"
