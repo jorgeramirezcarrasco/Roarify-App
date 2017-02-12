@@ -101,8 +101,6 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
     private LayoutInflater inflaterReply;
     private AlertDialog.Builder builderReply;
     private AlertDialog alertReply;
-    private View dialogViewDelete;
-    private LayoutInflater inflaterDelete;
     private AlertDialog.Builder builderDelete;
     private AlertDialog alertDelete;
     String textPost;
@@ -178,8 +176,6 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
                 dialog.cancel();
             }
         });
-
-        inflaterDelete = getLayoutInflater();
 
         builderDelete = new AlertDialog.Builder(this);
         builderDelete.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -257,8 +253,6 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
         delete.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
-                dialogViewDelete = inflaterDelete.inflate(R.layout.delete_dialog, null);
-                builderDelete.setView(dialogViewDelete);
                 builderDelete.setTitle("Delete Message");
                 builderDelete.setMessage("Are you sure that you want to delete the message?").setCancelable(false);
 

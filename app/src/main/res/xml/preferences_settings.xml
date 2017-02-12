@@ -5,10 +5,18 @@
         android:title="@string/title_first_section">
 
         <Preference
+            android:key="delete_favorites_preference"
             android:selectable="true"
             android:enabled="true"
             android:title="@string/title_delete_favorites"
             android:summary="@string/summary_delete_favorites" />
+
+        <Preference
+            android:key="delete_messages_preference"
+            android:selectable="true"
+            android:enabled="true"
+            android:title="@string/title_delete_messages"
+            android:summary="@string/summary_delete_messages" />
 
         <CheckBoxPreference
             android:key="anonymous_preference"
@@ -33,7 +41,6 @@
             android:dialogTitle="@string/dialog_title_distance_preference"
             android:entries="@array/entries_distance_preference"
             android:entryValues="@array/entryvalues_distance_preference" />
-
 
     </PreferenceCategory>
 

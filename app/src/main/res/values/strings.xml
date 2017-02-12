@@ -100,10 +100,12 @@
     <string name="title_first_section">Personal settings</string>
     <string name="title_second_section">Application settings</string>
     <string name="title_delete_favorites">Delete favorites</string>
-    <string name="summary_delete_favorites">This option lets you reset all your favorite messages.</string>
+    <string name="summary_delete_favorites">Reset your favorite messages.</string>
     <string name="title_anonymous_preference">Send messages anonymously</string>
     <string name="title_distance_preference">Distance</string>
     <string name="dialog_title_distance_preference">Maximum distance to retrieve messages</string>
     <string name="title_time_preference">Time</string>
     <string name="dialog_title_time_preference">Maximum age of messages to retrieve</string>
+    <string name="title_delete_messages">Delete own messages</string>
+    <string name="summary_delete_messages">Delete all your messages from the server, so they will disappear and won\'t be visible to you or any other user.</string>
 </resources>
