@@ -101,7 +101,7 @@ public class MessageAdapter extends ArrayAdapter<Message> {
                 }
 
                 if (tt4 != null) {
-                    tt4.setText("200metros");
+                    tt4.setText(p.getDistance() + "m");
                 }
 
 

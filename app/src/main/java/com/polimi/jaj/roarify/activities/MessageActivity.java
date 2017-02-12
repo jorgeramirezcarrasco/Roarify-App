@@ -2,6 +2,7 @@ package com.polimi.jaj.roarify.activities;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -14,6 +15,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
@@ -494,7 +496,16 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
 
 
             pairs.add(new BasicNameValuePair("userId", Profile.getCurrentProfile().getId()));
-            pairs.add(new BasicNameValuePair("userName", stripAccents(Profile.getCurrentProfile().getName())));
+
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            boolean anonymPref = sharedPref.getBoolean(SettingsActivity.KEY_PREF_ANONYM,false);
+            if (anonymPref) {
+                pairs.add(new BasicNameValuePair("userName", "Anoymous"));
+            }
+            else {
+                pairs.add(new BasicNameValuePair("userName", stripAccents(Profile.getCurrentProfile().getName())));
+            }
+
             pairs.add(new BasicNameValuePair("time", mLastUpdateTime.toString()));
             pairs.add(new BasicNameValuePair("text", stripAccents(textPost)));
             pairs.add(new BasicNameValuePair("lat", String.valueOf(mLastLocation.getLatitude())));

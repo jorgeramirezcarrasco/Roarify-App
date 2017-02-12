@@ -2,6 +2,7 @@ package com.polimi.jaj.roarify.fragments;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -60,6 +61,9 @@ public class MyMessagesFragment extends Fragment {
     /* Server Connection parameters */
     private Double lat;
     private Double lon;
+    private Integer distance;
+    private Location locationMessage;
+    private Location mLastLocation;
     private String user_ID;
     List<Message> dataMessages = new ArrayList<Message>();
 
@@ -184,6 +188,8 @@ public class MyMessagesFragment extends Fragment {
 
             } else {
                 Message message = new Message(values[0].getMessageId(),values[0].getUserId(),values[0].getUserName(),values[0].getText(),values[0].getTime(),values[0].getLatitude(),values[0].getLongitude(),values[0].getIsParent(),values[0].getParentId(), null);
+                //locationMessage = new Location("Roarify");
+                //message.setDistance(getDistanceToMessage(locationMessage, message).toString());
                 dataMessages.add(message);
                 LoadMessages(dataMessages);
 
@@ -212,5 +218,12 @@ public class MyMessagesFragment extends Fragment {
         });
     }
 
+    public Integer getDistanceToMessage(Location locationMessage, Message message){
+        locationMessage.setLatitude(message.getLatitude());
+        locationMessage.setLongitude(message.getLongitude());
+        distance = new Integer(0);
+        distance = Math.round(mLastLocation.distanceTo(locationMessage));
+        return distance;
+    }
 
 }

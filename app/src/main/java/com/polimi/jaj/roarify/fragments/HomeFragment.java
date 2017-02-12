@@ -3,6 +3,7 @@ package com.polimi.jaj.roarify.fragments;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -14,6 +15,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,6 +44,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.polimi.jaj.roarify.R;
 import com.polimi.jaj.roarify.activities.HomeActivity;
+import com.polimi.jaj.roarify.activities.SettingsActivity;
 import com.polimi.jaj.roarify.adapter.CustomAdapter;
 import com.polimi.jaj.roarify.activities.LoginActivity;
 import com.polimi.jaj.roarify.activities.MessageActivity;
@@ -310,7 +313,16 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
             List<NameValuePair> pairs = new ArrayList<NameValuePair>();
 
             pairs.add(new BasicNameValuePair("userId", Profile.getCurrentProfile().getId()));
-            pairs.add(new BasicNameValuePair("userName", stripAccents(Profile.getCurrentProfile().getName())));
+
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+            boolean anonymPref = sharedPref.getBoolean(SettingsActivity.KEY_PREF_ANONYM,false);
+            if (anonymPref) {
+                pairs.add(new BasicNameValuePair("userName", "Anoymous"));
+            }
+            else {
+                pairs.add(new BasicNameValuePair("userName", stripAccents(Profile.getCurrentProfile().getName())));
+            }
+
             pairs.add(new BasicNameValuePair("time", mLastUpdateTime.toString()));
             pairs.add(new BasicNameValuePair("text", stripAccents(textPost)));
             pairs.add(new BasicNameValuePair("lat", String.valueOf(mLastLocation.getLatitude())));

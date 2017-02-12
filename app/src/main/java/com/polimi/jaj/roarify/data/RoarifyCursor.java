@@ -43,5 +43,16 @@ public class RoarifyCursor extends CursorWrapper{
                         COLUMN_NAME_TIME));
     }
 
+    public Double getLat(){
+        return getDouble(
+                getColumnIndex(RoarifyDBContract.FavoriteEntry.
+                        COLUMN_NAME_LATITUDE));
+    }
+
+    public Double getLon(){
+        return getDouble(
+                getColumnIndex(RoarifyDBContract.FavoriteEntry.
+                        COLUMN_NAME_LONGITUDE));
+    }
 
 }
