@@ -13,6 +13,9 @@ import android.widget.TextView;
 import com.polimi.jaj.roarify.R;
 import com.polimi.jaj.roarify.model.Message;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -62,11 +65,13 @@ public class MessageAdapter extends ArrayAdapter<Message> {
                 }
 
                 if (tt3 != null) {
-                    tt3.setText(p.getTime());
+                    String[] s = p.getTime().split("\\s");
+
+                    tt3.setText(s[0]+' '+s[1]+' '+s[2]+'\n'+s[3]);
                 }
 
                 if (tt4 != null) {
-                    tt4.setText(p.getDistance() + "m");//TESTING
+                    tt4.setText(p.getDistance() + "m");
                 }
             }
             else{
@@ -91,11 +96,12 @@ public class MessageAdapter extends ArrayAdapter<Message> {
                 }
 
                 if (tt3 != null) {
-                    tt3.setText(p.getTime());
+                    String[] s = p.getTime().split("\\s");
+                    tt3.setText(s[0] + ' ' + s[1] + ' ' + s[2] + '\n' + s[3]);
                 }
 
                 if (tt4 != null) {
-                    tt4.setText("200metros");//TESTING
+                    tt4.setText("200metros");
                 }
 
 

@@ -36,6 +36,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -64,12 +65,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-
+import java.util.Locale;
 
 
 /**
@@ -104,12 +106,21 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
     private AlertDialog alertMessage;
     private SwipeRefreshLayout swipeContainer;
     String textPost;
+
     /* Server Connection parameters */
     private Double lat;
     private Double lon;
     private String user_ID;
     List<Message> dataMessages = new ArrayList<Message>();
     List<Message> dataMessagesDraw = new ArrayList<Message>();
+    private static final String ORIGINAL
+            = "ÁáÉéÍíÓóÚúÑñÜü";
+    private static final String REPLACEMENT
+            = "AaEeIiOoUuNnUu";
+    DateFormat format = new SimpleDateFormat("d MMM yyyy HH:mm:ss", Locale.ENGLISH);
+
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -135,7 +146,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
             /* Obtain the last Location */
                 mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             /* Obtain the last date */
-                mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+                mLastUpdateTime = format.format(new Date());
              /* Allows Location Updates */
                 mRequestingLocationUpdates = true;
                 mLocationRequest = new LocationRequest();
@@ -241,13 +252,22 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
             ActivityCompat.requestPermissions((getActivity()), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
+        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick ( final Marker marker){
+                Intent mIntent = new Intent(getActivity(), MessageActivity.class);
+                mIntent.putExtra("idMessage", marker.getTag().toString());
+                startActivity(mIntent);
+                return true;
+            }
+        });
     }
 
     public void drawMarker(LatLng myLocation) {
         map.clear();
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 10));
         for (Message m : dataMessagesDraw) {
-                map.addMarker(new MarkerOptions().position(new LatLng(m.getLatitude(), m.getLongitude())).title(m.getText()).snippet(m.getUserName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker)));
+                map.addMarker(new MarkerOptions().position(new LatLng(m.getLatitude(), m.getLongitude())).title(m.getText()).snippet(m.getUserName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))).setTag(m.getMessageId());
             }
     }
 
@@ -290,9 +310,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
             List<NameValuePair> pairs = new ArrayList<NameValuePair>();
 
             pairs.add(new BasicNameValuePair("userId", Profile.getCurrentProfile().getId()));
-            pairs.add(new BasicNameValuePair("userName", Profile.getCurrentProfile().getName()));
+            pairs.add(new BasicNameValuePair("userName", stripAccents(Profile.getCurrentProfile().getName())));
             pairs.add(new BasicNameValuePair("time", mLastUpdateTime.toString()));
-            pairs.add(new BasicNameValuePair("text", textPost));
+            pairs.add(new BasicNameValuePair("text", stripAccents(textPost)));
             pairs.add(new BasicNameValuePair("lat", String.valueOf(mLastLocation.getLatitude())));
             pairs.add(new BasicNameValuePair("long", String.valueOf(mLastLocation.getLongitude())));
             pairs.add(new BasicNameValuePair("isParent", "true"));
@@ -432,7 +452,19 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
         }
 
     }
-
+    public static String stripAccents(String str) {
+        if (str == null) {
+            return null;
+        }
+        char[] array = str.toCharArray();
+        for (int index = 0; index < array.length; index++) {
+            int pos = ORIGINAL.indexOf(array[index]);
+            if (pos > -1) {
+                array[index] = REPLACEMENT.charAt(pos);
+            }
+        }
+        return new String(array);
+    }
     public void LoadMessages(final List<Message> dataMessagesDraw) {
 
         Collections.sort(dataMessagesDraw, new Comparator<Message>() {
@@ -493,7 +525,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
             /* Obtain the last Location */
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             /* Obtain the last date */
-            mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+            mLastUpdateTime = format.format(new Date());
              /* Allows Location Updates */
             mRequestingLocationUpdates = true;
             mLocationRequest = new LocationRequest();
@@ -510,7 +542,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
             /* Try again to obtain the last Location */
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             /* Obtain the last date */
-            mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+            mLastUpdateTime = format.format(new Date());
              /* Allows Location Updates */
             mRequestingLocationUpdates = true;
             mLocationRequest = new LocationRequest();
@@ -545,7 +577,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
     @Override
     public void onLocationChanged(Location location) {
         mLastLocation = location;
-        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+        mLastUpdateTime = format.format(new Date());
         myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
     }
 

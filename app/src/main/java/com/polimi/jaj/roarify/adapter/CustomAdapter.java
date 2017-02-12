@@ -2,6 +2,7 @@ package com.polimi.jaj.roarify.adapter;
 
 import android.content.Context;
 import android.location.Location;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,7 +63,9 @@ public class CustomAdapter extends ArrayAdapter<Message> {
             }
 
             if (tt3 != null) {
-                tt3.setText(p.getTime());
+                String[] s = p.getTime().split("\\s");
+                tt3.setText(s[0] + ' ' + s[1] + ' ' + s[2] + '\n' + s[3]);
+
             }
 
             if (tt4 != null) {

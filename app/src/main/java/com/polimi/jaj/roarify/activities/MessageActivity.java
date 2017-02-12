@@ -67,11 +67,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import static android.os.SystemClock.sleep;
 import static com.polimi.jaj.roarify.activities.HomeActivity.db;
@@ -109,6 +111,11 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
     private String idMessage;
     Message dataMessage = new Message();
     List<Message> dataMessages = new ArrayList<Message>();
+    private static final String ORIGINAL
+            = "ÁáÉéÍíÓóÚúÑñÜü";
+    private static final String REPLACEMENT
+            = "AaEeIiOoUuNnUu";
+    DateFormat format = new SimpleDateFormat("d MMM yyyy HH:mm:ss", Locale.ENGLISH);
 
     private SwipeRefreshLayout swipeContainer;
 
@@ -219,7 +226,8 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
         distance.setText(dataMessage.getDistance()+"m from you");
 
         TextView time = (TextView) this.findViewById(R.id.timeMessage);
-        time.setText("At "+dataMessage.getTime());
+        String[] s = dataMessage.getTime().split("\\s");
+        time.setText("At "+s[0] + ' ' + s[1] + ' ' + s[2] + '\n' + s[3]);
 
         ImageButton reply = (ImageButton) this.findViewById(R.id.replyButton);
         reply.setOnClickListener(new View.OnClickListener() {
@@ -486,9 +494,9 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
 
 
             pairs.add(new BasicNameValuePair("userId", Profile.getCurrentProfile().getId()));
-            pairs.add(new BasicNameValuePair("userName", Profile.getCurrentProfile().getName()));
+            pairs.add(new BasicNameValuePair("userName", stripAccents(Profile.getCurrentProfile().getName())));
             pairs.add(new BasicNameValuePair("time", mLastUpdateTime.toString()));
-            pairs.add(new BasicNameValuePair("text", textPost));
+            pairs.add(new BasicNameValuePair("text", stripAccents(textPost)));
             pairs.add(new BasicNameValuePair("lat", String.valueOf(mLastLocation.getLatitude())));
             pairs.add(new BasicNameValuePair("long", String.valueOf(mLastLocation.getLongitude())));
             pairs.add(new BasicNameValuePair("isParent", "false"));
@@ -530,7 +538,19 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
         }
 
     }
-
+    public static String stripAccents(String str) {
+        if (str == null) {
+            return null;
+        }
+        char[] array = str.toCharArray();
+        for (int index = 0; index < array.length; index++) {
+            int pos = ORIGINAL.indexOf(array[index]);
+            if (pos > -1) {
+                array[index] = REPLACEMENT.charAt(pos);
+            }
+        }
+        return new String(array);
+    }
 
 
     private class DeleteMessage extends AsyncTask<Void, Void, Boolean> {
@@ -613,7 +633,7 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
             /* Obtain the last Location */
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             /* Obtain the last date */
-            mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+            mLastUpdateTime = format.format(new Date());
              /* Allows Location Updates */
             mRequestingLocationUpdates = true;
             mLocationRequest = new LocationRequest();
@@ -653,7 +673,7 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
     @Override
     public void onLocationChanged(Location location) {
         mLastLocation = location;
-        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+        mLastUpdateTime = format.format(new Date());
         myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
     }
 
