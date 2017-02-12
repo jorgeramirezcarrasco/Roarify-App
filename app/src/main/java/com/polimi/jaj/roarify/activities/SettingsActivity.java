@@ -3,6 +3,7 @@ package com.polimi.jaj.roarify.activities;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 
 import com.polimi.jaj.roarify.R;
 import com.polimi.jaj.roarify.fragments.SettingsFragment;
@@ -19,6 +20,12 @@ public class SettingsActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, new SettingsFragment())
