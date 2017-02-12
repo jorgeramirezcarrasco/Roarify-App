@@ -330,7 +330,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
 
         @Override
         protected void onPostExecute(Boolean result) {
-
+            //new GetNearMessages().execute();
         }
 
     }

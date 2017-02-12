@@ -91,7 +91,7 @@
                     android:background="#0000"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/star_fav_yes"
+                    app:srcCompat="@drawable/star_fav_no"
                     android:layout_below="@id/timeMessage"
                     android:layout_centerHorizontal="true"
                     android:layout_alignParentBottom="true"

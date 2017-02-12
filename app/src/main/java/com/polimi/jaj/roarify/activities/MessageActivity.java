@@ -158,6 +158,7 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
 
             }
         });
+        swipeContainer.setColorSchemeResources(R.color.colorPrimary);
 
 
         inflaterReply = getLayoutInflater();
@@ -196,6 +197,11 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Message from "+dataMessage.getUserName().split("\\s+")[0]);
 
+        final ImageButton fav = (ImageButton) this.findViewById(R.id.favButton);
+        if(db.findById(dataMessage.getMessageId()).moveToNext()) {
+            fav.setImageResource(R.drawable.star_fav_yes);
+        }
+
         TextView text = (TextView) this.findViewById(R.id.textMessage);
         text.setText(dataMessage.getText());
         text.setMovementMethod(new ScrollingMovementMethod());
@@ -217,29 +223,6 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
                 builderReply.setView(dialogViewReply);
                 builderReply.setTitle(dataMessage.getUserName());
                 builderReply.setMessage(dataMessage.getText()).setCancelable(false);
-
-                final Message message = dataMessage;
-                CheckBox favCheckBox = (CheckBox) dialogViewReply.findViewById(R.id.checkbox_favorite);
-                if (db.findById(message.getMessageId()).moveToNext()){
-                    favCheckBox.setChecked(true);
-                }
-                favCheckBox.setOnClickListener(new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View view)
-                    {
-                        System.out.println("DENTRO DE PINCHAR EL CHECKBOX");
-                        boolean checked = ((CheckBox) view).isChecked();
-                        if (checked){
-                            db.add(message);
-                            System.out.println("SI esta checkada");
-                        }
-                        else {
-                            db.delete(message);
-                            System.out.println("NO esta checkada");
-                        }
-                    }
-                });
 
                 alertReply = builderReply.create();
                 alertReply.show();
@@ -263,6 +246,21 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
         });
         }
 
+        fav.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (db.findById(dataMessage.getMessageId()).moveToNext()){
+                    db.delete(dataMessage);
+                    fav.setImageResource(R.drawable.star_fav_no);
+                    Toast.makeText(MessageActivity.this, R.string.favorite_deleted, Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    db.add(dataMessage);
+                    fav.setImageResource(R.drawable.star_fav_yes);
+                    Toast.makeText(MessageActivity.this, R.string.favorite_added, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
     }
 
     public void LoadMessages(final List<Message> dataMessages) {
@@ -283,37 +281,11 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
+                Message message = (Message) parent.getItemAtPosition(position);
 
-                dialogViewReply = inflaterReply.inflate(R.layout.reply_dialog, null);
-                builderReply.setView(dialogViewReply);
-                builderReply.setTitle(dataMessages.get(position).getUserName());
-                builderReply.setMessage(dataMessages.get(position).getText()).setCancelable(false);
-
-                final Message message = (Message) parent.getItemAtPosition(position);
-                CheckBox favCheckBox = (CheckBox) dialogViewReply.findViewById(R.id.checkbox_favorite);
-                if (db.findById(message.getMessageId()).moveToNext()){
-                    favCheckBox.setChecked(true);
-                }
-                favCheckBox.setOnClickListener(new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View view)
-                    {
-                        System.out.println("DENTRO DE PINCHAR EL CHECKBOX");
-                        boolean checked = ((CheckBox) view).isChecked();
-                        if (checked){
-                            db.add(message);
-                            System.out.println("SI esta checkada");
-                        }
-                        else {
-                            db.delete(message);
-                            System.out.println("NO esta checkada");
-                        }
-                    }
-                });
-
-                alertReply = builderReply.create();
-                alertReply.show();
+                Intent mIntent = new Intent(getApplicationContext(), MessageActivity.class);
+                mIntent.putExtra("idMessage", message.getMessageId());
+                startActivity(mIntent);
 
             }
         });

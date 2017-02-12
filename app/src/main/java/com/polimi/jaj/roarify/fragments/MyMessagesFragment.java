@@ -1,6 +1,7 @@
 package com.polimi.jaj.roarify.fragments;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -11,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -20,6 +20,7 @@ import com.facebook.Profile;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.polimi.jaj.roarify.R;
+import com.polimi.jaj.roarify.activities.MessageActivity;
 import com.polimi.jaj.roarify.adapter.CustomAdapter;
 import com.polimi.jaj.roarify.data.RoarifyCursor;
 import com.polimi.jaj.roarify.model.Message;
@@ -202,38 +203,11 @@ public class MyMessagesFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                // TODO Auto-generated method stub
+                Message message = (Message) parent.getItemAtPosition(position);
 
-                dialogViewReply = inflaterReply.inflate(R.layout.reply_dialog, null);
-                builderReply.setView(dialogViewReply);
-                builderReply.setTitle(dataMessages.get(position).getUserName());
-                builderReply.setMessage(dataMessages.get(position).getText()).setCancelable(false);
-
-                final Message message = (Message) parent.getItemAtPosition(position);
-                CheckBox favCheckBox = (CheckBox) dialogViewReply.findViewById(R.id.checkbox_favorite);
-                if (db.findById(message.getMessageId()).moveToNext()){
-                    favCheckBox.setChecked(true);
-                }
-                favCheckBox.setOnClickListener(new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View view)
-                    {
-                        System.out.println("DENTRO DE PINCHAR EL CHECKBOX");
-                        boolean checked = ((CheckBox) view).isChecked();
-                        if (checked){
-                            db.add(message);
-                            System.out.println("SI esta checkada");
-                        }
-                        else {
-                            db.delete(message);
-                            System.out.println("NO esta checkada");
-                        }
-                    }
-                });
-
-                alertReply = builderReply.create();
-                alertReply.show();
+                Intent mIntent = new Intent(getActivity() ,MessageActivity.class);
+                mIntent.putExtra("idMessage", message.getMessageId());
+                startActivity(mIntent);
             }
         });
     }
