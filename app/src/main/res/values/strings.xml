@@ -110,6 +110,6 @@
     <string name="summary_delete_messages">Delete all your messages from the server, so they will disappear and won\'t be visible to you or any other user.</string>
     <string name="favorite_deleted">The message was removed from your favorites</string>
     <string name="favorite_added">The message was added to your favorites</string>
-    <string name="google_map_card">Click on this card to see where the message was sent</string>
+    <string name="google_map_card">Click here to see where the message was sent</string>
     <string name="title_activity_maps">Map</string>
 </resources>

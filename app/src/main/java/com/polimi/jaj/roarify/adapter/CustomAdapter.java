@@ -21,10 +21,6 @@ import java.util.List;
 
 public class CustomAdapter extends ArrayAdapter<Message> {
 
-    public CustomAdapter(Context context, int textViewResourceId) {
-        super(context, textViewResourceId);
-    }
-
     public CustomAdapter(Context context, int resource, List<Message> items) {
         super(context, resource, items);
     }
@@ -33,11 +29,6 @@ public class CustomAdapter extends ArrayAdapter<Message> {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         View v = convertView;
-
-        final Float distance;
-        final Location locationMessage;//to calculate the distance between our position and the message.
-
-
 
         Message p = getItem(position);
 

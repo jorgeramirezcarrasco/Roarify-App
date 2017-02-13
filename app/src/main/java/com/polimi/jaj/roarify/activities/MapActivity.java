@@ -89,6 +89,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private LatLng messageLocation;
     Message m = new Message();
 
+    AlertDialog.Builder builderNavDialog;
+    AlertDialog alertNavDialog;
+
 
 
     @Override
@@ -96,7 +99,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("");
+        toolbar.setTitle("Message location");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -147,12 +150,28 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
+
+        builderNavDialog = new AlertDialog.Builder(this);
+        builderNavDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+        builderNavDialog.setTitle("Start Google Maps");
+        builderNavDialog.setMessage("Do you want to navigate to the marked destination?").setCancelable(false);
+
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick ( final Marker marker){
-                Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
-                        Uri.parse("google.navigation:q="+m.getLatitude()+","+m.getLongitude()));
-                startActivity(intent);
+                builderNavDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                                Uri.parse("google.navigation:q="+m.getLatitude()+","+m.getLongitude()));
+                        startActivity(intent);
+                    }
+                });
+                alertNavDialog = builderNavDialog.create();
+                alertNavDialog.show();
                 return true;
             }
         });
@@ -160,7 +179,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     public void drawMarker(LatLng myLocation) {
         map.clear();
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 30));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 16));
        //Draw
         map.addMarker(new MarkerOptions().position(new LatLng(m.getLatitude(), m.getLongitude())).title(m.getText()).snippet(m.getUserName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))).setTag(m.getMessageId());
 
