@@ -13,6 +13,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
@@ -127,7 +128,13 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
             }
         });
 
+        CardView gMapCard = (CardView) findViewById(R.id.gMapCard);
+        gMapCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+            }
+        });
 
          /* Google Api Client Connection */
         buildGoogleApiClient();

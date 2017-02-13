@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorAccentFallbackLight"
     android:fitsSystemWindows="true"
     tools:context="com.polimi.jaj.roarify.activities.MessageActivity">
 
@@ -23,48 +24,85 @@
     </android.support.design.widget.AppBarLayout>
 
     <FrameLayout
-        android:background="#FFB74D"
         android:id="@+id/container"
-        android:layout_height="300dp"
+        android:layout_height="270dp"
         android:layout_width="match_parent"
         android:layout_below="@id/appbarlayout"
         tools:context="com.polimi.jaj.roarify.activities.MessageActivity"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools" />
 
-    <TextView
-        android:id="@+id/textReplies"
+    <android.support.v7.widget.CardView
+        android:id="@+id/gMapCard"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#000"
-        android:text="Replies"
-        android:textStyle="bold"
-        android:textSize="20sp"
+        android:layout_height="30dp"
         android:layout_below="@id/container"
-        android:layout_margin="5dp"
-        />
-
-    <android.support.v4.widget.SwipeRefreshLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/swipeContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/textReplies"
-        android:orientation="vertical" >
-
-        <ListView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/comments"
+        android:background="#FFF"
+        android:layout_margin="10dp"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="5dp">
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </android.support.v4.widget.SwipeRefreshLayout>
+            android:layout_height="match_parent"
+            android:text="@string/google_map_card"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:textColor="#000"
+            android:textStyle="bold"
+            android:textSize="12sp"/>
 
-    <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    </android.support.v7.widget.CardView>
+    <android.support.v7.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_below="@id/gMapCard"
+        android:background="#FFF"
+        android:layout_margin="10dp"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="5dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/textReplies"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#000"
+                android:text="Replies"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:textAlignment="center"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="#BDBDBD"
+                />
+
+            <android.support.v4.widget.SwipeRefreshLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/swipeContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <ListView xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/comments"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </android.support.v4.widget.SwipeRefreshLayout>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-        tools:context="com.polimi.jaj.roarify.activities.MessageActivity">
+        tools:context="com.polimi.jaj.roarify.activities.MessageActivity"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
 
 
     </android.support.design.widget.CoordinatorLayout>

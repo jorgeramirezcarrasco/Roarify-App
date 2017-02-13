@@ -6,7 +6,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_height="250dp"
-    android:layout_margin="15dp"
+    android:layout_margin="10dp"
     card_view:cardCornerRadius="4dp"
     card_view:cardElevation="5dp">
 
@@ -62,6 +62,7 @@
                     android:textColor="#000"
                     android:textSize="14sp"
                     android:textStyle="italic"
+                    android:textAlignment="textEnd"
                     android:layout_margin="3dp"
 
                     />
@@ -96,9 +97,6 @@
                     android:layout_centerHorizontal="true"
                     android:layout_alignParentBottom="true"
                      />
-
-
-
 
     </RelativeLayout>
 

@@ -79,7 +79,7 @@ public class MessageAdapter extends ArrayAdapter<Message> {
                 if (v == null) {
                     LayoutInflater vi;
                     vi = LayoutInflater.from(getContext());
-                    v = vi.inflate(R.layout.rownotparent, null);
+                    v = vi.inflate(R.layout.rowparent, null);
                 }
 
                 TextView tt1 = (TextView) v.findViewById(R.id.author);

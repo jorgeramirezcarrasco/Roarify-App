@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="3dp"
         android:layout_below="@id/map"
-        android:background="#B0BEC5"/>
+        android:background="#BDBDBD"/>
 
     <android.support.v4.widget.SwipeRefreshLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
