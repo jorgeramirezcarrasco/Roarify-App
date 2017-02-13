@@ -38,6 +38,8 @@ import com.polimi.jaj.roarify.model.Message;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -47,16 +49,12 @@ import static com.polimi.jaj.roarify.activities.HomeActivity.db;
 
 public class FavoritesFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
+
     /* Parameters needed for the dialog fragments */
-    private View dialogViewReply;
-    private LayoutInflater inflaterReply;
-    private AlertDialog.Builder builderReply;
-    private AlertDialog alertReply;
+
     private View dialogViewMessage;
     private LayoutInflater inflaterMessage;
     private AlertDialog.Builder builderMessage;
-    private AlertDialog alertMessage;
-    private SwipeRefreshLayout swipeContainer;
     private List<Message> favoriteMessages = new ArrayList<Message>();;
 
     /* Google Maps parameters */
@@ -65,11 +63,9 @@ public class FavoritesFragment extends Fragment implements GoogleApiClient.Conne
     private String mLastUpdateTime;
     private boolean mRequestingLocationUpdates;
     private LocationRequest mLocationRequest;
-    private GoogleMap map;
-    static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
     private LatLng myLocation;
-    private Integer distance;//Cambiar a integer cuando queramos redondear
-    private Location locationMessage;//to calculate the distance between our position and the message.
+    private Integer distance;
+    private Location locationMessage;
 
     DateFormat format = new SimpleDateFormat("d MMM yyyy HH:mm:ss", Locale.ENGLISH);
 
@@ -90,81 +86,18 @@ public class FavoritesFragment extends Fragment implements GoogleApiClient.Conne
 
         if (mGoogleApiClient != null) {
             mGoogleApiClient.connect();
-        }else{
-            //If we came back and the GoogleApiClient is already created
-            if (ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
-            /* Obtain the last Location */
-                mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            /* Obtain the last date */
-                mLastUpdateTime = format.format(new Date());
-             /* Allows Location Updates */
-                mRequestingLocationUpdates = true;
-                mLocationRequest = new LocationRequest();
-                if (mRequestingLocationUpdates) {
-                    startLocationUpdates();
-                }
-            }
         }
-
-        /*Layout Setup*/
-        inflaterReply = getLayoutInflater(savedInstanceState);
-
-        /* Initial setup of the dialog fragment when clicking on a message */
-        builderReply = new AlertDialog.Builder((getActivity()));
-        builderReply.setPositiveButton("Reply", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-            /* Method that sends the response to the server or the user that wrote this message (not clear yet).
-             * In case of sending the message to the server, it would also be a multicast message. In case of
-             * sending the message only to the user, the setup of this button should be done in the LoadMessages
-             * method, as we need to know the user who sent the first message; moreover, we need to differentiate
-             * between a normal user and an anonymous user. If the user is anonymous, this button shouldn't be
-             * shown, or shouldn't be clickable (color it grey). */
-            }
-        });
-        builderReply.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.cancel();
-            }
-        });
-
-        /* Setup of the dialog fragment when clicking on the '+' button */
-        builderMessage = new AlertDialog.Builder(getActivity());
-        builderMessage.setPositiveButton("Roar!", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-            }
-        });
-        builderMessage.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.cancel();
-            }
-        });
-        inflaterMessage = getActivity().getLayoutInflater();
-        dialogViewMessage = inflaterMessage.inflate(R.layout.message_dialog, null);
-        builderMessage.setView(dialogViewMessage);
-        builderMessage.setTitle("New message");
-        alertMessage = builderMessage.create();
-
-        RoarifyCursor cursorAllMessages = db.findAll();
-
-        while(cursorAllMessages.moveToNext()){
-            Message iMessage = new Message();
-            iMessage.setUserName(cursorAllMessages.getUserName());
-            iMessage.setText(cursorAllMessages.getMessage());
-            iMessage.setTime(cursorAllMessages.getTime());
-            iMessage.setMessageId(cursorAllMessages.getMessageId());
-            iMessage.setLatitude(cursorAllMessages.getLat());
-            iMessage.setLongitude(cursorAllMessages.getLon());
-            locationMessage = new Location("Roarify");
-            iMessage.setDistance(getDistanceToMessage(locationMessage, iMessage).toString());
-
-            favoriteMessages.add(iMessage);
-        }
-        LoadMessages(favoriteMessages);
 
     }
 
     public void LoadMessages(final List<Message> dataMessages){
+
+        Collections.sort(dataMessages, new Comparator<Message>() {
+            @Override
+            public int compare(Message o1, Message o2) {
+                return Integer.valueOf(o1.getDistance()).compareTo(Integer.valueOf(o2.getDistance()));
+            }
+        });
 
         ListView favorites = (ListView) getActivity().findViewById(R.id.favorites);
         CustomAdapter customAdapter = new CustomAdapter(getActivity(), R.layout.row, dataMessages);
@@ -226,17 +159,22 @@ public class FavoritesFragment extends Fragment implements GoogleApiClient.Conne
         if (mLastLocation != null) {
             /* Convert Location and call drawMarker method */
             myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-        }else{
-            /* Try again to obtain the last Location */
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            /* Obtain the last date */
-            mLastUpdateTime = format.format(new Date());
-             /* Allows Location Updates */
-            mRequestingLocationUpdates = true;
-            mLocationRequest = new LocationRequest();
-            if (mRequestingLocationUpdates) {
-                startLocationUpdates();
+            RoarifyCursor cursorAllMessages = db.findAll();
+
+            while(cursorAllMessages.moveToNext()){
+                Message iMessage = new Message();
+                iMessage.setUserName(cursorAllMessages.getUserName());
+                iMessage.setText(cursorAllMessages.getMessage());
+                iMessage.setTime(cursorAllMessages.getTime());
+                iMessage.setMessageId(cursorAllMessages.getMessageId());
+                iMessage.setLatitude(cursorAllMessages.getLat());
+                iMessage.setLongitude(cursorAllMessages.getLon());
+                locationMessage = new Location("Roarify");
+                iMessage.setDistance(getDistanceToMessage(locationMessage, iMessage).toString());
+
+                favoriteMessages.add(iMessage);
             }
+            LoadMessages(favoriteMessages);
         }
     }
 

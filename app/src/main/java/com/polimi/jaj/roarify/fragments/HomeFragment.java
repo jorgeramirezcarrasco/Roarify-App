@@ -29,6 +29,7 @@ import android.widget.Toast;
 import com.facebook.Profile;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.fitness.data.Goal;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -94,15 +95,12 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
     private GoogleMap map;
     static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
     private LatLng myLocation;
-    private Integer distance;//Cambiar a integer cuando queramos redondear
-    private Location locationMessage;//to calculate the distance between our position and the message.
+    private Integer distance;
+    private Location locationMessage;
 
 
     /* Parameters needed for the dialog fragments */
-    private View dialogViewReply;
-    private LayoutInflater inflaterReply;
-    private AlertDialog.Builder builderReply;
-    private AlertDialog alertReply;
+
     private View dialogViewMessage;
     private LayoutInflater inflaterMessage;
     private AlertDialog.Builder builderMessage;
@@ -142,21 +140,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
 
         if (mGoogleApiClient != null) {
             mGoogleApiClient.connect();
-        }else{
-            //If we came back and the GoogleApiClient is already created
-            if (ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
-            /* Obtain the last Location */
-                mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            /* Obtain the last date */
-                mLastUpdateTime = format.format(new Date());
-             /* Allows Location Updates */
-                mRequestingLocationUpdates = true;
-                mLocationRequest = new LocationRequest();
-                if (mRequestingLocationUpdates) {
-                    startLocationUpdates();
-                }
-            }
         }
 
         FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
@@ -172,8 +155,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
         mapFragment.getMapAsync(this);
 
         /*Layout Setup*/
-        inflaterReply = getLayoutInflater(savedInstanceState);
-
 
         swipeContainer = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipeContainer);
         // Setup refresh listener which triggers new data loading
@@ -188,29 +169,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
         });
 
         swipeContainer.setColorSchemeResources(R.color.colorPrimary);
-
-
-        /* Initial setup of the dialog fragment when clicking on a message */
-        builderReply = new AlertDialog.Builder((getActivity()));
-        builderReply.setPositiveButton("Reply", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-            /* Method that sends the response to the server or the user that wrote this message (not clear yet).
-             * In case of sending the message to the server, it would also be a multicast message. In case of
-             * sending the message only to the user, the setup of this button should be done in the LoadMessages
-             * method, as we need to know the user who sent the first message; moreover, we need to differentiate
-             * between a normal user and an anonymous user. If the user is anonymous, this button shouldn't be
-             * shown, or shouldn't be clickable (color it grey). */
-            }
-        });
-        builderReply.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.cancel();
-            }
-        });
-
-
-
-
 
         /* Setup of the dialog fragment when clicking on the '+' button */
         builderMessage = new AlertDialog.Builder(getActivity());
@@ -233,9 +191,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
         builderMessage.setView(dialogViewMessage);
         builderMessage.setTitle("New message");
         alertMessage = builderMessage.create();
-
-
-
 
     }
 
@@ -362,7 +317,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
 
         @Override
         protected void onPostExecute(Boolean result) {
-            //new GetNearMessages().execute();
         }
 
     }
@@ -415,7 +369,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
                 showToastedWarning();
             }
 
-            dataMessages.clear();
+
             return null;
         }
 
@@ -437,7 +391,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
 
         @Override
         protected void onPreExecute() {
-
+            dataMessages.clear();
+            dataMessagesDraw.clear();
+            new GetLocationTask().execute();
         }
 
         @Override
@@ -548,20 +504,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
         if (mLastLocation != null) {
             /* Convert Location */
             myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-            /* Obtain Messages */
-            new GetNearMessages().execute();
-        }else{
-            /* Try again to obtain the last Location */
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            /* Obtain the last date */
-            mLastUpdateTime = format.format(new Date());
-             /* Allows Location Updates */
-            mRequestingLocationUpdates = true;
-            mLocationRequest = new LocationRequest();
-            if (mRequestingLocationUpdates) {
-                startLocationUpdates();
-            }
-
         }
     }
 
@@ -612,6 +554,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
         if (mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
             startLocationUpdates();
         }
+        new GetNearMessages().execute();
 
 
     }
@@ -622,6 +565,41 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
         distance = Math.round(mLastLocation.distanceTo(locationMessage));
 
         return distance;
+    }
+
+    private class GetLocationTask extends AsyncTask<Void, Void, Void>{
+        ProgressDialog asyncDialog = new ProgressDialog(getActivity());
+
+
+        @Override
+        protected void onPreExecute() {
+            asyncDialog.setMessage("Obtaining your location");
+            asyncDialog.show();
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            if (ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+
+            while(mLastLocation==null) {
+                mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            /* Obtain the last date */
+                mLastUpdateTime = format.format(new Date());
+
+            }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            asyncDialog.dismiss();
+
+            super.onPostExecute(result);
+        }
+
     }
 
 

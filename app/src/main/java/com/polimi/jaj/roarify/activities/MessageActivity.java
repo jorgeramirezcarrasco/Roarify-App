@@ -8,24 +8,16 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.preference.PreferenceManager;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -38,18 +30,13 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.polimi.jaj.roarify.R;
 import com.polimi.jaj.roarify.adapter.MessageAdapter;
 import com.polimi.jaj.roarify.fragments.CardViewFragment;
-import com.polimi.jaj.roarify.fragments.HomeFragment;
 import com.polimi.jaj.roarify.model.Message;
 
 import org.apache.http.HttpEntity;
@@ -77,7 +64,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import static android.os.SystemClock.sleep;
 import static com.polimi.jaj.roarify.activities.HomeActivity.db;
 
 public class MessageActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
@@ -90,15 +76,11 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
     private String mLastUpdateTime;
     private boolean mRequestingLocationUpdates;
     private LocationRequest mLocationRequest;
-    private GoogleMap map;
-    static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
     private LatLng messageLocation;
     private Location mLastLocation;
     private LatLng myLocation;
-    private Integer distance; //Cambiar a Integer cuando queramos redondear.
-    private Location locationMessage;//to calculate de distance between out position and the message.
-
-
+    private Integer distance;
+    private Location locationMessage;
 
     /* Parameters needed for the dialog fragments */
     private View dialogViewReply;
@@ -475,9 +457,9 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
 
             } else {
                 Message message = new Message(values[0].getMessageId(), values[0].getUserId(), values[0].getUserName(), values[0].getText(), values[0].getTime(), values[0].getLatitude(), values[0].getLongitude(),values[0].getIsParent(),values[0].getParentId(), null);
-                dataMessages.add(message);
                 locationMessage = new Location("Roarify");
                 message.setDistance(getDistanceToMessage(locationMessage, message).toString());
+                dataMessages.add(message);
                 LoadMessages(dataMessages);
             }
         }
