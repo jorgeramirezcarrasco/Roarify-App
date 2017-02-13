@@ -79,11 +79,12 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
     private String mLastUpdateTime;
     private boolean mRequestingLocationUpdates;
     private LocationRequest mLocationRequest;
-    private LatLng messageLocation;
+    private Location messageLocation;
     private Location mLastLocation;
     private LatLng myLocation;
     private Integer distance;
     private Location locationMessage;
+    private Intent mIntent;
 
     /* Parameters needed for the dialog fragments */
     private View dialogViewReply;
@@ -134,11 +135,11 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
         gMapCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent mIntent = new Intent(MessageActivity.this, MapActivity.class);
-                mIntent.putExtra("idMessage", dataMessage.getMessageId());
-                mIntent.putExtra("LongitudeMessage", dataMessage.getLongitude());
-                mIntent.putExtra("LatitudeMessage", dataMessage.getLatitude());
-                startActivity(mIntent);
+                Intent mIntentNext = new Intent(MessageActivity.this, MapActivity.class);
+                mIntentNext.putExtra("idMessage", dataMessage.getMessageId());
+                mIntentNext.putExtra("LongitudeMessage", dataMessage.getLongitude());
+                mIntentNext.putExtra("LatitudeMessage", dataMessage.getLatitude());
+                startActivity(mIntentNext);
 
             }
         });
@@ -151,7 +152,7 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
         }
 
         /* Intent Receiver */
-        Intent mIntent = getIntent();
+        mIntent = getIntent();
         idMessage = (String) mIntent.getExtras().getSerializable("idMessage");
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
 
@@ -297,6 +298,8 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
 
                 Intent mIntent = new Intent(getApplicationContext(), MessageActivity.class);
                 mIntent.putExtra("idMessage", message.getMessageId());
+                mIntent.putExtra("currentLat",mLastLocation.getLatitude());
+                mIntent.putExtra("currentLon",mLastLocation.getLongitude());
                 startActivity(mIntent);
 
             }
@@ -706,7 +709,15 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
         locationMessage.setLatitude(message.getLatitude());
         locationMessage.setLongitude(message.getLongitude());
         distance = new Integer(0);
-        distance = Math.round(mLastLocation.distanceTo(locationMessage));
+        if (mLastLocation != null) {
+            distance = Math.round(mLastLocation.distanceTo(locationMessage));
+        }
+        else {
+            messageLocation = new Location("Roarify");
+            messageLocation.setLatitude((Double) mIntent.getExtras().getSerializable("currentLat"));
+            messageLocation.setLongitude((Double) mIntent.getExtras().getSerializable("currentLon"));
+            distance = Math.round(messageLocation.distanceTo(locationMessage));
+        }
         return distance;
     }
 

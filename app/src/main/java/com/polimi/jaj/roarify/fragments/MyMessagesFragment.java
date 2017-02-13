@@ -221,6 +221,8 @@ public class MyMessagesFragment extends Fragment implements GoogleApiClient.Conn
 
                 Intent mIntent = new Intent(getActivity() ,MessageActivity.class);
                 mIntent.putExtra("idMessage", message.getMessageId());
+                mIntent.putExtra("currentLat",mLastLocation.getLatitude());
+                mIntent.putExtra("currentLon",mLastLocation.getLongitude());
                 startActivity(mIntent);
             }
         });

@@ -215,6 +215,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
             public boolean onMarkerClick ( final Marker marker){
                 Intent mIntent = new Intent(getActivity(), MessageActivity.class);
                 mIntent.putExtra("idMessage", marker.getTag().toString());
+                mIntent.putExtra("currentLat",mLastLocation.getLatitude());
+                mIntent.putExtra("currentLon",mLastLocation.getLongitude());
                 startActivity(mIntent);
                 return true;
             }
@@ -456,6 +458,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
 
                 Intent mIntent = new Intent(getActivity() ,MessageActivity.class);
                 mIntent.putExtra("idMessage", message.getMessageId());
+                mIntent.putExtra("currentLat",mLastLocation.getLatitude());
+                mIntent.putExtra("currentLon",mLastLocation.getLongitude());
                 startActivity(mIntent);
 
             }
