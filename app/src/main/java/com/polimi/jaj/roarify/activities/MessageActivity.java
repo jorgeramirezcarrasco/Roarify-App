@@ -37,6 +37,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.polimi.jaj.roarify.R;
 import com.polimi.jaj.roarify.adapter.MessageAdapter;
+import com.polimi.jaj.roarify.activities.MapActivity;
 import com.polimi.jaj.roarify.fragments.CardViewFragment;
 import com.polimi.jaj.roarify.model.Message;
 
@@ -65,6 +66,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import static com.polimi.jaj.roarify.R.drawable.marker;
 import static com.polimi.jaj.roarify.activities.HomeActivity.db;
 
 public class MessageActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
@@ -132,6 +134,11 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
         gMapCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent mIntent = new Intent(MessageActivity.this, MapActivity.class);
+                mIntent.putExtra("idMessage", dataMessage.getMessageId());
+                mIntent.putExtra("LongitudeMessage", dataMessage.getLongitude());
+                mIntent.putExtra("LatitudeMessage", dataMessage.getLatitude());
+                startActivity(mIntent);
 
             }
         });
