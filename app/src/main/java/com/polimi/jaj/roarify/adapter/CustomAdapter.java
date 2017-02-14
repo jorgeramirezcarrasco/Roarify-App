@@ -1,8 +1,6 @@
 package com.polimi.jaj.roarify.adapter;
 
 import android.content.Context;
-import android.location.Location;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +8,6 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.polimi.jaj.roarify.R;
-import com.polimi.jaj.roarify.fragments.HomeFragment;
 import com.polimi.jaj.roarify.model.Message;
 
 import java.util.List;

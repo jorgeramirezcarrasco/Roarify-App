@@ -1,4 +1,4 @@
-package com.polimi.jaj.roarify.activities;
+package com.polimi.jaj.roarify.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,11 +24,11 @@ import com.facebook.login.widget.ProfilePictureView;
 
 
 import com.polimi.jaj.roarify.data.RoarifySQLiteRepository;
-import com.polimi.jaj.roarify.fragments.FavoritesFragment;
-import com.polimi.jaj.roarify.fragments.HomeFragment;
+import com.polimi.jaj.roarify.fragment.FavoritesFragment;
+import com.polimi.jaj.roarify.fragment.FeedbackFragment;
+import com.polimi.jaj.roarify.fragment.HomeFragment;
 import com.polimi.jaj.roarify.R;
-import com.polimi.jaj.roarify.fragments.MyMessagesFragment;
-import com.polimi.jaj.roarify.fragments.SettingsFragment;
+import com.polimi.jaj.roarify.fragment.MyMessagesFragment;
 
 
 public class HomeActivity extends AppCompatActivity {
@@ -180,10 +180,8 @@ public class HomeActivity extends AppCompatActivity {
                                 drawer.closeDrawer(GravityCompat.START);
                                 return true;
                             case R.id.nav_help_feedback:
-                                return true;
-                            case R.id.nav_share:
-                                return true;
-                            case R.id.nav_send:
+                                setFragment(3);
+                                drawer.closeDrawer(GravityCompat.START);
                                 return true;
                             case R.id.nav_logout:
                                 logout(auxView);
@@ -209,8 +207,12 @@ public class HomeActivity extends AppCompatActivity {
                 fragmentTransaction.replace(R.id.fragment_container, myMessagesFragment);
                 break;
             case 2:
-                FavoritesFragment myFavoritesFragment = new FavoritesFragment();
-                fragmentTransaction.replace(R.id.fragment_container, myFavoritesFragment);
+                FavoritesFragment favoritesFragment = new FavoritesFragment();
+                fragmentTransaction.replace(R.id.fragment_container, favoritesFragment);
+                break;
+            case 3:
+                FeedbackFragment feedbackFragment = new FeedbackFragment();
+                fragmentTransaction.replace(R.id.fragment_container, feedbackFragment);
                 break;
         }
         fragmentTransaction.commit();

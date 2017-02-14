@@ -1,4 +1,4 @@
-package com.polimi.jaj.roarify.activities;
+package com.polimi.jaj.roarify.activity;
 
 import android.content.Intent;
 import android.os.Bundle;

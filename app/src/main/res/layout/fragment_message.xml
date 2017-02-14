@@ -22,6 +22,7 @@
                     android:layout_height="85dp"
                     android:textColor="#000"
                     android:textSize="18sp"
+                    android:textStyle="bold"
                     android:layout_below="@id/appbarlayout"
                     android:layout_margin="7dp"
                     android:scrollbars = "vertical"

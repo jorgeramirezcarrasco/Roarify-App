@@ -47,7 +47,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-        tools:context="com.polimi.jaj.roarify.activities.HomeActivity">
+        tools:context="com.polimi.jaj.roarify.activity.HomeActivity">
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

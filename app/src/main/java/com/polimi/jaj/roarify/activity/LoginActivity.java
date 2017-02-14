@@ -1,4 +1,4 @@
-package com.polimi.jaj.roarify.activities;
+package com.polimi.jaj.roarify.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,7 +12,6 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.polimi.jaj.roarify.R;
-import com.polimi.jaj.roarify.activities.HomeActivity;
 
 import java.util.Arrays;
 

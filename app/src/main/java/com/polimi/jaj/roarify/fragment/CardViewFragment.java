@@ -1,4 +1,4 @@
-package com.polimi.jaj.roarify.fragments;
+package com.polimi.jaj.roarify.fragment;
 
 /**
  * Created by jorgeramirezcarrasco on 10/2/17.

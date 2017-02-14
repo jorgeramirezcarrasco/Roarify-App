@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorAccentFallbackLight"
     android:fitsSystemWindows="true"
-    tools:context="com.polimi.jaj.roarify.activities.MessageActivity">
+    tools:context="com.polimi.jaj.roarify.activity.MessageActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbarlayout"
@@ -28,7 +28,7 @@
         android:layout_height="240dp"
         android:layout_width="match_parent"
         android:layout_below="@id/appbarlayout"
-        tools:context="com.polimi.jaj.roarify.activities.MessageActivity"
+        tools:context="com.polimi.jaj.roarify.activity.MessageActivity"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools" />
 
@@ -40,7 +40,7 @@
         android:background="#FFF"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        app:cardBackgroundColor="@color/colorAccent"
+        app:cardBackgroundColor="@color/colorPrimary"
         app:cardCornerRadius="4dp"
         app:cardElevation="5dp">
         <TextView
@@ -101,7 +101,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-        tools:context="com.polimi.jaj.roarify.activities.MessageActivity"
+        tools:context="com.polimi.jaj.roarify.activity.MessageActivity"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true">
 
