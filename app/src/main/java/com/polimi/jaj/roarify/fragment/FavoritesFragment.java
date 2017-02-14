@@ -1,16 +1,12 @@
-package com.polimi.jaj.roarify.fragments;
+package com.polimi.jaj.roarify.fragment;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,15 +20,11 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.polimi.jaj.roarify.R;
-import com.polimi.jaj.roarify.activities.MessageActivity;
+import com.polimi.jaj.roarify.activity.MessageActivity;
 import com.polimi.jaj.roarify.adapter.CustomAdapter;
 import com.polimi.jaj.roarify.data.RoarifyCursor;
-import com.polimi.jaj.roarify.data.RoarifyDBContract.*;
-import com.polimi.jaj.roarify.data.RoarifySQLiteRepository;
 import com.polimi.jaj.roarify.model.Message;
 
 import java.text.DateFormat;
@@ -44,7 +36,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import static com.polimi.jaj.roarify.activities.HomeActivity.db;
+import static com.polimi.jaj.roarify.activity.HomeActivity.db;
 
 
 public class FavoritesFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks,
@@ -162,6 +154,7 @@ public class FavoritesFragment extends Fragment implements GoogleApiClient.Conne
             /* Convert Location and call drawMarker method */
             myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
             RoarifyCursor cursorAllMessages = db.findAll();
+            favoriteMessages.clear();
 
             while(cursorAllMessages.moveToNext()){
                 Message iMessage = new Message();

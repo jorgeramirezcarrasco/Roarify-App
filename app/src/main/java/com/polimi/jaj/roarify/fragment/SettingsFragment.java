@@ -1,4 +1,4 @@
-package com.polimi.jaj.roarify.fragments;
+package com.polimi.jaj.roarify.fragment;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -8,7 +8,7 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 
 import com.polimi.jaj.roarify.R;
 
-import static com.polimi.jaj.roarify.activities.HomeActivity.db;
+import static com.polimi.jaj.roarify.activity.HomeActivity.db;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
 

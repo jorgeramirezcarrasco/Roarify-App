@@ -6,7 +6,7 @@
     android:id="@+id/activity_settings"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.polimi.jaj.roarify.activities.SettingsActivity">
+    tools:context="com.polimi.jaj.roarify.activity.SettingsActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbarlayout"

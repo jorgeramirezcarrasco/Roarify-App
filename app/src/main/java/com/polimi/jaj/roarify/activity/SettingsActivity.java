@@ -1,4 +1,4 @@
-package com.polimi.jaj.roarify.activities;
+package com.polimi.jaj.roarify.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -6,7 +6,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.polimi.jaj.roarify.R;
-import com.polimi.jaj.roarify.fragments.SettingsFragment;
+import com.polimi.jaj.roarify.fragment.SettingsFragment;
 
 public class SettingsActivity extends AppCompatActivity {
 

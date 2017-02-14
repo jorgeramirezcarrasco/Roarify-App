@@ -1,4 +1,4 @@
-package com.polimi.jaj.roarify.activities;
+package com.polimi.jaj.roarify.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -31,14 +31,12 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.polimi.jaj.roarify.R;
 import com.polimi.jaj.roarify.adapter.MessageAdapter;
-import com.polimi.jaj.roarify.activities.MapActivity;
-import com.polimi.jaj.roarify.fragments.CardViewFragment;
+import com.polimi.jaj.roarify.fragment.CardViewFragment;
 import com.polimi.jaj.roarify.model.Message;
 
 import org.apache.http.HttpEntity;
@@ -66,8 +64,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import static com.polimi.jaj.roarify.R.drawable.marker;
-import static com.polimi.jaj.roarify.activities.HomeActivity.db;
+import static com.polimi.jaj.roarify.activity.HomeActivity.db;
 
 public class MessageActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener{

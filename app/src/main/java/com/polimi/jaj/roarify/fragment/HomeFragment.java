@@ -1,4 +1,4 @@
-package com.polimi.jaj.roarify.fragments;
+package com.polimi.jaj.roarify.fragment;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -16,7 +16,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +28,6 @@ import android.widget.Toast;
 import com.facebook.Profile;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.fitness.data.Goal;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -44,11 +42,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.polimi.jaj.roarify.R;
-import com.polimi.jaj.roarify.activities.HomeActivity;
-import com.polimi.jaj.roarify.activities.SettingsActivity;
+import com.polimi.jaj.roarify.activity.SettingsActivity;
 import com.polimi.jaj.roarify.adapter.CustomAdapter;
-import com.polimi.jaj.roarify.activities.LoginActivity;
-import com.polimi.jaj.roarify.activities.MessageActivity;
+import com.polimi.jaj.roarify.activity.MessageActivity;
 import com.polimi.jaj.roarify.model.Message;
 
 import org.apache.http.HttpEntity;
@@ -62,7 +58,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 
 import java.io.BufferedReader;
 import java.io.IOException;
