@@ -112,4 +112,17 @@
     <string name="favorite_added">The message was added to your favorites</string>
     <string name="google_map_card">Click here to see where the message was sent</string>
     <string name="title_activity_maps">Map</string>
+    <string name="authors_feedback">Created by Alberto Martín López, Jorge Ramírez Carrasco and Jorge Ugarte Macías at Politecnico di Milano in 2017.</string>
+    <string name="app_feedback">Roarify 1.0</string>
+    <string name="mail_feedback">● Have any question, complaint or suggestion? Send us a mail!</string>
+    <string name="mail_button_feedback">Send mail</string>
+    <string name="tutorial_feedback">● Don\'t know how to use the app? Here are some tips that may help you get the most of it!</string>
+    <string name="tutorial1_feedback">- Home tab:</string>
+    <string name="tutorial2_feedback">- My messages tab:</string>
+    <string name="tutorial3_feedback">- Favorites tab:</string>
+    <string name="tutorial4_feedback">- Send a message:</string>
+    <string name="tutorial5_feedback">- See details of a message:</string>
+    <string name="tutorial6_feedback">- Reply to a message:</string>
+    <string name="tutorial7_feedback">- Navigate to where a message was sent:</string>
+    <string name="tutorial8_feedback">- Settings:</string>
 </resources>
