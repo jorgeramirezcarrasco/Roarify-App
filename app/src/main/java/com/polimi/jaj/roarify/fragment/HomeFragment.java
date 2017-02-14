@@ -71,6 +71,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.RunnableFuture;
 
 
 /**
@@ -314,6 +315,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
 
         @Override
         protected void onPostExecute(Boolean result) {
+            getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    new GetNearMessages().execute(); // run on UI thread to avoid inconsistencies between adapter and listview
+                }
+            });
         }
 
     }

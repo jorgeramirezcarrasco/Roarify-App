@@ -116,7 +116,7 @@
     <string name="app_feedback">Roarify 1.0</string>
     <string name="mail_feedback">● Have any question, complaint or suggestion? Send us a mail!</string>
     <string name="mail_button_feedback">Send mail</string>
-    <string name="tutorial_feedback">● Don\'t know how to use the app? Here are some tips that may help you get the most of it!</string>
+    <string name="tutorial_feedback">● Don\'t know how to use the app? Here are some tips and info that may help you get the most of it!</string>
     <string name="tutorial1_feedback">- Home tab:</string>
     <string name="tutorial2_feedback">- My messages tab:</string>
     <string name="tutorial3_feedback">- Favorites tab:</string>

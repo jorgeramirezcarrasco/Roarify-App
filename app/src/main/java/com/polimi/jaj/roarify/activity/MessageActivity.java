@@ -90,6 +90,8 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
     private AlertDialog alertReply;
     private AlertDialog.Builder builderDelete;
     private AlertDialog alertDelete;
+    AlertDialog.Builder builderNoMessage;
+    AlertDialog alertNoMessage;
     String textPost;
 
     /* Server Connection parameters */
@@ -369,10 +371,24 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
 
         @Override
         protected void onPostExecute(Boolean result) {
-
-            swipeContainer.setRefreshing(false);
-            new MessageActivity.GetChildrenMessages().execute();
-            LoadCardItems(dataMessage);
+            if(dataMessage.getMessageId() == null) {
+                builderNoMessage = new AlertDialog.Builder(MessageActivity.this);
+                builderNoMessage.setTitle("Message not found");
+                builderNoMessage.setMessage("Unfortunately, this message was deleted by his author, so it doesn't exist anymore. It will be removed from your favorite messages.").setCancelable(false);
+                builderNoMessage.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        db.delete(idMessage);
+                        finish();
+                    }
+                });
+                alertNoMessage= builderNoMessage.create();
+                alertNoMessage.show();
+            }
+            else {
+                swipeContainer.setRefreshing(false);
+                new MessageActivity.GetChildrenMessages().execute();
+                LoadCardItems(dataMessage);
+            }
         }
 
         @Override
@@ -381,12 +397,11 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
             if (values == null) {
 
             } else {
+
                 Message message = new Message(values[0].getMessageId(), values[0].getUserId(), values[0].getUserName(), values[0].getText(), values[0].getTime(), values[0].getLatitude(), values[0].getLongitude(),values[0].getIsParent(),values[0].getParentId(), null);
                 locationMessage = new Location("Roarify");
                 message.setDistance(getDistanceToMessage(locationMessage, message).toString());
                 dataMessage=message;
-
-
             }
         }
 

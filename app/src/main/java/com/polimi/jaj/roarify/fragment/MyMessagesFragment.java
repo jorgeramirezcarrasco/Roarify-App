@@ -93,10 +93,10 @@ public class MyMessagesFragment extends Fragment implements GoogleApiClient.Conn
             mGoogleApiClient.connect();
         }
 
-        new GetUserMessages().execute();
-
+        //new GetUserMessages().execute();
 
     }
+
 
     /**
      * Server Connection methods
@@ -143,7 +143,6 @@ public class MyMessagesFragment extends Fragment implements GoogleApiClient.Conn
                 showToastedWarning();
             }
 
-            dataMessages.clear();
             return null;
         }
 
@@ -166,12 +165,12 @@ public class MyMessagesFragment extends Fragment implements GoogleApiClient.Conn
 
         @Override
         protected void onPreExecute() {
-
+            dataMessages.clear();
         }
 
         @Override
         protected void onPostExecute(Boolean result) {
-
+            LoadMessages(dataMessages);
         }
 
         @Override
@@ -184,7 +183,6 @@ public class MyMessagesFragment extends Fragment implements GoogleApiClient.Conn
                 locationMessage = new Location("Roarify");
                 message.setDistance(getDistanceToMessage(locationMessage, message).toString());
                 dataMessages.add(message);
-                LoadMessages(dataMessages);
 
             }
         }
@@ -262,7 +260,6 @@ public class MyMessagesFragment extends Fragment implements GoogleApiClient.Conn
         if (mLastLocation != null) {
             /* Convert Location and call drawMarker method */
             myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-            LoadMessages(dataMessages);
         }
     }
 
@@ -313,6 +310,7 @@ public class MyMessagesFragment extends Fragment implements GoogleApiClient.Conn
         if (mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
             startLocationUpdates();
         }
+        new GetUserMessages().execute();
     }
 
 
