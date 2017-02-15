@@ -32,6 +32,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 /**
  * Created by Jorge on 13/02/2017.
  */
+/*This test creates a message, adds it to Favourites, removes it from Favorites, and deletes the message itself*/
 
 public class UploadMessageTest {
 
