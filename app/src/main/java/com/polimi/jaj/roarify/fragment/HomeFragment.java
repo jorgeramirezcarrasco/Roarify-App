@@ -64,8 +64,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -91,7 +93,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
     private GoogleMap map;
     static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
     private LatLng myLocation;
-    private Integer distance;
     private Location locationMessage;
 
 
@@ -221,7 +222,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
 
     public void drawMarker(LatLng myLocation) {
         map.clear();
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 10));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 12));
         for (Message m : dataMessagesDraw) {
                 map.addMarker(new MarkerOptions().position(new LatLng(m.getLatitude(), m.getLongitude())).title(m.getText()).snippet(m.getUserName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))).setTag(m.getMessageId());
             }
@@ -324,7 +325,15 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
 
     }
 
+
     private class GetNearMessages extends AsyncTask<Void, Message, Boolean> {
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        Integer distancePref = Integer.parseInt(sharedPref.getString(SettingsActivity.KEY_PREF_DISTANCE,"0"));
+        Integer timePref = Integer.parseInt(sharedPref.getString(SettingsActivity.KEY_PREF_TIME,"0"));
+        Calendar calendar = Calendar.getInstance();
+        Date limitDate;
+
 
         @Override
         protected Boolean doInBackground(Void... params) {
@@ -396,6 +405,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
         protected void onPreExecute() {
             dataMessages.clear();
             dataMessagesDraw.clear();
+            calendar.add(Calendar.HOUR, -timePref);
+            limitDate = calendar.getTime();
             new GetLocationTask().execute();
         }
 
@@ -413,12 +424,18 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
             if (values == null) {
 
             } else {
-
                 Message message = new Message(values[0].getMessageId(), values[0].getUserId(), values[0].getUserName(), values[0].getText(), values[0].getTime(), values[0].getLatitude(), values[0].getLongitude(),values[0].getIsParent(),values[0].getParentId(), null);
                 locationMessage = new Location("Roarify");
-                message.setDistance(getDistanceToMessage(locationMessage, message).toString());
-                dataMessages.add(message);
-
+                Integer distance = getDistanceToMessage(locationMessage, message);
+                try {
+                    Date messageDate = format.parse(message.getTime());
+                    if ((distancePref == 0 || distance < distancePref) && (timePref == 0 || messageDate.after(limitDate))) {
+                        message.setDistance(getDistanceToMessage(locationMessage, message).toString());
+                        dataMessages.add(message);
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -567,7 +584,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
     public Integer getDistanceToMessage(Location locationMessage, Message message){
         locationMessage.setLatitude(message.getLatitude());
         locationMessage.setLongitude(message.getLongitude());
-        distance = Math.round(mLastLocation.distanceTo(locationMessage));
+        Integer distance = Math.round(mLastLocation.distanceTo(locationMessage));
 
         return distance;
     }
@@ -588,12 +605,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
             if (ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
 
-            while(mLastLocation==null) {
-                mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            /* Obtain the last date */
-                mLastUpdateTime = format.format(new Date());
-
-            }
+                while(mLastLocation==null) {
+                    mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+                /* Obtain the last date */
+                    mLastUpdateTime = format.format(new Date());
+                }
             }
             return null;
         }

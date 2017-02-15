@@ -11,6 +11,8 @@ import com.polimi.jaj.roarify.fragment.SettingsFragment;
 public class SettingsActivity extends AppCompatActivity {
 
     public static final String KEY_PREF_ANONYM = "anonymous_preference";
+    public static final String KEY_PREF_DISTANCE = "distance_preference";
+    public static final String KEY_PREF_TIME = "time_preference";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

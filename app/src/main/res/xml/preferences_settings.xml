@@ -33,14 +33,16 @@
             android:title="@string/title_time_preference"
             android:dialogTitle="@string/dialog_title_time_preference"
             android:entries="@array/entries_time_preference"
-            android:entryValues="@array/entryvalues_time_preference" />
+            android:entryValues="@array/entryvalues_time_preference"
+            android:defaultValue="0"/>
 
         <ListPreference
             android:key="distance_preference"
             android:title="@string/title_distance_preference"
             android:dialogTitle="@string/dialog_title_distance_preference"
             android:entries="@array/entries_distance_preference"
-            android:entryValues="@array/entryvalues_distance_preference" />
+            android:entryValues="@array/entryvalues_distance_preference"
+            android:defaultValue="0"/>
 
     </PreferenceCategory>
 

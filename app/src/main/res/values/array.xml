@@ -11,13 +11,14 @@
         <item>No limit</item>
     </string-array>
 
+    <!-- Hours -->
     <string-array name="entryvalues_time_preference">
-        <item>3600</item>
-        <item>43200</item>
-        <item>86400</item>
-        <item>604800</item>
-        <item>2592000</item>
-        <item>31536000</item>
+        <item>1</item>
+        <item>12</item>
+        <item>24</item>
+        <item>168</item>
+        <item>720</item>
+        <item>8760</item>
         <item>0</item>
     </string-array>
 
