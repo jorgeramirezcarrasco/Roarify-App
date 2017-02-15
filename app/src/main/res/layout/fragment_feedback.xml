@@ -52,11 +52,13 @@
                 android:text="@string/mail_feedback"/>
 
             <Button
+                android:id="@+id/button_email"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dp"
                 android:text="@string/mail_button_feedback"
+                android:onClick="sendMail"
                 />
 
             <TextView
@@ -77,6 +79,7 @@
                 android:layout_marginEnd="15dp"
                 android:layout_marginStart="30dp"
                 android:textSize="14sp"
+                android:textColor="#000"
                 android:text="@string/tutorial1_feedback"/>
 
             <TextView
@@ -86,6 +89,7 @@
                 android:layout_marginEnd="15dp"
                 android:layout_marginStart="30dp"
                 android:textSize="14sp"
+                android:textColor="#000"
                 android:text="@string/tutorial2_feedback"/>
 
             <TextView
@@ -95,6 +99,7 @@
                 android:layout_marginEnd="15dp"
                 android:layout_marginStart="30dp"
                 android:textSize="14sp"
+                android:textColor="#000"
                 android:text="@string/tutorial3_feedback"/>
 
             <TextView
@@ -104,6 +109,7 @@
                 android:layout_marginEnd="15dp"
                 android:layout_marginStart="30dp"
                 android:textSize="14sp"
+                android:textColor="#000"
                 android:text="@string/tutorial4_feedback"/>
 
             <TextView
@@ -113,6 +119,7 @@
                 android:layout_marginEnd="15dp"
                 android:layout_marginStart="30dp"
                 android:textSize="14sp"
+                android:textColor="#000"
                 android:text="@string/tutorial5_feedback"/>
 
             <TextView
@@ -122,26 +129,64 @@
                 android:layout_marginEnd="15dp"
                 android:layout_marginStart="30dp"
                 android:textSize="14sp"
+                android:textColor="#000"
                 android:text="@string/tutorial6_feedback"/>
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginStart="30dp"
-                android:textSize="14sp"
-                android:text="@string/tutorial7_feedback"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginStart="30dp"
+            android:textSize="14sp"
+            android:textColor="#000"
+            android:text="@string/tutorial7_feedback"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:layout_marginBottom="20dp"
                 android:layout_marginEnd="15dp"
-                android:layout_marginStart="30dp"
+                android:layout_marginStart="45dp"
                 android:textSize="14sp"
-                android:text="@string/tutorial8_feedback"/>
+                android:textColor="#000"
+                android:text="@string/tutorial7_1_feedback"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginStart="45dp"
+                android:textSize="14sp"
+                android:textColor="#000"
+                android:text="@string/tutorial7_2_feedback"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginStart="45dp"
+                android:textSize="14sp"
+                android:textColor="#000"
+                android:text="@string/tutorial7_3_feedback"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginStart="45dp"
+                android:textSize="14sp"
+                android:textColor="#000"
+                android:text="@string/tutorial7_4_feedback"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginStart="45dp"
+                android:textSize="14sp"
+                android:textColor="#000"
+                android:text="@string/tutorial7_5_feedback"/>
         </LinearLayout>
     </ScrollView>
 

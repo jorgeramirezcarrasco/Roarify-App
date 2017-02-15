@@ -117,12 +117,18 @@
     <string name="mail_feedback">● Have any question, complaint or suggestion? Send us a mail!</string>
     <string name="mail_button_feedback">Send mail</string>
     <string name="tutorial_feedback">● Don\'t know how to use the app? Here are some tips and info that may help you get the most of it!</string>
-    <string name="tutorial1_feedback">- Home tab:</string>
-    <string name="tutorial2_feedback">- My messages tab:</string>
-    <string name="tutorial3_feedback">- Favorites tab:</string>
-    <string name="tutorial4_feedback">- Send a message:</string>
-    <string name="tutorial5_feedback">- See details of a message:</string>
-    <string name="tutorial6_feedback">- Reply to a message:</string>
-    <string name="tutorial7_feedback">- Navigate to where a message was sent:</string>
-    <string name="tutorial8_feedback">- Settings:</string>
+    <string name="tutorial1_feedback"><b>1.- <font color="#FF5722">Home tab:</font></b> Here you can see all messages that have been sent around you. You will see more or less depending on the filters of distance and time you apply (no filter by default). Clicking on any message or marker in the map will take you to a screen with some options about it (see <b>5.-</b>).</string>
+    <string name="tutorial2_feedback"><b>2.- <font color="#FF5722">My messages tab:</font></b> This screen contains a list with <b>all the messages you have sent</b> over time. Again, you can click on any of them to access the options.</string>
+    <string name="tutorial3_feedback"><b>3.- <font color="#FF5722">Favorites tab:</font></b> It displays a list of all <b>messages you have marked as favorite</b> (see <b>5.-</b> to learn how to mark messages as favorite).</string>
+    <string name="tutorial4_feedback"><b>4.- <font color="#FF5722">Send a message:</font></b> From the home screen, you can send a message by <b>clicking on the \'plus\' button</b> on the bottom right corner.</string>
+    <string name="tutorial5_feedback"><b>5.- <font color="#FF5722">See details of a message:</font></b> This screen is displayed whenever you click on a message from a list or a marker from the map. In the <b>first card</b>, you can see all message details, as well as reply to it, mark it as favorite or even delete it if it is yours (a trash icon will be shown if this happens); to <b>send a reply</b>, simply click on the purple arrow and write whatever you want; to <b>mark it as favorite</b>, click on the grey star and it will turn yellow (vice versa if you want to unmark it). If you click on the <b>second card</b>, you will see the exact location of the message (see <b>6.-</b> for more details). The <b>third card</b> contains all replies to the message; of course, you can click on any of them to see its details, options, replies, etc.</string>
+    <string name="tutorial6_feedback"><b>6.- <font color="#FF5722">Navigate to where a message was sent:</font></b> If you click on the second card in the message screen, you will be taken to a map with a marker on the message location. If you <b>click on the marker</b>, you will have the option to navigate to that location (Google Maps will be launched).</string>
+    <string name="tutorial7_feedback"><b>7.- <font color="#FF5722">Settings:</font></b> Here you have the following options:</string>
+    <string name="tutorial7_1_feedback"><b>7.1- Delete favorites:</b> Reset all your favorite messages. This will unmark all the messages you have, at some point, marked as favorite.</string>
+    <string name="tutorial7_2_feedback"><b>7.2- Delete own messages:</b> Delete all the messages you have ever sent. They won\'t be visible to anyone anymore.</string>
+    <string name="tutorial7_3_feedback"><b>7.3- Send messages anonymously:</b> Checking this option will let you send all messages (even replies) as an anonymous user.</string>
+    <string name="tutorial7_4_feedback"><b>7.4- Set time filter:</b> Several options to adjust the maximum age of messages you want to be shown.</string>
+    <string name="tutorial7_5_feedback"><b>7.5- Set distance filter:</b> Several options to adjust the maximum distance from you of messages you want to be shown.</string>
+    <string name="email_feedback_edit_text">Email</string>
+    <string name="suggestion_feedback_edit_text">Text</string>
 </resources>

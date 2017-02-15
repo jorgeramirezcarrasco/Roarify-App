@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
@@ -216,6 +217,20 @@ public class HomeActivity extends AppCompatActivity {
                 break;
         }
         fragmentTransaction.commit();
+    }
+
+
+    // onClick function for button in feedback screen
+    public void sendMail(View view) {
+        Intent i = new Intent(Intent.ACTION_SEND);
+        i.setType("message/rfc822");
+        i.putExtra(Intent.EXTRA_EMAIL  , new String[]{"roarifyapp@gmail.com"});
+        i.putExtra(Intent.EXTRA_SUBJECT, "Feedback");
+        try {
+            startActivity(Intent.createChooser(i, "Send mail..."));
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
+        }
     }
 
 
