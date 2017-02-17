@@ -716,6 +716,7 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
         if (mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
             startLocationUpdates();
         }
+        new MessageActivity.GetChildrenMessages().execute();
     }
 
     public Integer getDistanceToMessage(Location locationMessage, Message message){
