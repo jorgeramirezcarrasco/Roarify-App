@@ -2,6 +2,7 @@ package com.polimi.jaj.roarify.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;

@@ -32,8 +32,10 @@
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             tools:replace="android:theme" />
-        <activity android:name=".activity.HomeActivity" />
-        <activity android:name=".activity.LoginActivity" />
+        <activity
+            android:name=".activity.HomeActivity"/>
+        <activity
+            android:name=".activity.LoginActivity"/>
         <activity
             android:name=".activity.MessageActivity"
             android:label="@string/title_activity_message"
@@ -69,7 +71,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.polimi.jaj.roarify.activity.HomeActivity" />
         </activity>
-        <activity android:name=".activity.SettingsActivity"></activity>
+        <activity
+            android:name=".activity.SettingsActivity"></activity>
     </application>
 
 </manifest>
