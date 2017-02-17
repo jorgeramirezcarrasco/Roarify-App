@@ -16,6 +16,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -91,7 +92,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
     private boolean mRequestingLocationUpdates;
     private LocationRequest mLocationRequest;
     private GoogleMap map;
-    static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
     private LatLng myLocation;
     private Location locationMessage;
 
@@ -132,12 +132,34 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
 
-        /* Google Api Client Connection */
-        buildGoogleApiClient();
 
-        if (mGoogleApiClient != null) {
-            mGoogleApiClient.connect();
-        }
+
+            /* Google Api Client Connection */
+            buildGoogleApiClient();
+
+            if (mGoogleApiClient != null) {
+                mGoogleApiClient.connect();
+            }
+
+            /* GMap Setup */
+            SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+
+             /*Layout Setup */
+
+            swipeContainer = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipeContainer);
+
+            swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    // Your code to refresh the list here.
+                    // Make sure you call swipeContainer.setRefreshing(false)
+                    // once the network request has completed successfully.
+                    new GetNearMessages().execute();
+                }
+            });
+            swipeContainer.setColorSchemeResources(R.color.colorPrimary);
+
 
         FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -147,25 +169,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
             }
         });
 
-             /* GMap Setup */
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-
-        /*Layout Setup*/
-
-        swipeContainer = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipeContainer);
-        // Setup refresh listener which triggers new data loading
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                // Your code to refresh the list here.
-                // Make sure you call swipeContainer.setRefreshing(false)
-                // once the network request has completed successfully.
-                new GetNearMessages().execute();
-            }
-        });
-
-        swipeContainer.setColorSchemeResources(R.color.colorPrimary);
 
         /* Setup of the dialog fragment when clicking on the '+' button */
         builderMessage = new AlertDialog.Builder(getActivity());
@@ -191,6 +194,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
 
     }
 
+
+
+
     /**
      * Google Maps methods
      */
@@ -198,14 +204,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        // Check permission about location before enable location button on map
         if (ContextCompat.checkSelfPermission((getActivity()), android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             map.setMyLocationEnabled(true);
 
-        } else {
-            ActivityCompat.requestPermissions((getActivity()), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
@@ -228,31 +230,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
             }
     }
 
-    /**
-     * Pack Manager Method that manipulates the request permission result
-     */
-
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (ContextCompat.checkSelfPermission((getActivity()), android.Manifest.permission.ACCESS_FINE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED) {
-                        map.setMyLocationEnabled(true);
-                    }
-
-                } else {
-
-                }
-                return;
-            }
-        }
-    }
-
 
     /**
      * Server Connection methods
@@ -271,7 +248,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
             boolean anonymPref = sharedPref.getBoolean(SettingsActivity.KEY_PREF_ANONYM,false);
             if (anonymPref) {
-                pairs.add(new BasicNameValuePair("userName", "Anoymous"));
+                pairs.add(new BasicNameValuePair("userName", "Anonymous"));
             }
             else {
                 pairs.add(new BasicNameValuePair("userName", stripAccents(Profile.getCurrentProfile().getName())));
@@ -498,21 +475,27 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
     }
 
     public void onStart() {
-        mGoogleApiClient.connect();
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.connect();
+        }
+
         super.onStart();
     }
 
     public void onStop() {
-        mGoogleApiClient.disconnect();
+
+            if (mGoogleApiClient != null) {
+                mGoogleApiClient.disconnect();
+            }
         super.onStop();
     }
 
     @Override
     public void onConnected(Bundle connectionHint) {
-        /* When is connected check permissions with the Package Manager */
-        if (ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION)
+
+        if (ContextCompat.checkSelfPermission((getActivity()), android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-            /* Obtain the last Location */
+                        /* Obtain the last Location */
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             /* Obtain the last date */
             mLastUpdateTime = format.format(new Date());
@@ -522,6 +505,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
             if (mRequestingLocationUpdates) {
                 startLocationUpdates();
             }
+
         }
         if (mLastLocation != null) {
             /* Convert Location */
@@ -560,9 +544,12 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
     @Override
     public void onPause() {
         super.onPause();
-        if (mGoogleApiClient.isConnected()) {
-            stopLocationUpdates();
-        }
+            if (mGoogleApiClient != null) {
+
+                if (mGoogleApiClient.isConnected()) {
+                    stopLocationUpdates();
+                }
+            }
     }
 
     protected void stopLocationUpdates() {
@@ -573,11 +560,19 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
     @Override
     public void onResume() {
         super.onResume();
-        if (mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
-            startLocationUpdates();
-        }
-        new GetNearMessages().execute();
+        if (ContextCompat.checkSelfPermission((getActivity()), android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            if (mGoogleApiClient != null) {
 
+
+                if (mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
+                    startLocationUpdates();
+                }
+                new GetNearMessages().execute();
+
+            }
+
+        }
 
     }
 
@@ -621,7 +616,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
             super.onPostExecute(result);
         }
 
+
+
     }
 
 
 }
+

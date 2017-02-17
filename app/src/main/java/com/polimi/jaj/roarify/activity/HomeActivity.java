@@ -1,10 +1,16 @@
 package com.polimi.jaj.roarify.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -24,6 +30,7 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.widget.ProfilePictureView;
 
 
+import com.google.android.gms.maps.SupportMapFragment;
 import com.polimi.jaj.roarify.data.RoarifySQLiteRepository;
 import com.polimi.jaj.roarify.fragment.FavoritesFragment;
 import com.polimi.jaj.roarify.fragment.FeedbackFragment;
@@ -39,7 +46,10 @@ public class HomeActivity extends AppCompatActivity {
     private View auxView;
     DrawerLayout drawer;
     private AlertDialog alertMessage;
+
+
     public static RoarifySQLiteRepository db;
+    static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
 
 
@@ -82,10 +92,20 @@ public class HomeActivity extends AppCompatActivity {
         /* Check Facebook token */
         if (AccessToken.getCurrentAccessToken() == null) {
             goLoginScreen();
+        }else{
+
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+                setFragment(0);
+
+            }else {
+                int hasLocationPermission = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION);
+                if (hasLocationPermission != PackageManager.PERMISSION_GRANTED) {
+                    PermissionLocationHandler();
+                }
+            }
         }
 
-        //First start (Inbox Fragment)
-        setFragment(0);
 
     }
 
@@ -216,7 +236,7 @@ public class HomeActivity extends AppCompatActivity {
                 fragmentTransaction.replace(R.id.fragment_container, feedbackFragment);
                 break;
         }
-        fragmentTransaction.commit();
+        fragmentTransaction.commitAllowingStateLoss();
     }
 
 
@@ -232,6 +252,44 @@ public class HomeActivity extends AppCompatActivity {
             Toast.makeText(this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
         }
     }
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        int hasLocationPermission = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION);
+        if (hasLocationPermission != PackageManager.PERMISSION_GRANTED) {
+            PermissionLocationHandler();
+        }else{
+            setFragment(0);
+        }
 
+    }
+
+    public void PermissionLocationHandler(){
+        DialogInterface.OnClickListener okListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                ActivityCompat.requestPermissions(HomeActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+
+            }
+        };
+
+        DialogInterface.OnClickListener cancelListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        };
+
+        new AlertDialog.Builder(this)
+                .setMessage("Please, to use Roarify we need access to your location ")
+                .setPositiveButton("OK", okListener)
+                .setNegativeButton("Cancel", cancelListener)
+                .setCancelable(false)
+                .create()
+                .show();
+
+    }
 
 }
