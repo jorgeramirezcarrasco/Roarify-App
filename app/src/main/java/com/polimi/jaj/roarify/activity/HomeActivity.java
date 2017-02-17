@@ -283,7 +283,7 @@ public class HomeActivity extends AppCompatActivity {
         };
 
         new AlertDialog.Builder(this)
-                .setMessage("Please, to use Roarify we need access to your location ")
+                .setMessage("Please, to use Roarify we need to have access to your location")
                 .setPositiveButton("OK", okListener)
                 .setNegativeButton("Cancel", cancelListener)
                 .setCancelable(false)

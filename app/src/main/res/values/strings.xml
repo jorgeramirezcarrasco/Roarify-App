@@ -22,81 +22,8 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_message">MessageActivity</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_settings">Settings</string>
 
-    <!-- Strings related to Settings -->
-
-    <!-- Example General settings -->
-    <string name="pref_header_general">General</string>
-
-    <string name="pref_title_social_recommendations">Enable social recommendations</string>
-    <string name="pref_description_social_recommendations">Recommendations for people to contact
-        based on your message history
-    </string>
-
-    <string name="pref_title_display_name">Display name</string>
-    <string name="pref_default_display_name">John Smith</string>
-
-    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
-    <string-array name="pref_example_list_titles">
-        <item>Always</item>
-        <item>When possible</item>
-        <item>Never</item>
-    </string-array>
-    <string-array name="pref_example_list_values">
-        <item>1</item>
-        <item>0</item>
-        <item>-1</item>
-    </string-array>
-
-    <!-- Example settings for Data & Sync -->
-    <string name="pref_header_data_sync">Data &amp; sync</string>
-
-    <string name="pref_title_sync_frequency">Sync frequency</string>
-    <string-array name="pref_sync_frequency_titles">
-        <item>15 minutes</item>
-        <item>30 minutes</item>
-        <item>1 hour</item>
-        <item>3 hours</item>
-        <item>6 hours</item>
-        <item>Never</item>
-    </string-array>
-    <string-array name="pref_sync_frequency_values">
-        <item>15</item>
-        <item>30</item>
-        <item>60</item>
-        <item>180</item>
-        <item>360</item>
-        <item>-1</item>
-    </string-array>
-
-    <string-array name="list_preference_entries">
-        <item>Entry 1</item>
-        <item>Entry 2</item>
-        <item>Entry 3</item>
-    </string-array>
-
-    <string-array name="list_preference_entry_values">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-    </string-array>
-
-    <string-array name="multi_select_list_preference_default_value" />
-
-    <string name="pref_title_system_sync_settings">System sync settings</string>
-
-    <!-- Example settings for Notifications -->
-    <string name="pref_header_notifications">Notifications</string>
-
-    <string name="pref_title_new_message_notifications">New message notifications</string>
-
-    <string name="pref_title_ringtone">Ringtone</string>
-    <string name="pref_ringtone_silent">Silent</string>
-
-    <string name="pref_title_vibrate">Vibrate</string>
     <string name="title_first_section">Personal settings</string>
     <string name="title_second_section">Application settings</string>
     <string name="title_delete_favorites">Delete favorites</string>
@@ -117,18 +44,18 @@
     <string name="mail_feedback">● Have any question, complaint or suggestion? Send us a mail!</string>
     <string name="mail_button_feedback">Send mail</string>
     <string name="tutorial_feedback">● Don\'t know how to use the app? Here are some tips and info that may help you get the most of it!</string>
-    <string name="tutorial1_feedback"><b>1.- <font color="#FF5722">Home tab:</font></b> Here you can see all messages that have been sent around you. You will see more or less depending on the filters of distance and time you apply (no filter by default). Clicking on any message or marker in the map will take you to a screen with some options about it (see <b>5.-</b>).</string>
-    <string name="tutorial2_feedback"><b>2.- <font color="#FF5722">My messages tab:</font></b> This screen contains a list with <b>all the messages you have sent</b> over time. Again, you can click on any of them to access the options.</string>
-    <string name="tutorial3_feedback"><b>3.- <font color="#FF5722">Favorites tab:</font></b> It displays a list of all <b>messages you have marked as favorite</b> (see <b>5.-</b> to learn how to mark messages as favorite).</string>
-    <string name="tutorial4_feedback"><b>4.- <font color="#FF5722">Send a message:</font></b> From the home screen, you can send a message by <b>clicking on the \'plus\' button</b> on the bottom right corner.</string>
-    <string name="tutorial5_feedback"><b>5.- <font color="#FF5722">See details of a message:</font></b> This screen is displayed whenever you click on a message from a list or a marker from the map. In the <b>first card</b>, you can see all message details, as well as reply to it, mark it as favorite or even delete it if it is yours (a trash icon will be shown if this happens); to <b>send a reply</b>, simply click on the purple arrow and write whatever you want; to <b>mark it as favorite</b>, click on the grey star and it will turn yellow (vice versa if you want to unmark it). If you click on the <b>second card</b>, you will see the exact location of the message (see <b>6.-</b> for more details). The <b>third card</b> contains all replies to the message; of course, you can click on any of them to see its details, options, replies, etc.</string>
-    <string name="tutorial6_feedback"><b>6.- <font color="#FF5722">Navigate to where a message was sent:</font></b> If you click on the second card in the message screen, you will be taken to a map with a marker on the message location. If you <b>click on the marker</b>, you will have the option to navigate to that location (Google Maps will be launched).</string>
-    <string name="tutorial7_feedback"><b>7.- <font color="#FF5722">Settings:</font></b> Here you have the following options:</string>
-    <string name="tutorial7_1_feedback"><b>7.1- Delete favorites:</b> Reset all your favorite messages. This will unmark all the messages you have, at some point, marked as favorite.</string>
-    <string name="tutorial7_2_feedback"><b>7.2- Delete own messages:</b> Delete all the messages you have ever sent. They won\'t be visible to anyone anymore.</string>
-    <string name="tutorial7_3_feedback"><b>7.3- Send messages anonymously:</b> Checking this option will let you send all messages (even replies) as an anonymous user.</string>
-    <string name="tutorial7_4_feedback"><b>7.4- Set time filter:</b> Several options to adjust the maximum age of messages you want to be shown.</string>
-    <string name="tutorial7_5_feedback"><b>7.5- Set distance filter:</b> Several options to adjust the maximum distance from you of messages you want to be shown.</string>
+    <string name="tutorial1_feedback"><b>1. <font color="#FF5722">Home tab:</font></b> Here you can see all messages that have been sent around you. You will see more or less depending on the filters of distance and time you apply (no filter by default). Clicking on any message or marker in the map will take you to a screen with some options about it (see <b>5.</b>).</string>
+    <string name="tutorial2_feedback"><b>2. <font color="#FF5722">My messages tab:</font></b> This screen contains a list with <b>all the messages you have sent</b> over time. Again, you can click on any of them to access the options.</string>
+    <string name="tutorial3_feedback"><b>3. <font color="#FF5722">Favorites tab:</font></b> It displays a list of all <b>messages you have marked as favorite</b> (see <b>5.</b> to learn how to mark messages as favorite).</string>
+    <string name="tutorial4_feedback"><b>4. <font color="#FF5722">Send a message:</font></b> From the home screen, you can send a message by <b>clicking on the \'plus\' button</b> on the bottom right corner.</string>
+    <string name="tutorial5_feedback"><b>5. <font color="#FF5722">See details of a message:</font></b> This screen is displayed whenever you click on a message from a list or a marker from the map. In the <b>first card</b>, you can see all message details, as well as reply to it, mark it as favorite or even delete it if it is yours (a trash icon will be shown if this happens); to <b>send a reply</b>, simply click on the purple arrow and write whatever you want; to <b>mark it as favorite</b>, click on the grey star and it will turn yellow (vice versa if you want to unmark it). If you click on the <b>second card</b>, you will see the exact location of the message (see <b>6.</b> for more details). The <b>third card</b> contains all replies to the message; of course, you can click on any of them to see its details, options, replies, etc.</string>
+    <string name="tutorial6_feedback"><b>6. <font color="#FF5722">Navigate to where a message was sent:</font></b> If you click on the second card in the message screen, you will be taken to a map with a marker on the message location. If you <b>click on the marker</b>, you will have the option to navigate to that location (Google Maps will be launched).</string>
+    <string name="tutorial7_feedback"><b>7. <font color="#FF5722">Settings:</font></b> Here you have the following options:</string>
+    <string name="tutorial7_1_feedback"><b>7.1. Delete favorites:</b> Reset all your favorite messages. This will unmark all the messages you have, at some point, marked as favorite.</string>
+    <string name="tutorial7_2_feedback"><b>7.2. Delete own messages:</b> Delete all the messages you have ever sent. They won\'t be visible to anyone anymore.</string>
+    <string name="tutorial7_3_feedback"><b>7.3. Send messages anonymously:</b> Checking this option will let you send all messages (even replies) as an anonymous user.</string>
+    <string name="tutorial7_4_feedback"><b>7.4. Set time filter:</b> Several options to adjust the maximum age of messages you want to be shown.</string>
+    <string name="tutorial7_5_feedback"><b>7.5. Set distance filter:</b> Several options to adjust the maximum distance from you of messages you want to be shown.</string>
     <string name="email_feedback_edit_text">Email</string>
     <string name="suggestion_feedback_edit_text">Text</string>
 </resources>

@@ -184,6 +184,7 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginStart="45dp"
+                android:layout_marginBottom="15dp"
                 android:textSize="14sp"
                 android:textColor="#000"
                 android:text="@string/tutorial7_5_feedback"/>
