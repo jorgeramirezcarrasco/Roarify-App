@@ -512,7 +512,7 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             boolean anonymPref = sharedPref.getBoolean(SettingsActivity.KEY_PREF_ANONYM,false);
             if (anonymPref) {
-                pairs.add(new BasicNameValuePair("userName", "Anoymous"));
+                pairs.add(new BasicNameValuePair("userName", "Anonymous"));
             }
             else {
                 pairs.add(new BasicNameValuePair("userName", stripAccents(Profile.getCurrentProfile().getName())));
