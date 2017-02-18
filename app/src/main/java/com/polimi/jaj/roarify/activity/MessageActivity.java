@@ -387,7 +387,7 @@ public class MessageActivity extends AppCompatActivity implements GoogleApiClien
             }
             else {
                 swipeContainer.setRefreshing(false);
-                new MessageActivity.GetChildrenMessages().execute();
+                
                 LoadCardItems(dataMessage);
             }
         }
