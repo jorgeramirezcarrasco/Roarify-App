@@ -33,14 +33,17 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             tools:replace="android:theme" />
         <activity
-            android:name=".activity.HomeActivity"/>
+            android:name=".activity.HomeActivity"
+            android:configChanges="orientation|screenSize"/>
         <activity
-            android:name=".activity.LoginActivity"/>
+            android:name=".activity.LoginActivity"
+        android:configChanges="orientation|screenSize"/>
         <activity
             android:name=".activity.MessageActivity"
             android:label="@string/title_activity_message"
             android:parentActivityName=".activity.HomeActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            android:configChanges="orientation|screenSize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.polimi.jaj.roarify.activity.HomeActivity" />
@@ -49,14 +52,16 @@
             android:name=".activity.MapActivity"
             android:label="MapActivity"
             android:parentActivityName=".activity.MessageActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            android:configChanges="orientation|screenSize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.polimi.jaj.roarify.activity.MessageActivity" />
         </activity>
         <activity
             android:name=".activity.SplashScreenActivity"
-            android:theme="@style/SplashTheme">
+            android:theme="@style/SplashTheme"
+            android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -64,15 +69,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".fragment.SettingsFragment"
+            android:name=".activity.SettingsActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".activity.HomeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.polimi.jaj.roarify.activity.HomeActivity" />
         </activity>
-        <activity
-            android:name=".activity.SettingsActivity"></activity>
+
     </application>
 
 </manifest>

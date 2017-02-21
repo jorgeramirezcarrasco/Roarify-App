@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
@@ -66,7 +67,23 @@ public class HomeActivity extends AppCompatActivity {
 
         db = new RoarifySQLiteRepository(this);
 
-        /* Layout setup */
+        initUI();
+
+
+
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig)
+    {
+        super.onConfigurationChanged(newConfig);
+        initUI();
+    }
+
+    public void initUI()
+    {
+       /* Layout setup */
+
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -107,10 +124,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
 
-
     }
-
-
     /**
      * Login Management methods
      */

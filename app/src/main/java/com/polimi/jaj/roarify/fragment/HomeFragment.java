@@ -124,6 +124,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
+
         final View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         return view;
@@ -489,6 +490,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
             }
         super.onStop();
     }
+
 
     @Override
     public void onConnected(Bundle connectionHint) {
