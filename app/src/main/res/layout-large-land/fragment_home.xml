@@ -8,25 +8,25 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.polimi.jaj.roarify.activity.HomeActivity">
 
-    <View
-        android:id="@+id/separator"
-        android:layout_width="match_parent"
-        android:layout_height="3dp"
-        android:layout_below="@id/map"
-        android:background="#B0BEC5"/>
-
     <android.support.v4.widget.SwipeRefreshLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/swipeContainer"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_width="300dp">
+        android:layout_width="350dp"
+        android:orientation="vertical">
 
         <ListView xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/comments"
-                android:layout_width="200dp"
-                android:layout_height="200dp" />
+            android:id="@+id/comments"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
     </android.support.v4.widget.SwipeRefreshLayout>
+
+    <View
+        android:id="@+id/separator"
+        android:layout_width="3dp"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@id/swipeContainer"
+        android:background="#BDBDBD"/>
 
     <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -40,8 +40,11 @@
             android:id="@+id/fab"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="@dimen/fab_margin"
+            android:layout_gravity="bottom|start"
+            android:layout_marginRight="@dimen/fab_margin"
+            android:layout_marginTop="@dimen/fab_margin"
+            android:layout_marginBottom="@dimen/fab_margin"
+            android:layout_marginLeft="280dp"
             app:srcCompat="@drawable/ic_action_add"
             android:layout_weight="1" />
 
@@ -51,8 +54,7 @@
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_width="700dp" />
+        android:layout_width="match_parent"
+        android:layout_toRightOf="@id/separator"/>
 
 </RelativeLayout>
