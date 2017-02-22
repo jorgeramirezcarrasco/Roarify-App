@@ -56,7 +56,14 @@ public class MessageAdapter extends ArrayAdapter<Message> {
             }
 
             if (tt4 != null) {
-                tt4.setText(p.getDistance() + "m");
+                double distanceDou = Double.parseDouble(p.getDistance());
+                if (distanceDou < 1000) {
+                    tt4.setText(p.getDistance() + "m");
+                }
+                else {
+                    double distanceDouKm = Math.round((distanceDou/1000)*100.0)/100.0;
+                    tt4.setText(String.valueOf(distanceDouKm) + "km");
+                }
             }
         }
 

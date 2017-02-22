@@ -112,7 +112,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
          /* Intent Receiver */
         Intent mIntent = getIntent();
         idMessage = (String) mIntent.getExtras().getSerializable("idMessage");
-        messageLocation = new LatLng((Double) mIntent.getExtras().getSerializable("LatitudeMessage"),(Double) mIntent.getExtras().getSerializable("LongitudeMessage"));
+        messageLocation = new LatLng((Double) mIntent.getExtras().getSerializable("latitudeMessage"),(Double) mIntent.getExtras().getSerializable("longitudeMessage"));
 
         new GetMyMessage().execute();
 
@@ -152,7 +152,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 builderNavDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
-                                Uri.parse("google.navigation:q="+m.getLatitude()+","+m.getLongitude()));
+                                Uri.parse("geo:0,0?q="+marker.getPosition().latitude+","+marker.getPosition().longitude+"(" + "Message from "+marker.getSnippet().toString() + ")"));
                         startActivity(intent);
                     }
                 });

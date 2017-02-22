@@ -154,6 +154,8 @@ public class MyMessagesFragment extends Fragment implements OnMapReadyCallback,G
                 mIntent.putExtra("idMessage", marker.getTag().toString());
                 mIntent.putExtra("currentLat",mLastLocation.getLatitude());
                 mIntent.putExtra("currentLon",mLastLocation.getLongitude());
+                mIntent.putExtra("latitudeMessage",marker.getPosition().latitude);
+                mIntent.putExtra("longitudeMessage",marker.getPosition().longitude);
                 startActivity(mIntent);
                 return true;
             }
@@ -291,6 +293,8 @@ public class MyMessagesFragment extends Fragment implements OnMapReadyCallback,G
                 mIntent.putExtra("idMessage", message.getMessageId());
                 mIntent.putExtra("currentLat",mLastLocation.getLatitude());
                 mIntent.putExtra("currentLon",mLastLocation.getLongitude());
+                mIntent.putExtra("latitudeMessage",message.getLatitude());
+                mIntent.putExtra("longitudeMessage",message.getLongitude());
                 startActivity(mIntent);
             }
         });

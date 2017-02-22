@@ -93,7 +93,7 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
     private String mLastUpdateTime;
     private boolean mRequestingLocationUpdates;
     private LocationRequest mLocationRequest;
-    private Location messageLocation;
+    private LatLng messageLocation;
     private Location mLastLocation;
     private LatLng myLocation;
     private Integer distance;
@@ -126,6 +126,8 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
 
     private SwipeRefreshLayout swipeContainer;
 
+    AlertDialog.Builder builderNavDialog;
+    AlertDialog alertNavDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -149,15 +151,17 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
         }
 
 
+        isTablet = getResources().getBoolean(R.bool.isTablet);
+        orientation = getResources().getConfiguration().orientation;
 
          /* Intent Receiver */
         mIntent = getActivity().getIntent();
         idMessage = (String) mIntent.getExtras().getSerializable("idMessage");
+        if (isTablet && orientation== Configuration.ORIENTATION_LANDSCAPE) {
+            messageLocation = new LatLng((Double) mIntent.getExtras().getSerializable("latitudeMessage"), (Double) mIntent.getExtras().getSerializable("longitudeMessage"));
+        }
 
         /*Layout Setup */
-
-        isTablet = getResources().getBoolean(R.bool.isTablet);
-        orientation = getResources().getConfiguration().orientation;
 
         if (isTablet && orientation== Configuration.ORIENTATION_LANDSCAPE) {
 
@@ -178,8 +182,8 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
                 public void onClick(View view) {
                     Intent mIntentNext = new Intent(getActivity(), MapActivity.class);
                     mIntentNext.putExtra("idMessage", dataMessage.getMessageId());
-                    mIntentNext.putExtra("LongitudeMessage", dataMessage.getLongitude());
-                    mIntentNext.putExtra("LatitudeMessage", dataMessage.getLatitude());
+                    mIntentNext.putExtra("longitudeMessage", dataMessage.getLongitude());
+                    mIntentNext.putExtra("latitudeMessage", dataMessage.getLatitude());
                     startActivity(mIntentNext);
 
                 }
@@ -257,11 +261,18 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
         user.setText("From: " + dataMessage.getUserName());
 
         TextView distance = (TextView) getActivity().findViewById(R.id.distanceMessage);
-        distance.setText(dataMessage.getDistance() + "m from you");
+        double distanceDou = Double.parseDouble(dataMessage.getDistance());
+        if (distanceDou < 1000) {
+            distance.setText(dataMessage.getDistance() + "m from you");
+        }
+        else {
+            double distanceDouKm = Math.round((distanceDou/1000)*100.0)/100.0;
+            distance.setText(String.valueOf(distanceDouKm) + "km from you");
+        }
 
         TextView time = (TextView) getActivity().findViewById(R.id.timeMessage);
         String[] s = dataMessage.getTime().split("\\s");
-        time.setText("At " + s[0] + ' ' + s[1] + ' ' + s[2] + '\n' + s[3]);
+        time.setText("On " + s[0] + ' ' + s[1] + ' ' + s[2] + '\n' + s[3]);
 
         ImageButton reply = (ImageButton) getActivity().findViewById(R.id.replyButton);
         reply.setOnClickListener(new View.OnClickListener() {
@@ -334,6 +345,8 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
                 mIntent.putExtra("idMessage", message.getMessageId());
                 mIntent.putExtra("currentLat", mLastLocation.getLatitude());
                 mIntent.putExtra("currentLon", mLastLocation.getLongitude());
+                mIntent.putExtra("latitudeMessage",message.getLatitude());
+                mIntent.putExtra("longitudeMessage",message.getLongitude());
                 startActivity(mIntent);
 
             }
@@ -354,24 +367,28 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
                 map.setMyLocationEnabled(true);
 
             }
+            builderNavDialog = new AlertDialog.Builder(getContext());
+            builderNavDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                }
+            });
+            builderNavDialog.setTitle("Start Google Maps");
+            builderNavDialog.setMessage("Do you want to navigate to the marked destination?").setCancelable(false);
+
             map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                 @Override
-                public boolean onMarkerClick(final Marker marker) {
-                    if(marker.getTag().toString().equals(idMessage)){
-                        Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
-                                Uri.parse("geo:0,0?q="+marker.getPosition().latitude+","+marker.getPosition().longitude+"(" + "Message from "+marker.getSnippet().toString() + ")"));
-                        startActivity(intent);
-                        return true;
-
-                    }else{
-                        Intent mIntent = new Intent(getActivity(), MessageActivity.class);
-                        mIntent.putExtra("idMessage", marker.getTag().toString());
-                        mIntent.putExtra("currentLat", mLastLocation.getLatitude());
-                        mIntent.putExtra("currentLon", mLastLocation.getLongitude());
-                        startActivity(mIntent);
-                        return true;
-
-                    }
+                public boolean onMarkerClick ( final Marker marker){
+                    builderNavDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                                    Uri.parse("geo:0,0?q="+marker.getPosition().latitude+","+marker.getPosition().longitude+"(" + "Message from "+marker.getSnippet().toString() + ")"));
+                            startActivity(intent);
+                        }
+                    });
+                    alertNavDialog = builderNavDialog.create();
+                    alertNavDialog.show();
+                    return true;
                 }
             });
         }
@@ -385,12 +402,8 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 12));
         map.addMarker(new MarkerOptions().position(new LatLng(dataMessage.getLatitude(), dataMessage.getLongitude())).title(dataMessage.getText()).snippet(dataMessage.getUserName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))).setTag(dataMessage.getMessageId());
     }
-    public void drawMarkerMessages(LatLng myLocation) {
+    public void drawMarkerMessages() {
         map.clear();
-        if (myLocation == null) {
-            myLocation = new LatLng((Double) mIntent.getExtras().getSerializable("currentLat"), (Double) mIntent.getExtras().getSerializable("currentLon"));
-        }
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 12));
         if(dataMessage.getMessageId() == null) {
             builderNoMessage = new AlertDialog.Builder(getActivity());
             builderNoMessage.setTitle("Message not found");
@@ -405,10 +418,10 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
             alertNoMessage.show();
         }
         else {
-            map.addMarker(new MarkerOptions().position(new LatLng(dataMessage.getLatitude(), dataMessage.getLongitude())).title(dataMessage.getText()).snippet(dataMessage.getUserName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))).setTag(dataMessage.getMessageId());
             for (Message m : dataMessages) {
                 map.addMarker(new MarkerOptions().position(new LatLng(m.getLatitude(), m.getLongitude())).title(m.getText()).snippet(m.getUserName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_reply))).setTag(m.getMessageId());
             }
+            map.addMarker(new MarkerOptions().position(new LatLng(dataMessage.getLatitude(), dataMessage.getLongitude())).title(dataMessage.getText()).snippet(dataMessage.getUserName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))).setTag(dataMessage.getMessageId());
         }
     }
 
@@ -496,7 +509,7 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
 
                 LoadCardItems(dataMessage);
                 if (isTablet && orientation==Configuration.ORIENTATION_LANDSCAPE) {
-                    drawMarkerMessage(myLocation);
+                    drawMarkerMessage(messageLocation);
                 }
             }
         }
@@ -587,7 +600,7 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
             swipeContainer.setRefreshing(false);
             LoadMessages(dataMessages);
             if (isTablet && orientation==Configuration.ORIENTATION_LANDSCAPE) {
-                drawMarkerMessages(myLocation);
+                drawMarkerMessages();
             }
 
         }
@@ -841,7 +854,7 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
             distance = Math.round(mLastLocation.distanceTo(locationMessage));
         }
         else {
-            messageLocation = new Location("Roarify");
+            Location messageLocation = new Location("Roarify");
             messageLocation.setLatitude((Double) mIntent.getExtras().getSerializable("currentLat"));
             messageLocation.setLongitude((Double) mIntent.getExtras().getSerializable("currentLon"));
             distance = Math.round(messageLocation.distanceTo(locationMessage));
