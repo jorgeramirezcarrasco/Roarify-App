@@ -73,6 +73,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 import static com.polimi.jaj.roarify.activity.HomeActivity.db;
 
@@ -106,7 +107,7 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
     AlertDialog.Builder builderNoMessage;
     AlertDialog alertNoMessage;
     String textPost;
-    boolean tabletSize;
+    boolean isTablet;
 
     /* Server Connection parameters */
     private String idMessage;
@@ -150,8 +151,8 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
 
         /*Layout Setup */
 
-        tabletSize = getResources().getBoolean(R.bool.isTablet);
-        if (tabletSize) {
+        isTablet = getResources().getBoolean(R.bool.isTablet);
+        if (isTablet) {
 
             /* GMap Setup */
             SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
@@ -179,7 +180,7 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
             }
         });
 
-        new MessageFragment.GetMyMessage().execute();
+        new GetMyMessage().execute();
         swipeContainer = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipeContainer);
 
 
@@ -340,7 +341,7 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        if (tabletSize) {
+        if (isTablet) {
             map = googleMap;
             if (ContextCompat.checkSelfPermission((getActivity()), android.Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
@@ -363,15 +364,36 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
 
     public void drawMarkerMessage(LatLng myLocation) {
         map.clear();
+        if (myLocation == null) {
+            myLocation = new LatLng((Double) mIntent.getExtras().getSerializable("currentLat"),(Double) mIntent.getExtras().getSerializable("currentLon"));
+        }
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 12));
         map.addMarker(new MarkerOptions().position(new LatLng(dataMessage.getLatitude(), dataMessage.getLongitude())).title(dataMessage.getText()).snippet(dataMessage.getUserName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))).setTag(dataMessage.getMessageId());
     }
     public void drawMarkerMessages(LatLng myLocation) {
         map.clear();
+        if (myLocation == null) {
+            myLocation = new LatLng((Double) mIntent.getExtras().getSerializable("currentLat"), (Double) mIntent.getExtras().getSerializable("currentLon"));
+        }
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 12));
-        map.addMarker(new MarkerOptions().position(new LatLng(dataMessage.getLatitude(), dataMessage.getLongitude())).title(dataMessage.getText()).snippet(dataMessage.getUserName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))).setTag(dataMessage.getMessageId());
-        for (Message m : dataMessages) {
-            map.addMarker(new MarkerOptions().position(new LatLng(m.getLatitude(), m.getLongitude())).title(m.getText()).snippet(m.getUserName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_reply))).setTag(m.getMessageId());
+        if(dataMessage.getMessageId() == null) {
+            builderNoMessage = new AlertDialog.Builder(getActivity());
+            builderNoMessage.setTitle("Message not found");
+            builderNoMessage.setMessage("Unfortunately, this message was deleted by his author, so it doesn't exist anymore. It will be removed from your favorite messages.").setCancelable(false);
+            builderNoMessage.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    db.delete(idMessage);
+                    getActivity().finish();
+                }
+            });
+            alertNoMessage= builderNoMessage.create();
+            alertNoMessage.show();
+        }
+        else {
+            map.addMarker(new MarkerOptions().position(new LatLng(dataMessage.getLatitude(), dataMessage.getLongitude())).title(dataMessage.getText()).snippet(dataMessage.getUserName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))).setTag(dataMessage.getMessageId());
+            for (Message m : dataMessages) {
+                map.addMarker(new MarkerOptions().position(new LatLng(m.getLatitude(), m.getLongitude())).title(m.getText()).snippet(m.getUserName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_reply))).setTag(m.getMessageId());
+            }
         }
     }
 
@@ -458,7 +480,7 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
                 swipeContainer.setRefreshing(false);
 
                 LoadCardItems(dataMessage);
-                if (tabletSize) {
+                if (isTablet) {
                 drawMarkerMessage(myLocation);}
             }
         }
@@ -548,8 +570,9 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
         protected void onPostExecute(Boolean result) {
             swipeContainer.setRefreshing(false);
             LoadMessages(dataMessages);
-            if (tabletSize) {
-            drawMarkerMessages(myLocation);}
+            if (isTablet) {
+                drawMarkerMessages(myLocation);
+            }
 
         }
 

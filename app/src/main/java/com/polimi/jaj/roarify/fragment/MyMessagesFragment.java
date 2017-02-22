@@ -6,6 +6,7 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
@@ -67,9 +68,12 @@ public class MyMessagesFragment extends Fragment implements GoogleApiClient.Conn
     private String mLastUpdateTime;
     private boolean mRequestingLocationUpdates;
     private LocationRequest mLocationRequest;
+    private Location messageLocation;
     private LatLng myLocation;
     private Integer distance;
     private Location locationMessage;
+    private Double savedLat;
+    private Double savedLon;
 
     /* Server Connection parameters */
     List<Message> dataMessages = new ArrayList<Message>();
@@ -97,6 +101,25 @@ public class MyMessagesFragment extends Fragment implements GoogleApiClient.Conn
 
     }
 
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putDouble("savedLat",mLastLocation.getLatitude());
+        outState.putDouble("savedLon",mLastLocation.getLongitude());
+        System.out.println(mLastLocation);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            savedLat = savedInstanceState.getDouble("savedLat");
+            savedLon = savedInstanceState.getDouble("savedLon");
+        }
+        System.out.println(savedLat);
+        System.out.println(savedLon);
+    }
 
     /**
      * Server Connection methods
@@ -170,7 +193,12 @@ public class MyMessagesFragment extends Fragment implements GoogleApiClient.Conn
 
         @Override
         protected void onPostExecute(Boolean result) {
-            LoadMessages(dataMessages);
+            if (mGoogleApiClient.isConnected()) {
+                LoadMessages(dataMessages);
+            }
+            else {
+                mGoogleApiClient.connect();
+            }
         }
 
         @Override
@@ -318,7 +346,15 @@ public class MyMessagesFragment extends Fragment implements GoogleApiClient.Conn
         locationMessage.setLatitude(message.getLatitude());
         locationMessage.setLongitude(message.getLongitude());
         distance = new Integer(0);
-        distance = Math.round(mLastLocation.distanceTo(locationMessage));
+        if (mLastLocation != null) {
+            distance = Math.round(mLastLocation.distanceTo(locationMessage));
+        }
+        else {
+            Location auxLocation = new Location("Roarify");
+            auxLocation.setLatitude(savedLat);
+            auxLocation.setLongitude(savedLon);
+            distance = Math.round(auxLocation.distanceTo(locationMessage));
+        }
         return distance;
     }
 

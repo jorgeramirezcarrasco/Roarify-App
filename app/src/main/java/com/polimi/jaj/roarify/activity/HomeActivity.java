@@ -48,6 +48,7 @@ public class HomeActivity extends AppCompatActivity {
     private View auxView;
     DrawerLayout drawer;
     private AlertDialog alertMessage;
+    private int selectedFragment = 0;
 
 
     public static RoarifySQLiteRepository db;
@@ -101,6 +102,8 @@ public class HomeActivity extends AppCompatActivity {
 
         setupNavigationDrawerContent(navigationView);
 
+        navigationView.getMenu().getItem(selectedFragment).setChecked(true);
+
         /* User data setup */
         if (Profile.getCurrentProfile() != null) {
             setUserData(navigationView);
@@ -114,7 +117,7 @@ public class HomeActivity extends AppCompatActivity {
 
             if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
-                setFragment(0);
+                setFragment(selectedFragment);
 
             }else {
                 int hasLocationPermission = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION);
@@ -204,19 +207,23 @@ public class HomeActivity extends AppCompatActivity {
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
                         switch (menuItem.getItemId()) {
                             case R.id.nav_home:
-                                setFragment(0);
+                                selectedFragment = 0;
+                                setFragment(selectedFragment);
                                 drawer.closeDrawer(GravityCompat.START);
                                 return true;
                             case R.id.nav_my_messages:
-                                setFragment(1);
+                                selectedFragment = 1;
+                                setFragment(selectedFragment);
                                 drawer.closeDrawer(GravityCompat.START);
                                 return true;
                             case R.id.nav_favorites:
-                                setFragment(2);
+                                selectedFragment = 2;
+                                setFragment(selectedFragment);
                                 drawer.closeDrawer(GravityCompat.START);
                                 return true;
                             case R.id.nav_help_feedback:
-                                setFragment(3);
+                                selectedFragment = 3;
+                                setFragment(selectedFragment);
                                 drawer.closeDrawer(GravityCompat.START);
                                 return true;
                             case R.id.nav_logout:
@@ -275,7 +282,7 @@ public class HomeActivity extends AppCompatActivity {
         if (hasLocationPermission != PackageManager.PERMISSION_GRANTED) {
             PermissionLocationHandler();
         }else{
-            setFragment(0);
+            setFragment(selectedFragment);
         }
 
     }
