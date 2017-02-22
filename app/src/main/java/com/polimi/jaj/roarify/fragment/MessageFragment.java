@@ -170,7 +170,7 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
                     .add(R.id.container, CardViewFragment.newInstance())
                     .commit();
         }
-        if (isTablet && orientation==Configuration.ORIENTATION_PORTRAIT) {
+        if ((!isTablet) || (isTablet && orientation==Configuration.ORIENTATION_PORTRAIT)) {
             CardView gMapCard = (CardView) getActivity().findViewById(R.id.gMapCard);
             gMapCard.setOnClickListener(new View.OnClickListener() {
                 @Override
