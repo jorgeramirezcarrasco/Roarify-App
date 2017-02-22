@@ -158,7 +158,6 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
         isTablet = getResources().getBoolean(R.bool.isTablet);
         orientation = getResources().getConfiguration().orientation;
 
-        System.out.println("HOOOOLAAAAAA "+(isTablet));
         if (isTablet && orientation== Configuration.ORIENTATION_LANDSCAPE) {
 
             /* GMap Setup */
@@ -172,7 +171,6 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
                     .commit();
         }
         if (isTablet && orientation==Configuration.ORIENTATION_PORTRAIT) {
-            System.out.println("AAAADIOOOOOOOS "+getResources().getConfiguration().orientation);
             CardView gMapCard = (CardView) getActivity().findViewById(R.id.gMapCard);
             gMapCard.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -186,11 +184,6 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
                 }
             });
         }
-        System.out.println("HOOOOLAAAAAA "+getResources().getConfiguration().orientation);
-        System.out.println("HOOOOLAAAAAA "+Configuration.ORIENTATION_LANDSCAPE);
-        System.out.println("HOOOOLAAAAAA "+Configuration.ORIENTATION_PORTRAIT);
-        System.out.println("HOOOOLAAAAAA "+(getResources().getConfiguration().orientation==Configuration.ORIENTATION_PORTRAIT));
-        System.out.println("HOOOOLAAAAAA "+(isTablet && getResources().getConfiguration().orientation==Configuration.ORIENTATION_PORTRAIT));
 
         new GetMyMessage().execute();
         swipeContainer = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipeContainer);
@@ -493,7 +486,8 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
 
                 LoadCardItems(dataMessage);
                 if (isTablet && orientation==Configuration.ORIENTATION_LANDSCAPE) {
-                drawMarkerMessage(myLocation);}
+                    drawMarkerMessage(myLocation);
+                }
             }
         }
 

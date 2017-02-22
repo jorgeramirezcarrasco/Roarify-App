@@ -2,6 +2,7 @@ package com.polimi.jaj.roarify.fragment;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -23,7 +24,14 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.polimi.jaj.roarify.R;
@@ -58,7 +66,7 @@ import java.util.Locale;
  * Created by jorgeramirezcarrasco on 4/1/17.
  */
 
-public class MyMessagesFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks,
+public class MyMessagesFragment extends Fragment implements OnMapReadyCallback,GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
 
@@ -70,6 +78,7 @@ public class MyMessagesFragment extends Fragment implements GoogleApiClient.Conn
     private LocationRequest mLocationRequest;
     private Location messageLocation;
     private LatLng myLocation;
+    private GoogleMap map;
     private Integer distance;
     private Location locationMessage;
     private Double savedLat;
@@ -78,6 +87,9 @@ public class MyMessagesFragment extends Fragment implements GoogleApiClient.Conn
     /* Server Connection parameters */
     List<Message> dataMessages = new ArrayList<Message>();
     DateFormat format = new SimpleDateFormat("d MMM yyyy HH:mm:ss", Locale.ENGLISH);
+
+    boolean isTablet;
+    int orientation;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -97,7 +109,15 @@ public class MyMessagesFragment extends Fragment implements GoogleApiClient.Conn
             mGoogleApiClient.connect();
         }
 
-        //new GetUserMessages().execute();
+        isTablet = getResources().getBoolean(R.bool.isTablet);
+        orientation = getResources().getConfiguration().orientation;
+
+        if (isTablet && orientation== Configuration.ORIENTATION_LANDSCAPE) {
+
+            /* GMap Setup */
+            SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+        }
 
     }
 
@@ -116,6 +136,35 @@ public class MyMessagesFragment extends Fragment implements GoogleApiClient.Conn
         if (savedInstanceState != null) {
             savedLat = savedInstanceState.getDouble("savedLat");
             savedLon = savedInstanceState.getDouble("savedLon");
+        }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+        if (ContextCompat.checkSelfPermission((getActivity()), android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            map.setMyLocationEnabled(true);
+
+        }
+        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick ( final Marker marker){
+                Intent mIntent = new Intent(getActivity(), MessageActivity.class);
+                mIntent.putExtra("idMessage", marker.getTag().toString());
+                mIntent.putExtra("currentLat",mLastLocation.getLatitude());
+                mIntent.putExtra("currentLon",mLastLocation.getLongitude());
+                startActivity(mIntent);
+                return true;
+            }
+        });
+    }
+
+    public void drawMarker(LatLng myLocation) {
+        map.clear();
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 12));
+        for (Message m : dataMessages) {
+            map.addMarker(new MarkerOptions().position(new LatLng(m.getLatitude(), m.getLongitude())).title(m.getText()).snippet(m.getUserName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))).setTag(m.getMessageId());
         }
     }
 
@@ -193,6 +242,9 @@ public class MyMessagesFragment extends Fragment implements GoogleApiClient.Conn
         protected void onPostExecute(Boolean result) {
             if (mGoogleApiClient.isConnected()) {
                 LoadMessages(dataMessages);
+                if (isTablet && orientation==Configuration.ORIENTATION_LANDSCAPE) {
+                    drawMarker(myLocation);
+                }
             }
             else {
                 mGoogleApiClient.connect();

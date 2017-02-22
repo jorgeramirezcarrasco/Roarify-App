@@ -10,8 +10,22 @@
 
     <ListView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/mymessages"
-        android:layout_width="match_parent"
+        android:layout_width="350dp"
         android:layout_height="match_parent" />
+
+    <View
+        android:id="@+id/separator"
+        android:layout_width="3dp"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@id/mymessages"
+        android:background="#BDBDBD"/>
+
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_toRightOf="@id/separator"/>
 
     <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"

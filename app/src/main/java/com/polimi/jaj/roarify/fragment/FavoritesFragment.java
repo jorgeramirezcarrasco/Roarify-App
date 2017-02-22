@@ -2,6 +2,7 @@ package com.polimi.jaj.roarify.fragment;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -20,7 +21,14 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.polimi.jaj.roarify.R;
 import com.polimi.jaj.roarify.activity.MessageActivity;
 import com.polimi.jaj.roarify.adapter.CustomAdapter;
@@ -39,7 +47,7 @@ import java.util.Locale;
 import static com.polimi.jaj.roarify.activity.HomeActivity.db;
 
 
-public class FavoritesFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks,
+public class FavoritesFragment extends Fragment implements OnMapReadyCallback,GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     /* Parameters needed for the dialog fragments */
@@ -56,10 +64,14 @@ public class FavoritesFragment extends Fragment implements GoogleApiClient.Conne
     private boolean mRequestingLocationUpdates;
     private LocationRequest mLocationRequest;
     private LatLng myLocation;
+    private GoogleMap map;
     private Integer distance;
     private Location locationMessage;
 
     DateFormat format = new SimpleDateFormat("d MMM yyyy HH:mm:ss", Locale.ENGLISH);
+
+    boolean isTablet;
+    int orientation;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -80,6 +92,45 @@ public class FavoritesFragment extends Fragment implements GoogleApiClient.Conne
             mGoogleApiClient.connect();
         }
 
+        isTablet = getResources().getBoolean(R.bool.isTablet);
+        orientation = getResources().getConfiguration().orientation;
+
+        if (isTablet && orientation== Configuration.ORIENTATION_LANDSCAPE) {
+
+            /* GMap Setup */
+            SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+        }
+
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+        if (ContextCompat.checkSelfPermission((getActivity()), android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            map.setMyLocationEnabled(true);
+
+        }
+        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick ( final Marker marker){
+                Intent mIntent = new Intent(getActivity(), MessageActivity.class);
+                mIntent.putExtra("idMessage", marker.getTag().toString());
+                mIntent.putExtra("currentLat",mLastLocation.getLatitude());
+                mIntent.putExtra("currentLon",mLastLocation.getLongitude());
+                startActivity(mIntent);
+                return true;
+            }
+        });
+    }
+
+    public void drawMarker(LatLng myLocation) {
+        map.clear();
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 12));
+        for (Message m : favoriteMessages) {
+            map.addMarker(new MarkerOptions().position(new LatLng(m.getLatitude(), m.getLongitude())).title(m.getText()).snippet(m.getUserName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))).setTag(m.getMessageId());
+        }
     }
 
     public void LoadMessages(final List<Message> dataMessages){
@@ -170,6 +221,9 @@ public class FavoritesFragment extends Fragment implements GoogleApiClient.Conne
                 favoriteMessages.add(iMessage);
             }
             LoadMessages(favoriteMessages);
+            if (isTablet && orientation==Configuration.ORIENTATION_LANDSCAPE) {
+                drawMarker(myLocation);
+            }
         }
     }
 

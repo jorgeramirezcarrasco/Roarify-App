@@ -1,8 +1,12 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_mymessages"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.polimi.jaj.roarify.fragment.FavoritesFragment">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.polimi.jaj.roarify.activity.HomeActivity">
 
     <ListView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/favorites"
@@ -16,4 +20,4 @@
         android:fitsSystemWindows="true"
         tools:context="com.polimi.jaj.roarify.activity.HomeActivity"/>
 
-</FrameLayout>
+</RelativeLayout>
