@@ -8,6 +8,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.location.Location;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -356,12 +357,21 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
             map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                 @Override
                 public boolean onMarkerClick(final Marker marker) {
-                    Intent mIntent = new Intent(getActivity(), MessageActivity.class);
-                    mIntent.putExtra("idMessage", marker.getTag().toString());
-                    mIntent.putExtra("currentLat", mLastLocation.getLatitude());
-                    mIntent.putExtra("currentLon", mLastLocation.getLongitude());
-                    startActivity(mIntent);
-                    return true;
+                    if(marker.getTag().toString().equals(idMessage)){
+                        Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                                Uri.parse("geo:0,0?q="+marker.getPosition().latitude+","+marker.getPosition().longitude+"(" + "Message from "+marker.getSnippet().toString() + ")"));
+                        startActivity(intent);
+                        return true;
+
+                    }else{
+                        Intent mIntent = new Intent(getActivity(), MessageActivity.class);
+                        mIntent.putExtra("idMessage", marker.getTag().toString());
+                        mIntent.putExtra("currentLat", mLastLocation.getLatitude());
+                        mIntent.putExtra("currentLon", mLastLocation.getLongitude());
+                        startActivity(mIntent);
+                        return true;
+
+                    }
                 }
             });
         }
