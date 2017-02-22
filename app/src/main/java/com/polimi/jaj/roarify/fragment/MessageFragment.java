@@ -4,6 +4,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -108,6 +111,7 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
     AlertDialog alertNoMessage;
     String textPost;
     boolean isTablet;
+    int orientation;
 
     /* Server Connection parameters */
     private String idMessage;
@@ -152,14 +156,14 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
         /*Layout Setup */
 
         isTablet = getResources().getBoolean(R.bool.isTablet);
-        if (isTablet) {
+        orientation = getResources().getConfiguration().orientation;
+
+        System.out.println("HOOOOLAAAAAA "+(isTablet));
+        if (isTablet && orientation== Configuration.ORIENTATION_LANDSCAPE) {
 
             /* GMap Setup */
             SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
-
-        } else {
-
         }
 
         if (savedInstanceState == null) {
@@ -167,18 +171,26 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
                     .add(R.id.container, CardViewFragment.newInstance())
                     .commit();
         }
-        CardView gMapCard = (CardView) getActivity().findViewById(R.id.gMapCard);
-        gMapCard.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent mIntentNext = new Intent(getActivity(), MapActivity.class);
-                mIntentNext.putExtra("idMessage", dataMessage.getMessageId());
-                mIntentNext.putExtra("LongitudeMessage", dataMessage.getLongitude());
-                mIntentNext.putExtra("LatitudeMessage", dataMessage.getLatitude());
-                startActivity(mIntentNext);
+        if (isTablet && orientation==Configuration.ORIENTATION_PORTRAIT) {
+            System.out.println("AAAADIOOOOOOOS "+getResources().getConfiguration().orientation);
+            CardView gMapCard = (CardView) getActivity().findViewById(R.id.gMapCard);
+            gMapCard.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent mIntentNext = new Intent(getActivity(), MapActivity.class);
+                    mIntentNext.putExtra("idMessage", dataMessage.getMessageId());
+                    mIntentNext.putExtra("LongitudeMessage", dataMessage.getLongitude());
+                    mIntentNext.putExtra("LatitudeMessage", dataMessage.getLatitude());
+                    startActivity(mIntentNext);
 
-            }
-        });
+                }
+            });
+        }
+        System.out.println("HOOOOLAAAAAA "+getResources().getConfiguration().orientation);
+        System.out.println("HOOOOLAAAAAA "+Configuration.ORIENTATION_LANDSCAPE);
+        System.out.println("HOOOOLAAAAAA "+Configuration.ORIENTATION_PORTRAIT);
+        System.out.println("HOOOOLAAAAAA "+(getResources().getConfiguration().orientation==Configuration.ORIENTATION_PORTRAIT));
+        System.out.println("HOOOOLAAAAAA "+(isTablet && getResources().getConfiguration().orientation==Configuration.ORIENTATION_PORTRAIT));
 
         new GetMyMessage().execute();
         swipeContainer = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipeContainer);
@@ -480,7 +492,7 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
                 swipeContainer.setRefreshing(false);
 
                 LoadCardItems(dataMessage);
-                if (isTablet) {
+                if (isTablet && orientation==Configuration.ORIENTATION_LANDSCAPE) {
                 drawMarkerMessage(myLocation);}
             }
         }
@@ -570,7 +582,7 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
         protected void onPostExecute(Boolean result) {
             swipeContainer.setRefreshing(false);
             LoadMessages(dataMessages);
-            if (isTablet) {
+            if (isTablet && orientation==Configuration.ORIENTATION_LANDSCAPE) {
                 drawMarkerMessages(myLocation);
             }
 

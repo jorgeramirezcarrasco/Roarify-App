@@ -117,8 +117,6 @@ public class MyMessagesFragment extends Fragment implements GoogleApiClient.Conn
             savedLat = savedInstanceState.getDouble("savedLat");
             savedLon = savedInstanceState.getDouble("savedLon");
         }
-        System.out.println(savedLat);
-        System.out.println(savedLon);
     }
 
     /**
