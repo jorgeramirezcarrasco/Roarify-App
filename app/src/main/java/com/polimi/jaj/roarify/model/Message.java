@@ -1,8 +1,5 @@
 package com.polimi.jaj.roarify.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import java.io.Serializable;
 
 public class Message implements Serializable{
@@ -18,7 +15,7 @@ public class Message implements Serializable{
     private Double lon;
     private String isParent;
     private String parentId;
-    private String distance;//Este valor se actualiza desde el usuario, el servidor no lo toca.
+    private String distance;
 
 
     public Message(){}

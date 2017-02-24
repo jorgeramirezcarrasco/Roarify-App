@@ -2,7 +2,6 @@ package com.polimi.jaj.roarify.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -10,9 +9,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -32,7 +29,6 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.widget.ProfilePictureView;
 
 
-import com.google.android.gms.maps.SupportMapFragment;
 import com.polimi.jaj.roarify.data.RoarifySQLiteRepository;
 import com.polimi.jaj.roarify.fragment.FavoritesFragment;
 import com.polimi.jaj.roarify.fragment.FeedbackFragment;
@@ -47,7 +43,6 @@ public class HomeActivity extends AppCompatActivity {
     /* Parameters needed for the dialog fragments */
     private View auxView;
     DrawerLayout drawer;
-    private AlertDialog alertMessage;
     private int selectedFragment = 0;
 
 

@@ -2,7 +2,6 @@ package com.polimi.jaj.roarify.fragment;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;

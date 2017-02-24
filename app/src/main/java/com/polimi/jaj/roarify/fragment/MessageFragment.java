@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -77,7 +75,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.ExecutionException;
 
 import static com.polimi.jaj.roarify.activity.HomeActivity.db;
 
@@ -95,8 +92,6 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
     private LocationRequest mLocationRequest;
     private LatLng messageLocation;
     private Location mLastLocation;
-    private LatLng myLocation;
-    private Integer distance;
     private Location locationMessage;
     private GoogleMap map;
     private Intent mIntent;
@@ -200,11 +195,7 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // Your code to refresh the list here.
-                // Make sure you call swipeContainer.setRefreshing(false)
-                // once the network request has completed successfully.
                 new MessageFragment.GetChildrenMessages().execute();
-
             }
         });
         swipeContainer.setColorSchemeResources(R.color.colorPrimary);
@@ -394,12 +385,12 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
         }
     }
 
-    public void drawMarkerMessage(LatLng myLocation) {
+    public void drawMarkerMessage(LatLng messageLocation) {
         map.clear();
-        if (myLocation == null) {
-            myLocation = new LatLng((Double) mIntent.getExtras().getSerializable("currentLat"),(Double) mIntent.getExtras().getSerializable("currentLon"));
+        if (messageLocation == null) {
+            messageLocation = new LatLng((Double) mIntent.getExtras().getSerializable("currentLat"),(Double) mIntent.getExtras().getSerializable("currentLon"));
         }
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 16));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(messageLocation, 16));
         map.addMarker(new MarkerOptions().position(new LatLng(dataMessage.getLatitude(), dataMessage.getLongitude())).title(dataMessage.getText()).snippet(dataMessage.getUserName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))).setTag(dataMessage.getMessageId());
     }
     public void drawMarkerMessages() {
@@ -790,11 +781,6 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
                 startLocationUpdates();
             }
         }
-         /* If all the process was right draw the marker */
-        if (mLastLocation != null) {
-            /* Convert Location and call drawMarker method */
-            myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-        }
     }
 
     @Override
@@ -823,7 +809,6 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
     public void onLocationChanged(Location location) {
         mLastLocation = location;
         mLastUpdateTime = format.format(new Date());
-        myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
     }
 
     @Override
@@ -849,7 +834,7 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
     public Integer getDistanceToMessage(Location locationMessage, Message message){
         locationMessage.setLatitude(message.getLatitude());
         locationMessage.setLongitude(message.getLongitude());
-        distance = new Integer(0);
+        Integer distance;
         if (mLastLocation != null) {
             distance = Math.round(mLastLocation.distanceTo(locationMessage));
         }

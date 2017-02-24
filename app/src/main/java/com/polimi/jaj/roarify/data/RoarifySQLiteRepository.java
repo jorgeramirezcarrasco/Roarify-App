@@ -32,21 +32,18 @@ public class RoarifySQLiteRepository {
                 new Object[]{favorite.getMessageId(),favorite.getUserId(), favorite.getUserName(),
                         favorite.getText(), favorite.getTime(), favorite.getLatitude(),
                         favorite.getLongitude(),});
-        System.out.println("SE HA ANADIDO UN MENSAJE");
     }
 
     public void delete(Message favorite){
         db.execSQL("DELETE FROM "+FavoriteEntry.TABLE_NAME+ " WHERE " +
                         FavoriteEntry.COLUMN_NAME_MESSAGE_ID + " = ?",
                 new Object[]{favorite.getMessageId()});
-        System.out.println("SE HA ELIMINADO UN MENSAJE");
     }
 
     public void delete(String messageID){
         db.execSQL("DELETE FROM "+FavoriteEntry.TABLE_NAME+ " WHERE " +
                         FavoriteEntry.COLUMN_NAME_MESSAGE_ID + " = ?",
                 new Object[]{messageID});
-        System.out.println("SE HA ELIMINADO UN MENSAJE");
     }
 
     public void deleteAll(){

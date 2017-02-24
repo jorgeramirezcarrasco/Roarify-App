@@ -1,11 +1,9 @@
 package com.polimi.jaj.roarify.activity;
 
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.polimi.jaj.roarify.R;
 
 /**
  * Created by jorgeramirezcarrasco on 25/1/17.

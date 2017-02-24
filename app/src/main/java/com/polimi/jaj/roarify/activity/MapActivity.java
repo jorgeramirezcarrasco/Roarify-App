@@ -2,7 +2,6 @@ package com.polimi.jaj.roarify.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
@@ -61,15 +60,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     /* Google Maps parameters */
     private GoogleApiClient mGoogleApiClient;
-    private Location mLastLocation;
-    private String mLastUpdateTime;
     private boolean mRequestingLocationUpdates;
     private LocationRequest mLocationRequest;
     private GoogleMap map;
     static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
-    private LatLng myLocation;
-    private Integer distance;
-    private Location locationMessage;
 
     private String idMessage;
     private LatLng messageLocation;
@@ -163,9 +157,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         });
     }
 
-    public void drawMarker(LatLng myLocation) {
+    public void drawMarker(LatLng messageLocation) {
         map.clear();
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 16));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(messageLocation, 16));
        //Draw
         map.addMarker(new MarkerOptions().position(new LatLng(m.getLatitude(), m.getLongitude())).title(m.getText()).snippet(m.getUserName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))).setTag(m.getMessageId());
 
@@ -225,18 +219,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         /* When is connected check permissions with the Package Manager */
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-            /* Obtain the last Location */
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
              /* Allows Location Updates */
             mRequestingLocationUpdates = true;
             mLocationRequest = new LocationRequest();
             if (mRequestingLocationUpdates) {
                 startLocationUpdates();
             }
-        }
-        if (mLastLocation != null) {
-            /* Convert Location */
-            myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
         }
     }
 
@@ -260,12 +248,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     }
 
-    /* Method that is called when Location is changed */
-    @Override
-    public void onLocationChanged(Location location) {
-        mLastLocation = location;
-        myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-    }
 
     @Override
     public void onPause() {
@@ -288,6 +270,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
 
     }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+    }
+
     /**
      * Server Connection methods
      */

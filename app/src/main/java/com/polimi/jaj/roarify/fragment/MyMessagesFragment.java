@@ -52,14 +52,10 @@ import org.apache.http.message.BasicNameValuePair;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 
 /**
@@ -73,20 +69,15 @@ public class MyMessagesFragment extends Fragment implements OnMapReadyCallback,G
     /* Google Maps parameters */
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
-    private String mLastUpdateTime;
     private boolean mRequestingLocationUpdates;
     private LocationRequest mLocationRequest;
-    private Location messageLocation;
     private LatLng myLocation;
     private GoogleMap map;
-    private Integer distance;
-    private Location locationMessage;
     private Double savedLat;
     private Double savedLon;
 
     /* Server Connection parameters */
     List<Message> dataMessages = new ArrayList<Message>();
-    DateFormat format = new SimpleDateFormat("d MMM yyyy HH:mm:ss", Locale.ENGLISH);
 
     boolean isTablet;
     int orientation;
@@ -127,7 +118,6 @@ public class MyMessagesFragment extends Fragment implements OnMapReadyCallback,G
         super.onSaveInstanceState(outState);
         outState.putDouble("savedLat",mLastLocation.getLatitude());
         outState.putDouble("savedLon",mLastLocation.getLongitude());
-        System.out.println(mLastLocation);
     }
 
     @Override
@@ -259,7 +249,7 @@ public class MyMessagesFragment extends Fragment implements OnMapReadyCallback,G
 
             } else {
                 Message message = new Message(values[0].getMessageId(),values[0].getUserId(),values[0].getUserName(),values[0].getText(),values[0].getTime(),values[0].getLatitude(),values[0].getLongitude(),values[0].getIsParent(),values[0].getParentId(), null);
-                locationMessage = new Location("Roarify");
+                Location locationMessage = new Location("Roarify");
                 message.setDistance(getDistanceToMessage(locationMessage, message).toString());
                 dataMessages.add(message);
 
@@ -328,8 +318,6 @@ public class MyMessagesFragment extends Fragment implements OnMapReadyCallback,G
                 == PackageManager.PERMISSION_GRANTED) {
             /* Obtain the last Location */
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            /* Obtain the last date */
-            mLastUpdateTime = format.format(new Date());
              /* Allows Location Updates */
             mRequestingLocationUpdates = true;
             mLocationRequest = new LocationRequest();
@@ -369,7 +357,6 @@ public class MyMessagesFragment extends Fragment implements OnMapReadyCallback,G
     @Override
     public void onLocationChanged(Location location) {
         mLastLocation = location;
-        mLastUpdateTime = format.format(new Date());
         myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
     }
 
@@ -399,7 +386,7 @@ public class MyMessagesFragment extends Fragment implements OnMapReadyCallback,G
     public Integer getDistanceToMessage(Location locationMessage, Message message){
         locationMessage.setLatitude(message.getLatitude());
         locationMessage.setLongitude(message.getLongitude());
-        distance = new Integer(0);
+        Integer distance;
         if (mLastLocation != null) {
             distance = Math.round(mLastLocation.distanceTo(locationMessage));
         }

@@ -51,7 +51,6 @@ public class MessageAdapter extends ArrayAdapter<Message> {
 
             if (tt3 != null) {
                 String[] s = p.getTime().split("\\s");
-
                 tt3.setText(s[0]+' '+s[1]+' '+s[2]+'\n'+s[3]);
             }
 

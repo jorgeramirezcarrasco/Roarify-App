@@ -58,7 +58,6 @@ public class RoarifyDBContract {
         @Override
         public void onCreate(SQLiteDatabase db) {
             db.execSQL(SQL_CREATE_FAVORITES_TABLE);
-            System.out.println("SE HA CREADO LA BD");
         }
 
         @Override

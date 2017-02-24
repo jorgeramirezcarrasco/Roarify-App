@@ -10,13 +10,11 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,7 +72,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.RunnableFuture;
 
 
 /**
@@ -93,7 +90,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
     private LocationRequest mLocationRequest;
     private GoogleMap map;
     private LatLng myLocation;
-    private Location locationMessage;
 
 
     /* Parameters needed for the dialog fragments */
@@ -108,7 +104,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
     /* Server Connection parameters */
     private Double lat;
     private Double lon;
-    private String user_ID;
     List<Message> dataMessages = new ArrayList<Message>();
     List<Message> dataMessagesDraw = new ArrayList<Message>();
     private static final String ORIGINAL
@@ -135,31 +130,28 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
 
 
 
-            /* Google Api Client Connection */
-            buildGoogleApiClient();
+        /* Google Api Client Connection */
+        buildGoogleApiClient();
 
-            if (mGoogleApiClient != null) {
-                mGoogleApiClient.connect();
+        if (mGoogleApiClient != null) {
+            mGoogleApiClient.connect();
+        }
+
+        /* GMap Setup */
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+         /*Layout Setup */
+
+        swipeContainer = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipeContainer);
+
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new GetNearMessages().execute();
             }
-
-            /* GMap Setup */
-            SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-            mapFragment.getMapAsync(this);
-
-             /*Layout Setup */
-
-            swipeContainer = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipeContainer);
-
-            swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    // Your code to refresh the list here.
-                    // Make sure you call swipeContainer.setRefreshing(false)
-                    // once the network request has completed successfully.
-                    new GetNearMessages().execute();
-                }
-            });
-            swipeContainer.setColorSchemeResources(R.color.colorPrimary);
+        });
+        swipeContainer.setColorSchemeResources(R.color.colorPrimary);
 
 
         FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
@@ -404,7 +396,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
 
             } else {
                 Message message = new Message(values[0].getMessageId(), values[0].getUserId(), values[0].getUserName(), values[0].getText(), values[0].getTime(), values[0].getLatitude(), values[0].getLongitude(),values[0].getIsParent(),values[0].getParentId(), null);
-                locationMessage = new Location("Roarify");
+                Location locationMessage = new Location("Roarify");
                 Integer distance = getDistanceToMessage(locationMessage, message);
                 try {
                     Date messageDate = format.parse(message.getTime());
@@ -585,9 +577,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
     public Integer getDistanceToMessage(Location locationMessage, Message message){
         locationMessage.setLatitude(message.getLatitude());
         locationMessage.setLongitude(message.getLongitude());
-        Integer distance = Math.round(mLastLocation.distanceTo(locationMessage));
 
-        return distance;
+        return Math.round(mLastLocation.distanceTo(locationMessage));
     }
 
     private class GetLocationTask extends AsyncTask<Void, Void, Void>{
@@ -622,10 +613,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
             super.onPostExecute(result);
         }
 
-
-
     }
-
 
 }
 
