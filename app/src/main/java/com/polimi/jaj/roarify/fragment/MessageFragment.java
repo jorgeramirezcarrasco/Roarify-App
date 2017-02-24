@@ -399,7 +399,7 @@ public class MessageFragment extends Fragment implements OnMapReadyCallback,Goog
         if (myLocation == null) {
             myLocation = new LatLng((Double) mIntent.getExtras().getSerializable("currentLat"),(Double) mIntent.getExtras().getSerializable("currentLon"));
         }
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 12));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 16));
         map.addMarker(new MarkerOptions().position(new LatLng(dataMessage.getLatitude(), dataMessage.getLongitude())).title(dataMessage.getText()).snippet(dataMessage.getUserName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))).setTag(dataMessage.getMessageId());
     }
     public void drawMarkerMessages() {

@@ -225,9 +225,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
         });
     }
 
-    public void drawMarker(LatLng myLocation) {
+    public void drawMarker() {
         map.clear();
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 12));
         for (Message m : dataMessagesDraw) {
                 map.addMarker(new MarkerOptions().position(new LatLng(m.getLatitude(), m.getLongitude())).title(m.getText()).snippet(m.getUserName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))).setTag(m.getMessageId());
             }
@@ -395,7 +394,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
             swipeContainer.setRefreshing(false);
             dataMessagesDraw=dataMessages;
             LoadMessages(dataMessagesDraw);
-            drawMarker(myLocation);
+            drawMarker();
         }
 
         @Override
@@ -516,6 +515,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback,GoogleA
         if (mLastLocation != null) {
             /* Convert Location */
             myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 13));
         }
     }
 

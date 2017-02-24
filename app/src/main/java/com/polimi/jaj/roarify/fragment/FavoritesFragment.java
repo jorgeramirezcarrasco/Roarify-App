@@ -127,9 +127,8 @@ public class FavoritesFragment extends Fragment implements OnMapReadyCallback,Go
         });
     }
 
-    public void drawMarker(LatLng myLocation) {
+    public void drawMarker() {
         map.clear();
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 12));
         for (Message m : favoriteMessages) {
             map.addMarker(new MarkerOptions().position(new LatLng(m.getLatitude(), m.getLongitude())).title(m.getText()).snippet(m.getUserName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))).setTag(m.getMessageId());
         }
@@ -208,6 +207,7 @@ public class FavoritesFragment extends Fragment implements OnMapReadyCallback,Go
         if (mLastLocation != null) {
             /* Convert Location and call drawMarker method */
             myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 13));
             RoarifyCursor cursorAllMessages = db.findAll();
             favoriteMessages.clear();
 
@@ -226,7 +226,7 @@ public class FavoritesFragment extends Fragment implements OnMapReadyCallback,Go
             }
             LoadMessages(favoriteMessages);
             if (isTablet && orientation==Configuration.ORIENTATION_LANDSCAPE) {
-                drawMarker(myLocation);
+                drawMarker();
             }
         }
     }
