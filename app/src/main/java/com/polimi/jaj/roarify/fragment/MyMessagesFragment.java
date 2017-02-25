@@ -329,7 +329,9 @@ public class MyMessagesFragment extends Fragment implements OnMapReadyCallback,G
         if (mLastLocation != null) {
             /* Convert Location and call drawMarker method */
             myLocation = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 13));
+            if (isTablet && orientation== Configuration.ORIENTATION_LANDSCAPE) {
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 13));
+            }
         }
     }
 
