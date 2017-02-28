@@ -9,6 +9,8 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.Profile;
+import com.facebook.ProfileTracker;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.polimi.jaj.roarify.R;
@@ -19,6 +21,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private LoginButton loginButton;
     private CallbackManager callbackManager;
+    private ProfileTracker ProfileTracker;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,7 +38,15 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                goMainScreen();
+                if(Profile.getCurrentProfile() == null) {
+                    ProfileTracker = new ProfileTracker() {
+                        @Override
+                        protected void onCurrentProfileChanged(Profile profile, Profile profile2) {
+                            ProfileTracker.stopTracking();
+                            goMainScreen();
+                        }
+                    };
+                }
             }
 
             @Override

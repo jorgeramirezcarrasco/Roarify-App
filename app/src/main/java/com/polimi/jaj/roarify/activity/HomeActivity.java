@@ -57,6 +57,7 @@ public class HomeActivity extends AppCompatActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
 
         FacebookSdk.sdkInitialize(getApplicationContext());
@@ -64,8 +65,6 @@ public class HomeActivity extends AppCompatActivity {
         db = new RoarifySQLiteRepository(this);
 
         initUI();
-
-
 
     }
 
@@ -78,7 +77,7 @@ public class HomeActivity extends AppCompatActivity {
 
     public void initUI()
     {
-       /* Layout setup */
+        /* Layout setup */
 
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -137,6 +136,13 @@ public class HomeActivity extends AppCompatActivity {
         LoginManager.getInstance().logOut();
         goLoginScreen();
     }
+
+
+
+    /**
+     * Layout setup methods
+     */
+
     public void setUserData(NavigationView navigationView) {
         Profile profile = Profile.getCurrentProfile();
         String userId = profile.getId();
@@ -153,14 +159,7 @@ public class HomeActivity extends AppCompatActivity {
         profilePictureView = (ProfilePictureView) headerLayout.findViewById(R.id.profilePicture);
         profilePictureView.setProfileId(userId);
 
-
     }
-
-
-
-    /**
-     * Layout setup methods
-     */
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
